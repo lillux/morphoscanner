@@ -7,7 +7,8 @@ setup(name = 'morphoscanner',
      author = 'Calogero Carlino, Federico Fontana',
      author_email = 'calogero.carlino28@gmail.com',
      license = 'GPLv3',
-     packages = find_packages())
+     packages = find_packages(),
+     zip_safe=False)
      
      
      
