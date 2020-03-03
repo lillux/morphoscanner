@@ -8,7 +8,8 @@ setup(name = 'morphoscanner',
      author_email = 'calogero.carlino28@gmail.com',
      license = 'GPLv3',
      packages = find_packages(),
-     zip_safe=False)
+     zip_safe=False,
+     python_requires = '>= 3.6')
      
      
      
