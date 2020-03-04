@@ -12,8 +12,8 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 
-import plotly
-import plotly.express as px
+#import plotly
+#import plotly.express as px
 
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
@@ -33,7 +33,7 @@ import MDAnalysis as mda
 
 #import xml.etree.ElementTree as et
 #from Bio.PDB import *
-import nglview as nv
+#import nglview as nv
 
 from timeit import default_timer as timer
 
