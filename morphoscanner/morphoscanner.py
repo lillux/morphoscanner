@@ -90,13 +90,7 @@ trj_gro = '/home/lillo/Code/Tesi/dataset/trajectory_6_12_19/min-LDLK12-100mer-ou
 
 class morphoscanner():
     
-    
-    
-    
-    
-    
-    
-    
+
     class read():
         
         # READ .gro FILE AND PREPROCESSING
