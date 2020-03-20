@@ -38,4 +38,4 @@ trj.get_database()
 
 
 
-trj.database.to_excel('/home/lillo/Documents/Code/export_test/t1.xls', sheet_name='t1')
+#trj.database.to_excel('/home/lillo/Documents/Code/export_test/t1.xls', sheet_name='t1')
