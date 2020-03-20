@@ -24,11 +24,18 @@ print("\n%s loaded" % _xtc)
 
 trj = trajectory(_gro, _xtc)
 
+print('Your trajectory has %d frames: ' % trj.number_of_frames)
+
+peptide_length = input('Set the number of aminoacids in your peptides: ')
+interval = input('Set the interval betwen sampled frames: ')
+
+trj.compose_database(peptide_length=peptide_length, interval=interval)
+trj.analyze_inLoop()
+trj.get_data()
+trj.get_database()
 
 
-#prod.compose_database(peptide_length=18, interval=2000)
-#prod.analyze_inLoop()
-#prod.get_data()
-#prod.get_database()
 
-#prod.database.to_excel('/home/lillo/Documents/Code/export_test/t1.xls', sheet_name='t1')
+
+
+trj.database.to_excel('/home/lillo/Documents/Code/export_test/t1.xls', sheet_name='t1')
