@@ -10,7 +10,7 @@ from utilities import contact_list_from_dict
 
 import numpy as np
 import pandas as pd
-import tqdm.tqdm
+import tqdm
 
 
 # COMPUTE CONTACT MAPS

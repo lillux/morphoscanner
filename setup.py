@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(name = 'morphoscanner',
      version = '0.0.1',
-     description = 'A library to handle gromacs simulation data of Self Assembling Peptide',
+     description = 'A library to handle gromacs simulation data of Self Assembling Peptides',
      url = 'https://github.com/lillux/sap_analysis',
      author = 'Calogero Carlino, Federico Fontana',
      author_email = 'calogero.carlino28@gmail.com',
@@ -19,10 +19,11 @@ setup(name = 'morphoscanner',
           'Intended Audience :: Healthcare Industry',
           'Intended Audience :: Education',
           'Intended Audience :: Science/Research',
-          'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
           'Programming Language :: Python :: 3.7',
           'Topic :: Software Development :: Libraries',
-          'Topic :: Software Development :: Libraries :: Python Modules'
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
               
       packages=find_packages())

@@ -1,4 +1,4 @@
-from future import absolute_import
+#from future import absolute_import
 
 from . import topology
 from . import math_utilities
@@ -10,7 +10,3 @@ from . import dataframe
 from . import pattern_recognition
 from . import graph
 from . import plot
-from . import trajectory
-
-
-__version__ = '0.0.1'

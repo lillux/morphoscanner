@@ -1,8 +1,6 @@
 """
         vectorization of matrix
 
-
-
 @author: lillo
 """
 

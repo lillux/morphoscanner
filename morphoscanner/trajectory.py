@@ -7,10 +7,9 @@ Created on Thu Mar 19 12:38:50 2020
 """
 
 
-import morphoscanner
+from . import backend
 from timeit import default_timer as timer
 import pandas as pd
-
 
 class trajectory:
 
@@ -26,8 +25,8 @@ class trajectory:
 
         self.trj_gro = trj_gro
         self.trj_xtc = trj_xtc
-        self.universe = morphoscanner.topology.make_universe(self.trj_gro, self.trj_xtc)
-        self.peptide_length_list = morphoscanner.topology.get_peptide_length_list(self.trj_gro)
+        self.universe = backend.topology.make_universe(self.trj_gro, self.trj_xtc)
+        self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
         #self.topology = morphoscanner.topology.get_peptide_length_list(self.trj_gro)
         self.number_of_frames = len(self.universe.trajectory)
 
@@ -35,13 +34,13 @@ class trajectory:
 
 
 
-    def compose_database(self, peptide_length=None, start_from=0, interval=0):
+    def compose_database(self, peptide_length=None, start_from=0, interval=1):
 
         self.peptide_length = peptide_length
         self.start_from = start_from
         self.interval = interval
 
-        self.data = morphoscanner.topology.get_coordinate_dict_from_trajectory(self.trj_gro, self.trj_xtc, peptide_length=self.peptide_length, start_from=self.start_from, interval=self.interval)
+        self.data = backend.topology.get_coordinate_dict_from_trajectory(self.trj_gro, self.trj_xtc, peptide_length=self.peptide_length, start_from=self.start_from, interval=self.interval)
         self.sampled_frames = [key for key in self.data.keys()]
 
 
@@ -56,19 +55,19 @@ class trajectory:
 
         self.frame_dict = self.data[self.frame]
 
-        self.frame_tensor = morphoscanner.distance_tensor.get_coordinate_tensor_from_dict(self.frame_dict)
+        self.frame_tensor = backend.distance_tensor.get_coordinate_tensor_from_dict(self.frame_dict)
 
-        self.frame_distance_maps = morphoscanner.distance_tensor.compute_euclidean_norm_torch(self.frame_tensor)
+        self.frame_distance_maps = backend.distance_tensor.compute_euclidean_norm_torch(self.frame_tensor)
 
-        self.frame_contact = morphoscanner.distance.compute_contact_maps_as_array(self.frame_distance_maps)
+        self.frame_contact = backend.pattern_recognition.compute_contact_maps_as_array(self.frame_distance_maps)
 
-        self.frame_denoised, self.df = morphoscanner.denoise.denoise_contact_maps(self.frame_contact)
+        self.frame_denoised, self.df = backend.pattern_recognition.denoise_contact_maps(self.frame_contact)
 
-        self.frame_graph = morphoscanner.graph.nx_graph_search(self.frame_denoised)
+        self.frame_graph = backend.graph.nx_graph_search(self.frame_denoised)
 
-        self.frame_graph_full = morphoscanner.graph.graph_v1(self.frame_denoised, self.df)
+        self.frame_graph_full = backend.graph.graph_v1(self.frame_denoised, self.df)
 
-        self.subgraphs = morphoscanner.graph.find_subgraph(self.frame_graph_full)
+        self.subgraphs = backend.graph.find_subgraph(self.frame_graph_full)
 
         if self.frame not in self.frames:
 
@@ -147,7 +146,7 @@ class trajectory:
 
                 subgraph_dict = {}
 
-                subgraph_dict[key] = morphoscanner.graph.find_subgraph(self.frames[key]['frame_graph_full'])
+                subgraph_dict[key] = backend.graph.find_subgraph(self.frames[key]['frame_graph_full'])
 
                 len_list = []
 
@@ -188,7 +187,7 @@ class trajectory:
 
                 subgraph_dict = {}
 
-                subgraph_dict[key] = morphoscanner.graph.find_subgraph(self.frames[key]['frame_graph'])
+                subgraph_dict[key] = backend.graph.find_subgraph(self.frames[key]['frame_graph'])
 
                 len_list = []
 
@@ -220,7 +219,7 @@ class trajectory:
             subs = self.frames[frame]['subgraphs_full']
             #senses = contact_sense_in_subgraph(graph, subs)
             #sense_counter = count_sense_in_subgraph(senses)
-            sense_counter = morphoscanner.graph.sense_in_subgraph(graph, subs)
+            sense_counter = backend.graph.sense_in_subgraph(graph, subs)
             macroaggregate_sense_dict[frame] = sense_counter
 
         self.macroaggregate_df = pd.DataFrame.from_dict(macroaggregate_sense_dict, orient='index')

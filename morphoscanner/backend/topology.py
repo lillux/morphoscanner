@@ -4,15 +4,17 @@ Created on Thu Mar 19 20:03:20 2020
 @author: lillo
 """
 
-
+#from __future__ import absolute_import
 import MDAnalysis as mda
 import readGro
 import tqdm
 
+
+
 #get a list of the number of residues of every peptide in the topology
 def get_peptide_length_list(topology):
     
-    topology = readGro.read.clean_gro(topology)
+    topology = readGro.clean_gro(topology)
 
     peptide_lenght_list = []
 
