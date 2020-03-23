@@ -51,18 +51,28 @@ class trajectory:
 
         # WHY len(frame_denoised) is len(frame_dict)-1 ???????
 
-        self.frame = frame        
+        self.frame = frame
+        print('Analyzing frame n°: ', self.frame)
 
         self.frame_dict = self.data[self.frame]
 
         self.frame_tensor = backend.distance_tensor.get_coordinate_tensor_from_dict(self.frame_dict)
 
+        start_dist = timer()
         self.frame_distance_maps = backend.distance_tensor.compute_euclidean_norm_torch(self.frame_tensor)
-
+        end_dist = timer()
+        print('Time to coumpute distance is: ', (end_dist - start_dist))
+        
+        start_contc = timer()
         self.frame_contact = backend.pattern_recognition.compute_contact_maps_as_array(self.frame_distance_maps)
-
+        end_contc = timer()
+        print('Time to compute contact is: ', (end_contc - start_contc))
+        
+        start_den = timer()
         self.frame_denoised, self.df = backend.pattern_recognition.denoise_contact_maps(self.frame_contact)
-
+        end_den = timer()
+        print('Time to denoise: ', (end_den-start_den))
+        
         self.frame_graph = backend.graph.nx_graph_search(self.frame_denoised)
 
         self.frame_graph_full = backend.graph.graph_v1(self.frame_denoised, self.df)

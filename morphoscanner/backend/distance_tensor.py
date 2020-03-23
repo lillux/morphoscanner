@@ -17,26 +17,15 @@ def get_coordinate_tensor_from_dict(coordinate_dict):
     dim2 = len(coordinate_dict[0][0])
 
     #initialize a 0s tensor
-    if torch.cuda.is_available() == True:
-        
-        zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32, device='cuda')
-
-    else:
-        zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32, device=device)
 
 
     for peptide in coordinate_dict:
 
         for aminoacid in coordinate_dict[peptide]:
             
-            
-            if torch.cuda.is_available() == True:
-                # create torch tensor on cuda device with cordinate [x,y,z...]
-                zero[peptide][aminoacid] = torch.cuda.FloatTensor(coordinate_dict[peptide][aminoacid])
-
-            else:
-                zero[peptide][aminoacid] = torch.FloatTensor(coordinate_dict[peptide][aminoacid])
-
+            zero[peptide][aminoacid] = torch.tensor(coordinate_dict[peptide][aminoacid], device=device)
                 
                 
     return zero
@@ -58,13 +47,11 @@ def compute_euclidean_norm_torch(coordinate_tensor):
     '''
 
     #create tensor of 0s with shape n_pep x n_pep * n_res + n_res
-    if torch.cuda.is_available() == True:
-        zero = torch.zeros((coordinate_tensor.shape[0], coordinate_tensor.shape[0], coordinate_tensor.shape[1], coordinate_tensor.shape[1]), dtype=torch.float32, device='cuda')
-    else:
-        zero = torch.zeros((coordinate_tensor.shape[0], coordinate_tensor.shape[0], coordinate_tensor.shape[1], coordinate_tensor.shape[1]), dtype=torch.float32)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    zero = torch.zeros((coordinate_tensor.shape[0], coordinate_tensor.shape[0], coordinate_tensor.shape[1], coordinate_tensor.shape[1]), dtype=torch.float32, device = device)
     
     #cicle on peptide
-    for index1, peptide1 in tqdm.tqdm(enumerate(coordinate_tensor)):
+    for index1, peptide1 in enumerate(coordinate_tensor):
 
         #cicle on peptide (upper triangle + diagonal)
         for index2 in range(index1, coordinate_tensor.shape[0]):
@@ -96,6 +83,9 @@ def compute_euclidean_norm_torch(coordinate_tensor):
     if torch.cuda.is_available():
         # move to system memory and cast to numpy array
         zero = zero.cpu().numpy()
+        
+    else:
+        zero = zero.numpy()
 
     return zero
 
