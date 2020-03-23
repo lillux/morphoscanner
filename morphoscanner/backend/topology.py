@@ -6,7 +6,7 @@ Created on Thu Mar 19 20:03:20 2020
 
 #from __future__ import absolute_import
 import MDAnalysis as mda
-import readGro
+from .readGro import clean_gro
 import tqdm
 
 
@@ -14,7 +14,7 @@ import tqdm
 #get a list of the number of residues of every peptide in the topology
 def get_peptide_length_list(topology):
     
-    topology = readGro.clean_gro(topology)
+    topology = clean_gro(topology)
 
     peptide_lenght_list = []
 
@@ -125,9 +125,12 @@ def get_coordinate_dict_from_trajectory(trj_gro, trj_xtc, peptide_length=None, s
 
     else:
 
-        n_pep = sum([(e//peptide_length) for e in peptides_list])
+        n_pep = sum([(e // int(peptide_length)) for e in peptides_list])
 
 
+    interval = int(interval)
+    peptide_length = int(peptide_length)
+    
     trj_dict = {}
 
     for index_ts, ts in tqdm.tqdm(enumerate(universe.trajectory)):

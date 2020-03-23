@@ -4,13 +4,13 @@ Created on Thu Mar 19 20:01:35 2020
 @author: lillo
 
 """
-from topology import make_universe, get_peptide_length_list
+from .topology import make_universe, get_peptide_length_list
 
 import pandas as pd
 
 import torch
 
-import distance_tensor
+from .distance_tensor import distance_matrix_from_2d_tensor
 
 
 def get_dataframe_from_trajectory(trj_gro, trj_xtc, peptide_length = None):
@@ -246,7 +246,7 @@ def distance_maps_from_dataframe(dataframe, time_step):
             peptide2_tensor = get_peptide_tensor_from_dataframe(dataframe, time_step, peptide2)
 
 
-            distance_map = distance_tensor.distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor)
+            distance_map = distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor)
             distance_dict[peptide1][peptide2] = distance_map
 
             if peptide2 in distance_dict.keys():

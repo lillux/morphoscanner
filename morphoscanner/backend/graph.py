@@ -10,7 +10,7 @@
 """
 
 
-from math_utilities import get_col_vector, get_row_vector
+from .math_utilities import get_col_vector, get_row_vector
 
 import numpy as np   
 import networkx as nx    
