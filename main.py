@@ -68,8 +68,8 @@ def get_destination_dir_and_name(counter=0):
     # Check for input
     destination_directory = input('Insert the path in which you want to save your output: ')
     destination_directory = os.path.normpath(destination_directory)
-    if os.path.exists(destination_directory) == False:
-        print("%s does not look like a proper path, please retry...\n " % str(destination_directory))
+    if os.path.isdir(destination_directory) == False:
+        print("%s does not look like an existing directory, please retry...\n " % str(destination_directory))
         counter += 1
         print(counter)
         if counter >= 5:
