@@ -27,8 +27,8 @@ class trajectory:
         self.trj_xtc = trj_xtc
         self.universe = backend.topology.make_universe(self.trj_gro, self.trj_xtc)
         self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
-        #self.topology = morphoscanner.topology.get_peptide_length_list(self.trj_gro)
         self.number_of_frames = len(self.universe.trajectory)
+        self.number_of_BB_atoms = len(self.universe.select_atoms('name BB'))
 
         self.frames = {}
 
@@ -52,7 +52,7 @@ class trajectory:
         # WHY len(frame_denoised) is len(frame_dict)-1 ???????
 
         self.frame = frame
-        print('Analyzing frame n°: ', self.frame)
+        print('Analyzing frame n° ', self.frame)
 
         self.frame_dict = self.data[self.frame]
 
@@ -61,7 +61,7 @@ class trajectory:
         start_dist = timer()
         self.frame_distance_maps = backend.distance_tensor.compute_euclidean_norm_torch(self.frame_tensor)
         end_dist = timer()
-        print('Time to coumpute distance is: ', (end_dist - start_dist))
+        print('Time to compute distance is: ', (end_dist - start_dist))
         
         start_contc = timer()
         self.frame_contact = backend.pattern_recognition.compute_contact_maps_as_array(self.frame_distance_maps)

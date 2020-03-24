@@ -12,7 +12,8 @@ setup(name = 'morphoscanner',
                        'MDAnalysis>=0.20.1',
                        'pandas>=1.0.1',
                        'torch>=1.1.0',
-                       'networkx>=2.4'],
+                       'networkx>=2.4',
+                       'openpyxl'],
                        
       classifiers=[
           'Development Status :: 3 - Alpha',
@@ -27,3 +28,4 @@ setup(name = 'morphoscanner',
       ],
               
       packages=find_packages())
+
