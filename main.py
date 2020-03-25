@@ -46,6 +46,7 @@ def get_xtc(counter = 0):
 def get_value(sentence, counter = 0):
     
     value = int(input(sentence))
+    
     #assert os.path.exists(_xtc), "I did not find the file at: "+str(_xtc)
     if type(int(value)) != int:
         print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
@@ -60,6 +61,32 @@ def get_value(sentence, counter = 0):
         print("value is %d" % value)
     return int(value)
 
+
+
+def peptide_length(sentence, counter = 0):
+    
+    value = input(sentence)
+    
+    if value == '':
+        value = None
+        print('The .gro topology file is set as reference for the analysis')
+        return value
+    
+    else:
+        if str.isdigit(value):
+            
+            return int(value)
+        
+        else:
+            counter += 1
+            print(counter)
+            if counter >= 5:
+                raise sys.exit("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
+            #return print('You are wrong boy, bye bye!')
+            else:
+                
+                return peptide_length(counter=counter, sentence=sentence)
+            
 
 
 
@@ -102,11 +129,11 @@ if __name__ == '__main__':
     
     
     #peptide_length = int(input('Set the number of aminoacids in your peptides (int): '))
-    peptide_length = get_value(sentence='Set the number of aminoacids in one peptide (int): ')
+    peptide_length = peptide_length(sentence='Set the number of aminoacids in one peptide (int): ')
     #interval = int(input('Set the interval betwen sampled frames (int): '))
     interval = get_value(sentence='Set the interval between sampled frames (int): ')
     #start_from = int(input('Set the frame from which you want to start.\n(0 if you have a single simulation. len(split1) if you are analyzing split2.\nUsed to keep track of the frame index.) (int): '))
-    start_from = get_value(sentence='Set the index from which you want to start.\n(0 if you have a single simulation. 0 if you are analying split1, len(split1) if you are analyzing split2.) (int): ')
+    start_from = get_value(sentence='Set the index from which you want to start.\n(0 if you have a single simulation.\n0 if you are analyzing split1, len(split1) if you are analyzing split2.) (int): ')
     
     output_path, file_name = get_destination_dir_and_name()
     

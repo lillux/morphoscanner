@@ -125,11 +125,11 @@ def get_coordinate_dict_from_trajectory(trj_gro, trj_xtc, peptide_length=None, s
 
     else:
 
-        n_pep = sum([(e // int(peptide_length)) for e in peptides_list])
+        n_pep = sum([(e // peptide_length) for e in peptides_list])
 
 
     interval = int(interval)
-    peptide_length = int(peptide_length)
+    #peptide_length = peptide_length
     
     trj_dict = {}
 
