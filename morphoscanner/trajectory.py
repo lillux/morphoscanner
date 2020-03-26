@@ -114,25 +114,50 @@ class trajectory:
         return
 
 
-
     def get_sense(self):
-
-
+        
+        ''' Analyze self.frames to retrieve the number of contact 
+            per sense ("parallel" and "antiparallel")
+                
+        '''
+        
+        # instantiate main dict
         sense_dict = {}
-
-        for e in self.frames:
-
-            parallel = len(self.frames[e]['frame_data'].groupby('sense').get_group('parallel'))
-            antiparallel = len(self.frames[e]['frame_data'].groupby('sense').get_group('antiparallel'))
-
-            sense_dict[e] = {  'parallel' : parallel,
+        
+        # loop trough frames
+        for frame in self.frames:
+            
+            group = self.frames[frame]['frame_data'].groupby('sense').groups
+            
+            # check for antiparallel key in the frame_data
+            if 'antiparallel' in group:
+            
+                # get number of antiparallel contacts
+                antiparallel = len(group['antiparallel'])
+            
+            else:
+                antiparallel = 0
+                
+                
+            # check for parallel key in the frame_data
+            if 'parallel' in group:
+                        
+                # get number of parallel contacts
+                parallel = len(group['parallel'])
+        
+            else:
+                parallel = 0
+            
+            # add frame data to main dict
+            sense_dict[frame] = {  'parallel' : parallel,
                                'antiparallel' : antiparallel}
 
-
+        # at the end convert dict to pandas.DataFrame
         self.sense_df = pd.DataFrame.from_dict(sense_dict, orient='index')
 
 
         return
+
 
 
 

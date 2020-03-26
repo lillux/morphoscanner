@@ -1,6 +1,10 @@
-# -*- coding: utf-8 -*-
+# part 1
+#prod_xtc = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part1/prod.xtc'   # laptop
+#prod_gro = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part1/min.gro'    # laptop
 
-
+# part 2
+#prod1_xtc = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part2/prod-compl.xtc' #laptop
+#prod1_gro = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part2/prod-compl.gro' #laptop
 
 import sys
 import os
@@ -82,7 +86,6 @@ def peptide_length(sentence, counter = 0):
             print(counter)
             if counter >= 5:
                 raise sys.exit("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
-            #return print('You are wrong boy, bye bye!')
             else:
                 
                 return peptide_length(counter=counter, sentence=sentence)
@@ -135,15 +138,15 @@ if __name__ == '__main__':
     #start_from = int(input('Set the frame from which you want to start.\n(0 if you have a single simulation. len(split1) if you are analyzing split2.\nUsed to keep track of the frame index.) (int): '))
     start_from = get_value(sentence='Set the index from which you want to start.\n(0 if you have a single simulation.\n0 if you are analyzing split1, len(split1) if you are analyzing split2.) (int): ')
     
-    output_path, file_name = get_destination_dir_and_name()
+    #output_path, file_name = get_destination_dir_and_name()
     
     
     trj.compose_database(peptide_length=peptide_length, interval=interval)
     trj.analyze_inLoop()
-    trj.get_data()
-    trj.get_database()
+    #trj.get_data()
+    #trj.get_database()
     
     
     
-    trj.database.to_excel(output_path, sheet_name=file_name)
+    #trj.database.to_excel(output_path, sheet_name=file_name)
 
