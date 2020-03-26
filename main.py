@@ -1,11 +1,3 @@
-# part 1
-#prod_xtc = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part1/prod.xtc'   # laptop
-#prod_gro = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part1/min.gro'    # laptop
-
-# part 2
-#prod1_xtc = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part2/prod-compl.xtc' #laptop
-#prod1_gro = '/home/lillo/TesiCNTE/from_cluster/prod/prod_part2/prod-compl.gro' #laptop
-
 import sys
 import os
 
@@ -131,12 +123,9 @@ if __name__ == '__main__':
     print('Yout trajectory has %d BB atoms' % trj.number_of_BB_atoms)
     
     
-    #peptide_length = int(input('Set the number of aminoacids in your peptides (int): '))
     peptide_length = peptide_length(sentence='Set the number of aminoacids in one peptide (int): ')
-    #interval = int(input('Set the interval betwen sampled frames (int): '))
     interval = get_value(sentence='Set the interval between sampled frames (int): ')
-    #start_from = int(input('Set the frame from which you want to start.\n(0 if you have a single simulation. len(split1) if you are analyzing split2.\nUsed to keep track of the frame index.) (int): '))
-    start_from = get_value(sentence='Set the index from which you want to start.\n(0 if you have a single simulation.\n0 if you are analyzing split1, len(split1) if you are analyzing split2.) (int): ')
+    start_from = get_value(sentence='Set the index from which you want to start.\n\n0 if you have a single simulation.\n0 if you are analyzing split1.\nlen(split1) if you are analyzing split2.\ninteger: ')
     
     output_path, file_name = get_destination_dir_and_name()
     
