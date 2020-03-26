@@ -138,15 +138,15 @@ if __name__ == '__main__':
     #start_from = int(input('Set the frame from which you want to start.\n(0 if you have a single simulation. len(split1) if you are analyzing split2.\nUsed to keep track of the frame index.) (int): '))
     start_from = get_value(sentence='Set the index from which you want to start.\n(0 if you have a single simulation.\n0 if you are analyzing split1, len(split1) if you are analyzing split2.) (int): ')
     
-    #output_path, file_name = get_destination_dir_and_name()
+    output_path, file_name = get_destination_dir_and_name()
     
     
     trj.compose_database(peptide_length=peptide_length, interval=interval)
     trj.analyze_inLoop()
-    #trj.get_data()
-    #trj.get_database()
+    trj.get_data()
+    trj.get_database()
     
     
     
-    #trj.database.to_excel(output_path, sheet_name=file_name)
+    trj.database.to_excel(output_path, sheet_name=file_name)
 
