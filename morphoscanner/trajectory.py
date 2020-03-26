@@ -113,7 +113,6 @@ class trajectory:
 
         return
 
-
     def get_sense(self):
         
         ''' Analyze self.frames to retrieve the number of contact 
@@ -160,6 +159,7 @@ class trajectory:
 
 
 
+    # TODO add support to retrieve peptides index of peptides in macroaggregate
 
     def subgraph_length_peptide(self):
         '''Get information about the size of the aggregates in the trajectory
