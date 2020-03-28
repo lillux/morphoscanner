@@ -120,7 +120,7 @@ if __name__ == '__main__':
     trj = trajectory(_gro, _xtc)
     
     print('Your trajectory has %d frames' % trj.number_of_frames)
-    print('Yout trajectory has %d BB atoms' % trj.number_of_BB_atoms)
+    print('Your trajectory has %d BB atoms' % trj.number_of_BB_atoms)
     
     
     peptide_length = peptide_length(sentence='Set the number of aminoacids in one peptide (int): ')

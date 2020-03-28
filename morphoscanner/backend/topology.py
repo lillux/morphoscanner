@@ -94,11 +94,11 @@ def get_coordinate_dict_from_trajectory(trj_gro, trj_xtc, peptide_length=None, s
                 optional:
                     
                     peptide_length, default=None.   You can set the length of the peptide
-                                                    Usefull if you hae to analyze simulation in which
+                                                    Useful if you have to analyze simulation in which
                                                     there are premade aggregate
                                     
                     start_from, default=0.    You can chose from which frame start the counter.
-                                                Usefull if you are working with a simulation
+                                                Useful if you are working with a simulation
                                                 made of different part. Eg. If part 1 end at
                                                 frame 500, you can set start_from=500 and analyze
                                                 part 2 of the simulation. Use it expecially
