@@ -135,7 +135,6 @@ def graph_v1(denoised_dict, df):
             graph.add_edge(peptide_1, peptide_2, length = number_of_contacts, sense=sense)
 
     return graph
-#return graph
 
 
 
@@ -245,7 +244,7 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     of the nx_graph_search funtion to the default value of 3.
     
     '''
-    # one line function # don't use clever shit my friend
+    # one line function # don't use clever shits my friend
     #out = [e for e in coordinate_dict if e not in [a for i in subgraph for a in i]]
 
     out = []

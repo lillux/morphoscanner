@@ -69,10 +69,16 @@ def compute_contact_maps_as_array(distance_maps_array, radius_multiplier=1.5):  
 
 def shift_library_maker(contact_map_to_analyze):
 
-    ''' riceve numero di righe e di colonne
-    restituisce un array shape((((row + col)*2)-2),row,col).
-    ogni slice è una diagonale. Lo stack copre le diagonali su tutta la matrice'''
+    ''' Create shift matrix library to perform pattern recognition on a contact map.
+    
+    Inputs: numpy.array, a single contact map
+    
+    returns: dict of shift matrix to analyze the given contact map
 
+            shift matrix are diagonal matrix spanning all the given contact map
+            
+    '''
+    
     row = contact_map_to_analyze.shape[0]
     col = contact_map_to_analyze.shape[1]
 

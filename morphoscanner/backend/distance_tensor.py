@@ -5,11 +5,16 @@ Created on Thu Mar 19 20:11:57 2020
 """
 
 import torch
-import tqdm
+#import tqdm
 
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
 def get_coordinate_tensor_from_dict(coordinate_dict):
+    '''Convert a frame_dict to a tensor, for parallel euclidean distance calculation.
+    
+    Inputs: coordinate_dict, dict.
+    
+    Return: torch.tensor'''
 
     #variables wit dict dimension
     dim0 = len(coordinate_dict)
@@ -42,7 +47,7 @@ def compute_euclidean_norm_torch(coordinate_tensor):
 
     Argument: tensor of shape n_peptide * n_residue * number of dimension (3 for 3d)
 
-    return: tensor of shape n_peptide * n_peptide * n_residue * n_peptide
+    return: tensor of shape n_peptide * n_peptide * n_residue * n_residue
 
     '''
 

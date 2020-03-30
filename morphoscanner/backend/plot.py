@@ -1,15 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Created on Fri Mar 20 00:40:39 2020
 
 
     class plot():
 
-        
                 function to plot aggregate and peptide
-
-
 
 @author: lillo
 """
@@ -64,8 +60,29 @@ def plot_single_peptide(peptide_coordinate_dict, centroid=False):
 # The box axis have arbitrary scale dependent on the aminoacids distance
 # you can select to show the centroid
 def plot_peptide_list(coordinate_dict, peptide_list, centroid=False):
+    '''Plot peptides from a trajectory frame.
+        Using jupyter-notebook, use '%matplotlib notebook' to
+        plot the points cloud in 3D.
     
+    Inputs:     coordinate_dict, dict   Is the dict that contains all the coordinate
+                                        of the atoms of a single frame.
+                                        A single frame of the output of 
+                                        backend.topology.get_coordinate_dict_from_trajectory 
+                                        is a coordinate_dict.
     
+                peptide_list, list.     is a list of int. Put here the index of the peptide
+                                        or peptides that you want to plot
+                                
+                centroid,   bool.       default=False 
+                                        The centroid of a peptide can be plotted
+                                        in red together with the selected peptide.
+                                           
+                                        
+    Return:     show a 3D plot
+    '''
+    
+    # if there is only a single peptide to show
+    # use the single peptide function to normalize axis
     if len(peptide_list) == 1:
         
         return plot_single_peptide(coordinate_dict[peptide_list[0]])
