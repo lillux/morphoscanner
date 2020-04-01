@@ -89,6 +89,8 @@ def full_graph(denoised_dict):
     return: networkx.MultiGraph
 
     '''
+    
+    # Instantiate graph
     graph = nx.MultiGraph()
 
     for peptide_1 in denoised_dict:
@@ -113,21 +115,41 @@ def full_graph(denoised_dict):
 ## THIS IS WORKING in object trajectory
 
 def graph_v1(denoised_dict, df):
+    ''' Create a full graph of all the peptides in the frame.
 
+    Every peptide is a node in the graph.
+    Edges join contacting peptides.
+    Edges have attribute:   'length', that gives the number of contact between the peptides
+                            'sense', that gives the sense of the contact
+
+    Useful to analyze peptides aggregation behaviour analysis during molecular dynamics
+
+    Arguments: denoised contact maps dict
+    return: networkx.MultiGraph
+
+    '''
+    # Instantiate graph
     graph = nx.MultiGraph()
 
+    # iter dataframe (second output of denoise_contact_maps)
     for group in df.index:
-
+        
+        # peptides index assignment
         peptide_1 = df.iloc[group]['peptide1']
         peptide_2 = df.iloc[group]['peptide2']
 
+        # take array from denoised contact map using index peptides as index
         array_1 = denoised_dict[peptide_1][peptide_2]
-
+        
+        # add peptides nodes in the graph 
         graph.add_node(peptide_1)
         graph.add_node(peptide_2)
 
+        #check number of contacts between the peptides
         number_of_contacts = array_1.sum()
 
+        # if there is a contact between the peptides
+        # ad an edge and data attributes to edge
         if number_of_contacts >= 1:
 
             sense = df.iloc[group]['sense']
@@ -188,7 +210,7 @@ def find_subgraph_in_order(graph):
 
 def find_subgraph(graph):
     '''
-    Find subgraph of joined peptides that have no node in common.
+    Find subgraph of joined peptides that have no node in common with other subgraph.
     It start to search from always from peptide 0, and from that does depth first search.
     The peptide of the subgraph that are touching are in consequential order in the sublist
 
@@ -211,6 +233,7 @@ def find_subgraph(graph):
 
             # check if the first node of the tree has adjiacency == 1
             # so it checks if it is the first or last node of the subgraph
+            # DOES NOT FIND ANYTHING IF THERE ARE ALWAYS MORE THAN 1 CONTACT BETWEEN PEPTIDES
             #if len(graph[tree[0]]) == 1:
 
             if len(subgraph_list) == 0:
@@ -239,9 +262,14 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     #####
     
     Basically this function gives you all the node left out
-    from the 'find_subgraph' function. That are all the node
-    with 0 or 1 neighbour if you leave the 'minimum_contact' parameter
-    of the nx_graph_search funtion to the default value of 3.
+    from the 'find_subgraph' function.
+    The output depends on the graph creation function:
+    
+    nx_graph_search: get all the node with 0 and 1 neighbour
+                    if you leave the 'minimum_contact' parameter
+                    of the nx_graph_search funtion to the default value of 3.
+                    
+    graph_v1 :      get node without neighbours
     
     '''
     # one line function # don't use clever shits my friend
