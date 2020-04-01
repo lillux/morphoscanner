@@ -75,7 +75,7 @@ def compute_distance_maps_from_coordinate_dict(coordinate_dict):
 
 # get average distance map from distance maps set
 # THIS SHOULD BE FUNCTION OF AN OBJECT. YOU WILL NEED A MAP FOR EACH PEPTIDE SIZE OF THE SIMULATION
-# AND PEPTIDE COMPOSITION? HOW WILL YOU ACCOUNT FOR PEPTIDE OF SAME SIZE BUT MADE OF DIFFE???
+# AND PEPTIDE COMPOSITION? HOW WILL YOU ACCOUNT FOR PEPTIDE OF SAME SIZE BUT MADE OF DIFFERENT AMINOACIDS???
 def get_mean_distance_map(distance_maps):
     '''
     Calculate mean distance map from distance maps set
