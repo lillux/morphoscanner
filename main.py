@@ -39,26 +39,6 @@ def get_xtc(counter = 0):
 
 
 
-def get_value(sentence, counter = 0):
-    
-    value = int(input(sentence))
-    
-    #assert os.path.exists(_xtc), "I did not find the file at: "+str(_xtc)
-    if type(int(value)) != int:
-        print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
-        counter += 1
-        print(counter)
-        if counter >= 5:
-            raise sys.exit("Wrong wrong boy, bye bye!") 
-            #return print('You are wrong boy, bye bye!')
-        else:
-            return get_value(counter=counter, sentence=sentence)
-    else:
-        print("value is %d" % value)
-    return int(value)
-
-
-
 def peptide_length(sentence, counter = 0):
     
     value = input(sentence)
