@@ -79,9 +79,58 @@ def peptide_length(sentence, counter = 0):
             if counter >= 5:
                 raise sys.exit("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
             else:
-                
+                print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
                 return peptide_length(counter=counter, sentence=sentence)
             
+            
+
+def get_interval(sentence, counter = 0):
+
+    value = input(sentence)
+    
+    if value == '':
+        value = 1
+        print('The interval was set to 1, each frame of the trajectory will be sampled')
+        return value
+    
+    else:
+        if str.isdigit(value):
+            
+            return int(value)
+        
+        else:
+            counter += 1
+            print(counter)
+            if counter >= 5:
+                raise sys.exit("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
+            else:
+                print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
+                return get_interval(counter=counter, sentence=sentence)
+
+
+def start_from(sentence, counter = 0):
+    
+    value = input(sentence)
+    
+    if value == '':
+        value = 0
+        print('Your analysis starts from frame index: %d' % value)
+        return value
+    
+    else:
+        if str.isdigit(value):
+            value = int(value)
+            print('Your analysis starts from frame index: %d' % value)
+            return value
+        
+        else:
+            counter += 1
+            print(counter)
+            if counter >= 5:
+                raise sys.exit("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
+            else:
+                print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
+                return start_from(counter=counter, sentence=sentence)
 
 
 
@@ -124,8 +173,8 @@ if __name__ == '__main__':
     
     
     peptide_length = peptide_length(sentence='Set the number of aminoacids in one peptide (int): ')
-    interval = get_value(sentence='Set the interval between sampled frames (int): ')
-    start_from = get_value(sentence='Set the index from which you want to start.\n\n0 if you have a single simulation.\n0 if you are analyzing split1.\nlen(split1) if you are analyzing split2.\ninteger: ')
+    interval = get_interval(sentence='Set the interval between sampled frames (int): ')
+    start_from = start_from(sentence='Set the index from which you want to start.\n\n0 if you have a single simulation.\n0 if you are analyzing split1.\nlen(split1) if you are analyzing split2.\ninteger: ')
     
     output_path, file_name = get_destination_dir_and_name()
     
