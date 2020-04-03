@@ -27,23 +27,25 @@ The [Anaconda installer](https://www.anaconda.com/distribution/ "Anaconda websit
 ### Conda env creation
 ***Conda envs*** can be created following the [conda documentation](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html "conda envs management").
 
+**If you have an *Nvidia GPU* you can use** *pytorch* **hardware acceleration installing the package** *cudatoolkit*.\
+**To date** *pytorch* **package requires** *cudatoolkit=9.2* or *cudatoolkit=10.1*.\
+**Specify the** *cudatoolkit* **that you want to use in the command below**.\
+*cudatoolkit 10.1* **is tested and working**.
+
 An *env* called *morphoscanner* can be created with: 
+```bash
+conda create -n morphoscanner python pip numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.1
+```
 
->conda create -n morphoscanner python pip numpy pandas mdanalysis tqdm pytorch networkx
-
-If you have an *Nvidia GPU* you can use hardware acceleration installing the package ***cudatoolkit***.
-
-To date *pytorch* package requires *cudatoolkit=9.2* or *cudatoolkit=10.1*.
-
-You can install the desidered *cudatoolkit* (e.g. *cudatoolkit 10.1*) with:
-
-> conda install cudatoolkit=10.1
-
+The installed packages can be checked (in the active env) with:
+```bash
+conda list
+```
 
 You can activate the env with:
-
-> conda activate morphoscanner
-
+```bash
+conda activate morphoscanner
+```
 
 ## Morphoscanner installation
 
@@ -51,8 +53,9 @@ You can activate the env with:
 
 Inside the env you have to install morphoscanner:
 
-> pip install git+https://github.com/lillux/sap_analysis.git#egg=morphoscanner
-
+```bash
+pip install git+https://github.com/lillux/sap_analysis.git#egg=morphoscanner
+```
 You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*.
 
 Then it will be installed in your env. You can now use morphoscanner from your *IDE* or *Python Console*.
@@ -64,7 +67,9 @@ You can download morphoscanner from its [Github repository](https://github.com/l
 
 It will be downloaded as a compressed archive. Decompress it in a directory. Then move to the directory and launch:
 
->python main.py
+```bash
+python main.py
+```
 
 The script will start and the input paths of the trajectory files will be requested.
 
