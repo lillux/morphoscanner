@@ -18,7 +18,7 @@ It can be runned using the *main.py* file of Morphoscanner.
 The python module can be imported in an IDE and used to write customized scripts and to do specific analysis. It can used to analyze MD trajectory data in a jupyter-notebook, and it integrates with the main packages used in a data-science, as numpy, pandas, pytorch, MDAnalysis, matplotlib and NetworkX.
 
 
-## Getting started
+## Prerequisites
 Is suggested to install the package in a ***conda environment*** using **Anaconda**, due to the *active development status* of *Morphoscanner*.
 
 ### Installing Anaconda
@@ -45,6 +45,8 @@ You can activate the env with:
 > conda activate morphoscanner
 
 
+## Morphoscanner installation
+
 ### Morphoscanne Installation as Module
 
 Inside the env you have to install morphoscanner:
@@ -65,3 +67,62 @@ It will be downloaded as a compressed archive. Decompress it in a directory. The
 >python main.py
 
 The script will start and the input paths of the trajectory files will be requested.
+
+
+## Getting started
+
+Using ***Morphoscanner*** as a *Python module* is straightforward:
+
+``` python
+from morphoscanner.trajectory import trajectory
+
+#The .gro and .xtc files must be inserted as path:
+_gro = '/path/to/your/gro'
+_xtc = '/path/to/your/xtc'
+
+#Create class instance
+trj = trajectory(_gro, _xtc)
+
+#Compose the database
+# peptide_length (integer) is the number of aminoacid in a peptide.
+    # leave it blank to follow topology
+    # insert an integer if your want to specify the lenght of the peptide 
+    # (all the peptides are of the same length)
+    # the integer is the number of aminoacids of one peptide
+    # if all the peptides are of the same length.
+#interval (integer) is the interval between sampled frame
+    # (default) leave it blank to sample each frame
+    # Insert an integer 
+trj.compose_database(peptide_length = 18, interval = 1000)
+
+#Analyze the database.
+trj.analyze_inLoop()
+
+#Get data
+trj.get_data()
+
+#Get database with results:
+trj.get_database()
+
+#Show database
+trj.database
+
+```
+
+A *pandas.DataFrame* will be shown at the end of the analysis.
+
+The database can be saved as an *excel file* leveraging *pandas* capability:
+
+```python
+
+# set an output path
+output_path = 'path/to/your/directory'
+
+# set the name of the file
+file_name = 'name_of_the_output_file'
+
+# export the database with .xlsx file extension
+trj.database.to_excel(output_path, sheet_name=file_name)
+
+
+```
