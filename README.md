@@ -88,17 +88,22 @@ _xtc = '/path/to/your/xtc'
 #Create class instance
 trj = trajectory(_gro, _xtc)
 
+
 #Compose the database
-# peptide_length (integer) is the number of aminoacid in a peptide.
-    # leave it blank to follow topology
-    # insert an integer if your want to specify the lenght of the peptide 
-    # (all the peptides are of the same length)
-    # the integer is the number of aminoacids of one peptide
-    # if all the peptides are of the same length.
-#interval (integer) is the interval between sampled frame
-    # (default) leave it blank to sample each frame
-    # Insert an integer 
-trj.compose_database(peptide_length = 18, interval = 1000)
+    # peptide_length (integer) is the number of aminoacid in a peptide.
+        # leave it blank to follow topology
+        # insert an integer if your want to specify the lenght of the peptide 
+        # (all the peptides are of the same length)
+        # the integer is the number of aminoacids of one peptide
+        # if all the peptides are of the same length.
+    #interval (integer) is the interval between sampled frame
+        # (default) leave it blank to sample each frame
+        # Insert an integer
+
+peptide_length = integer
+interval = integer
+
+trj.compose_database(peptide_length = peptide_length, interval = interval)
 
 #Analyze the database.
 trj.analyze_inLoop()
