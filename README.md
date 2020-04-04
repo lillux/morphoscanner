@@ -49,7 +49,7 @@ conda activate morphoscanner
 
 ## Morphoscanner installation
 
-### Morphoscanne Installation as Module
+### Morphoscanner Installation as Module
 
 Inside the env you have to install morphoscanner:
 
