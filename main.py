@@ -2,8 +2,10 @@ import sys
 import os
 
 from morphoscanner.trajectory import trajectory
+
+from morphoscanner.backend.topology import print_peptides_length
+
 from morphoscanner.data_acquisition import get_gro, get_xtc, peptide_length, get_interval, start_from, get_destination_dir_and_name
-from morphoscanner.topology import print_peptides_length
 
 
 # script

@@ -1,5 +1,3 @@
-#from future import absolute_import
-
 from . import topology
 from . import math_utilities
 from . import utilities

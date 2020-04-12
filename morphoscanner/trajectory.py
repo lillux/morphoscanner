@@ -6,7 +6,7 @@ Created on Thu Mar 19 12:38:50 2020
 
 
 from . import backend
-from backend.topology import get_peptide_length_dict
+from morphoscanner.backend.topology import get_peptide_length_dict
 from timeit import default_timer as timer
 import pandas as pd
 

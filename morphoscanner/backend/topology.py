@@ -50,30 +50,30 @@ def get_peptide_length_list(topology):
     return peptide_length_list
 
 
-    def get_peptide_length_dict(peptide_length_list):
-        '''Get the number of peptides in each peptide length
-        
-        Input: list, the output of topology.get_peptide_length_list
-        
-        Output: dict, length: number of peptides of that length'''    
-        
-        len_dict = {}
+def get_peptide_length_dict(peptide_length_list):
+    '''Get the number of peptides in each peptide length
     
-        for i in peptide_length_list:
+    Input: list, the output of topology.get_peptide_length_list
     
-            if i not in len_dict:
-                len_dict[i] = 1
-            else:
-                len_dict[i] += 1
-                
-        return len_dict
+    Output: dict, length: number of peptides of that length'''    
+    
+    len_dict = {}
+
+    for i in peptide_length_list:
+
+        if i not in len_dict:
+            len_dict[i] = 1
+        else:
+            len_dict[i] += 1
+            
+    return len_dict
+    
         
-            
-            
-    def print_peptides_length(len_dict):
-        for key, value in len_dict.items() :
-            print ('Length: %d Peptides: %d' % (key, value))
-        return
+        
+def print_peptides_length(len_dict):
+    for key, value in len_dict.items() :
+        print ('Length: %d Peptides: %d' % (key, value))
+    return
         
 
 
