@@ -6,6 +6,7 @@ Created on Thu Mar 19 12:38:50 2020
 
 
 from . import backend
+from backend.topology import get_peptide_length_dict
 from timeit import default_timer as timer
 import pandas as pd
 
@@ -24,11 +25,12 @@ class trajectory:
         self.trj_gro = trj_gro
         self.trj_xtc = trj_xtc
         self.universe = backend.topology.make_universe(self.trj_gro, self.trj_xtc)
-        self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
         self.number_of_frames = len(self.universe.trajectory)
         self.number_of_BB_atoms = len(self.universe.select_atoms('name BB'))
-
         self.frames = {}
+        
+        peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
+        self.len_dict = get_peptide_length_dict(peptide_length_list)
 
 
 

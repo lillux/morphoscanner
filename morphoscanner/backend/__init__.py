@@ -9,4 +9,3 @@ from . import distance_tensor
 from . import dataframe
 from . import pattern_recognition
 from . import graph
-from . import plot

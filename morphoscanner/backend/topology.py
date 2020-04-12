@@ -16,7 +16,7 @@ def get_peptide_length_list(topology):
     
     topology = clean_gro(topology)
 
-    peptide_lenght_list = []
+    peptide_length_list = []
 
     temporary_list = []
 
@@ -31,8 +31,8 @@ def get_peptide_length_list(topology):
             # if position of actual residue is less than last residue
             if temporary_list[-1] > int(residue[1]):
 
-                # append lenght of last peptide to peptide lenght list
-                peptide_lenght_list.append(len(temporary_list))
+                # append lenght of last peptide to peptide length list
+                peptide_length_list.append(len(temporary_list))
 
                 # empty temporary list
                 temporary_list = []
@@ -45,9 +45,9 @@ def get_peptide_length_list(topology):
                 temporary_list.append(int(residue[1]))
 
     # append last peptide lenght to lenght stack
-    peptide_lenght_list.append(len(temporary_list))
+    peptide_length_list.append(len(temporary_list))
 
-    return peptide_lenght_list
+    return peptide_length_list
 
 
 
