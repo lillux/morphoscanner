@@ -72,7 +72,7 @@ def get_peptide_length_dict(peptide_length_list):
         
 def print_peptides_length(len_dict):
     for key, value in len_dict.items() :
-        print ('Length: %d Peptides: %d' % (key, value))
+        print ('Length: %d, Peptides: %d' % (key, value))
     return
         
 
