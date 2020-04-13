@@ -6,7 +6,6 @@ Created on Thu Mar 19 12:38:50 2020
 
 
 from . import backend
-from morphoscanner.backend.topology import get_peptide_length_dict
 from timeit import default_timer as timer
 import pandas as pd
 
@@ -30,7 +29,7 @@ class trajectory:
         self.frames = {}
         
         peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
-        self.len_dict = get_peptide_length_dict(peptide_length_list)
+        self.len_dict = backend.topology.get_peptide_length_dict(peptide_length_list)
 
 
 
