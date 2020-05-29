@@ -11,9 +11,10 @@ setup(name = 'morphoscanner',
      install_requires=['numpy>=1.18.1',
                        'MDAnalysis>=0.20.1',
                        'pandas>=1.0.1',
-                       'torch>=1.1.0',
+                       'pytorch>=1.1.0',
                        'networkx>=2.4',
-                       'openpyxl'],
+                       'openpyxl',
+                       'tqdm'],
                        
       classifiers=[
           'Development Status :: 3 - Alpha',

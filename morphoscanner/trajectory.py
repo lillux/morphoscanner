@@ -97,13 +97,13 @@ class trajectory:
                 start_an = timer()
                 self.analysis(frame)
                 end_an = timer()
-                text= 'Time needed to analyze frame %d is %f seconds' % (frame, (end_an-start_an))
+                text= 'Time needed to analyze frame %d was %f seconds' % (frame, (end_an-start_an))
                 print(text)
 
             end = timer()
 
 
-            print('Total time to analyze dataset is %f seconds' % (end -start))
+            print('Total time to analyze dataset was %f seconds' % (end -start))
 
         else:
             print('You have to compose the database before analyze it.')
