@@ -13,6 +13,41 @@ import tqdm
 
 #get a list of the number of residues of every peptide in the topology
 def get_peptide_length_list(topology):
+    '''
+    Take the .gro file and get back a list, in which each
+    element is the length in atoms of a single peptide.
+    
+    It relies on the number in front of the residue name
+    in the .gro file.
+
+    Parameters
+    ----------
+    topology : .gro file path as 'user/data/file.gro'
+        The path of the .gro file on your system
+
+    Returns
+    -------
+    peptide_length_list : list
+        It is a list of integer, each is the number of
+        residues that forms a single entry in your .gro.
+        It follows the order in which you have the entry
+        in the .gro file, so for example:
+            
+            You have:
+                2 peptides of 12 residues,
+                3 peptides of 8 residues
+                2 seeds made from 4 peptides of 8 residues each
+                
+            Your output will be:
+                
+                [12, 12, 8, 8, 8, 32, 32]
+                
+        So if you have seeds in your .gro simulation data,
+        each seed will be recognized as a single peptide.
+                
+            
+
+    '''
     
     topology = clean_gro(topology)
 
@@ -44,7 +79,7 @@ def get_peptide_length_list(topology):
             else:
                 temporary_list.append(int(residue[1]))
 
-    # append last peptide lenght to lenght stack
+    # append last peptide length to length stack
     peptide_length_list.append(len(temporary_list))
 
     return peptide_length_list
@@ -97,6 +132,29 @@ def make_universe(trj_gro, trj_xtc):
 
 # create a dict from a Universe in which each entry is a timestep of the MD simulation
 def create_trajectory_dict(universe):
+    '''
+    Parse all the universe trajectory coordinate
+    and put it in a dict. It does not group peptides,
+    it just get all the coordinates of BB atoms for
+    each trajectory frame.
+
+    Parameters
+    ----------
+    universe : mdAnalysis.Universe
+        It uses mdAnalysis parsing capability to read
+        the trajectory data
+
+    Returns
+    -------
+    trajectory_dict : dict
+        Is a dict in which each keys is an integer
+        that indicate the trajectory frame, starting
+        from zero.
+        Values are the coordinate of all the BB atoms
+        of that frame.
+
+    '''
+    
     bb = universe.select_atoms('name BB')
     trajectory_dict = {}
     
