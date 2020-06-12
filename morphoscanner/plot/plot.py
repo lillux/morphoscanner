@@ -59,30 +59,48 @@ def plot_single_peptide(peptide_coordinate_dict, centroid=False):
 # plot a list of peptide point cloud in 3d space.
 # The box axis have arbitrary scale dependent on the aminoacids distance
 # you can select to show the centroid
-def plot_peptide_list(coordinate_dict, peptide_list, centroid=False):
-    '''Plot peptides from a trajectory frame.
-        Using jupyter-notebook, use '%matplotlib notebook' to
-        plot the points cloud in 3D.
-    
-    Inputs:     coordinate_dict, dict   Is the dict that contains all the coordinate
-                                        of the atoms of a single frame.
-                                        A single frame of the output of 
-                                        backend.topology.get_coordinate_dict_from_trajectory 
-                                        is a coordinate_dict.
-    
-                peptide_list, list.     is a list of int. Put here the index of the peptide
-                                        or peptides that you want to plot
-                                
-                centroid,   bool.       default=False 
-                                        The centroid of a peptide can be plotted
-                                        in red together with the selected peptide.
-                                           
-                                        
-    Return:     show a 3D plot
+def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
+    '''
+    Plot peptides from a trajectory frame.
+    Using jupyter-notebook, use '%matplotlib notebook' to
+    plot the points cloud in 3D.
+
+    Parameters
+    ----------
+    coordinate_dict : dict
+        Is the dict that contains all the coordinate
+        of the atoms of a single frame.
+        A single frame of the output of 
+        backend.topology.get_coordinate_dict_from_trajectory 
+        is a coordinate_dict.
+        
+    peptide_list : list, optional
+        The default is None. By default all the peptides
+        will be plotted.
+            Is a list of int. Put here the index of the peptide
+            or peptides that you want to plot.
+            For example [0,2,5,24,1,6] to plot
+            only these peptides.
+        
+    centroid : bool, optional
+        The default is False.
+            The centroid of a peptide can be plotted
+            in red together with the selected peptide.
+    Returns
+    -------
+    3D plot
+        Return a scattered 3D plot.
+
     '''
     
+      
+    # if no peptide specified, plot all
+    if peptide_list == None:
+        peptide_list = [p for p in coordinate_dict]
+
+
     # if there is only a single peptide to show
-    # use the single peptide function to normalize axis
+    # use the single peptide function to normalize axis        
     if len(peptide_list) == 1:
         
         return plot_single_peptide(coordinate_dict[peptide_list[0]])

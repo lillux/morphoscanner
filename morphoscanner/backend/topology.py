@@ -114,16 +114,45 @@ def print_peptides_length(len_dict):
 
 
 
-def make_universe(trj_gro, trj_xtc):
-    ''' Leverage MDAnalysis.Universe() to parse trajectory file from gromacs output.
+def make_universe(trj_gro, trj_xtc, in_memory=True):
+    '''
+    
 
-    Intput: string: system path of gro file (topology) and
+    Parameters
+    ----------
+    trj_gro : string
+        system path of gro file (topology).
+    trj_xtc : string
+        system path of xtc or trr file (trajectory).
+        can be provided as a single file or
+        a list of consecutive trajectory files,
+        as [part1.trr, part2.trr, ...]
+    in_memory : bool, optional
+        The default is True.
+        Move to memory for faster (~100x faster)
+        frames coordinate retrival.
+        Needs a lot of memory.
+
+    Returns
+    -------
+    universe : MDAnalysis.Universe()
+        DESCRIPTION.
+
+    '''
+    
+    ''' 
+    
+    Leverage MDAnalysis.Universe() to parse trajectory file from gromacs output.
+
+    Input: string: system path of gro file (topology) and
                     system path of xtc file (trajectory)
                     of the file to analyze
+                    
+            bool: in_memory
 
     return: MDAnalysis.Universe()'''
 
-    universe = mda.Universe(trj_gro,trj_xtc)
+    universe = mda.Universe(trj_gro,trj_xtc, in_memory(in_memory))
 
     return universe
 
