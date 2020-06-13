@@ -86,6 +86,7 @@ def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
         The default is False.
             The centroid of a peptide can be plotted
             in red together with the selected peptide.
+    
     Returns
     -------
     3D plot

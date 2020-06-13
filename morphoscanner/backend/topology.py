@@ -114,7 +114,7 @@ def print_peptides_length(len_dict):
 
 
 
-def make_universe(trj_gro, trj_xtc, in_memory=True):
+def make_universe(trj_gro, trj_xtc, in_memory=False):
     '''
     
 
@@ -152,7 +152,7 @@ def make_universe(trj_gro, trj_xtc, in_memory=True):
 
     return: MDAnalysis.Universe()'''
 
-    universe = mda.Universe(trj_gro,trj_xtc, in_memory(in_memory))
+    universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
 
     return universe
 
