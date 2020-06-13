@@ -115,9 +115,8 @@ def print_peptides_length(len_dict):
 
 
 def make_universe(trj_gro, trj_xtc, in_memory=False):
-    '''
     
-
+    '''
     Parameters
     ----------
     trj_gro : string
@@ -139,18 +138,6 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
         DESCRIPTION.
 
     '''
-    
-    ''' 
-    
-    Leverage MDAnalysis.Universe() to parse trajectory file from gromacs output.
-
-    Input: string: system path of gro file (topology) and
-                    system path of xtc file (trajectory)
-                    of the file to analyze
-                    
-            bool: in_memory
-
-    return: MDAnalysis.Universe()'''
 
     universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
 
@@ -161,6 +148,7 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
 
 # create a dict from a Universe in which each entry is a timestep of the MD simulation
 def create_trajectory_dict(universe):
+    
     '''
     Parse all the universe trajectory coordinate
     and put it in a dict. It does not group peptides,
