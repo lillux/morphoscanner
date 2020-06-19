@@ -99,7 +99,7 @@ def compute_euclidean_norm_torch(coordinate_tensor):
 
 
 
-def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor):
+def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None):
     '''Minimal function to calculate euclidean distance between two set of points
     using quadratic expansion. Thanks to:
     https://discuss.pytorch.org/t/efficient-distance-matrix-computation/9065
@@ -109,6 +109,9 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor):
     Output: 2d tensor of shape (n,m)
             
      '''
+
+    if peptide2_tensor == None:
+        peptide2_tensor = peptide1_tensor
 
     # calculate distance
     x_norm = torch.pow(peptide1_tensor, 2).sum(1).view(-1,1)
