@@ -31,62 +31,7 @@ def get_xtc(counter = 0):
             return get_xtc(counter=counter)
     else:
         print("\n%s loaded" % _xtc)
-    return _xtc
-
-
-
-def check_input_int_recursive_with_sentence(sentence, limit=5, counter = 0):
-    '''
-    ### DEPRECATED
-    Ask for input and evaluate if it is an int.
-
-    Parameters
-    ----------
-    sentence : str
-        The sentence that will be printed on screen while asking for the input.
-        
-    limit : int, optional
-        The default is 5.
-        The number of time the function will ask for input if the input is wrong
-        
-    counter : int, optional
-        The default is 0.
-        The counter that counts the times the function is called if the input is wrong
-        ## TODO use just one number and subtract until 0
-        
-    Raises
-    ------
-    sys
-        Exit if input is wrong 'limit' times
-
-    Returns
-    -------
-    int
-        Return the value as int if the input is correct.
-
-    '''
-    
-    value = input(sentence)
-    
-    if value == '':
-        counter += 1
-        print('You forgot to insert a value...please retry.')
-        return check_input_int_recursive_with_sentence(sentence=sentence, counter=counter)
-    
-    else:
-        if isInt(value):
-            
-            return int(value)
-        
-        else:
-            counter += 1
-            print('Trial %d of %d.' % (counter, limit))
-            if counter >= limit:
-                raise sys.exit("%s is not an integer, it is of type %s...\nClosing... " % (str(value), type(value))) 
-            else:
-                print("%s is not an integer, it is of type %s...\n " % (str(value), type(value)))
-                return check_input_int_recursive_with_sentence(counter=counter, sentence=sentence)
-            
+    return _xtc            
 
 
 def check_input_multiple_int_recursive_with_sentence(sentence, limit=5):
@@ -145,53 +90,6 @@ def check_input_multiple_int_recursive_with_sentence(sentence, limit=5):
         
         return va_list
     
-
-
-def ask_for_splitting(limit=5):
-    '''
-    Ask if the user wants to split the peptides.
-    
-    Used as part of the requests made to split peptides seeds in .gro file
-
-    Parameters
-    ----------
-    limit : int, optional
-        The default is 5.
-        Number of times to ask for input in case of wrong input
-
-
-    Raises
-    ------
-    sys
-        Exit if input is wrong 'limit' times
-
-    Returns
-    -------
-    bool
-        Return True if the users wants to split, else False.
-
-    '''
-
-    answer = input("Do you want to split peptides? Write 'yes' or 'no': ")
-    
-    if answer not in {'n','no','y','yes'}:
-        print('This is not a valid answer, please write yes or no.\n'
-            '%d trial left.' % limit)
-        limit -= 1
-        if limit == 0:
-            raise sys.exit('Too many wrong inputs. Closing...')
-        else:
-            return ask_for_splitting(limit=limit)
-
-
-    elif answer in {'n', 'no'}:
-        print('The .gro topology file is set as reference for the analysis')
-        return False
-
-    elif answer in {'y', 'yes'}:
-        return True
-
-
 
 def peptide_length(sentence, counter = 0):
     
@@ -291,3 +189,86 @@ def get_destination_dir_and_name(counter=0):
         final_path = os.path.join(destination_directory, (file_name + extension))
         
     return final_path, file_name
+
+
+def ask_for_splitting(limit=5):
+    '''
+    Ask if the user wants to split the peptides.
+    
+    Used as part of the requests made to split peptides seeds in .gro file
+
+    Parameters
+    ----------
+    limit : int, optional
+        The default is 5.
+        Number of times to ask for input in case of wrong input
+
+
+    Raises
+    ------
+    sys
+        Exit if input is wrong 'limit' times
+
+    Returns
+    -------
+    bool
+        Return True if the users wants to split, else False.
+
+    '''
+
+    answer = input("Do you want to split peptides? Write 'yes' or 'no': ")
+    
+    if answer not in {'n','no','y','yes'}:
+        print('This is not a valid answer, please write yes or no.\n'
+            '%d trial left.' % limit)
+        limit -= 1
+        if limit == 0:
+            raise sys.exit('Too many wrong inputs. Closing...')
+        else:
+            return ask_for_splitting(limit=limit)
+
+    elif answer in {'n', 'no'}:
+        print('The .gro topology file is set as reference for the analysis')
+        return False
+
+    elif answer in {'y', 'yes'}:
+        return True
+
+    
+def check_for_compatibility(list1, list2):
+    if len(list1) == len(list2):
+        
+        for e1, e2 in zip(list1, list2):
+            if e1%e2 != 0:
+                print('%d is not multiple of %d' % (e1,e2))
+                return False
+            
+        
+        else:
+            return True
+    
+    else:
+        raise ValueError('Your lists are of different len! list1 len = %d, list2 len = %d.' % (len(list1), len(list2)))
+
+
+def get_splitting_dict(to_split, split_size):
+    
+    splitting_dict = {}
+    
+    for length, split_dim in zip(to_split, split_size):
+        #check for divisibility
+        if (length%split_dim) == 0:
+            splitting_dict[length] = split_dim
+    
+    return splitting_dict
+
+def get_new_peptides_length(peptide_length_list, splitting_dict):
+    new_peptide_list = []
+    for pep_length in peptide_length_list:
+        if pep_length in splitting_dict.keys():
+            new_size = splitting_dict[pep_length]
+            new_peptide_list.extend([splitting_dict[pep_length] for p in range((pep_length//new_size))])
+        else:
+            new_peptide_list.append(pep_length)
+    
+    return new_peptide_list

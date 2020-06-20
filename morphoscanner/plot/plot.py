@@ -13,7 +13,8 @@ Created on Fri Mar 20 00:40:39 2020
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
-
+import plotly as px 
+import plotly.graph_objects as go
 
 
 
@@ -231,5 +232,88 @@ def plot_peptide_from_tensor(coordinate_dict, peptide_list, centroid=False):
     return plt.show()
 
 
+
+# plot from trajectory positions  ### WORKING BUT YOU NEED TO:
+# make_universe
+# positions = universe.select_atoms('name BB').positions
+def plot_peptide_from_trajectory_frame(positions, peptide_list=None, centroid=False):
+    
+    '''
+    Plot atoms from universe.trajectory[frame]
+    '''
+    
+    if peptide_list == None:
+        
+        peptide_list = [e for e in range(len(positions))]
+
+    x = []
+    y = []
+    z = []
+
+
+    for peptide in range(len(peptide_list)):
+        x.append([peptide])
+        y.append([peptide])
+        z.append([peptide])
+
+        point = positions[peptide_list[peptide]]
+        #print(peptide, point)
+        x[peptide].append(point[0])
+        y[peptide].append(point[1])
+        z[peptide].append(point[2])
+
+        del x[peptide][0]
+        del y[peptide][0]
+        del z[peptide][0]
+
+    fig = plt.figure()
+
+    ax = plt.axes(projection='3d')
+
+    for pep in range(len(x)):
+
+        # scatter points, making list from torch tensor item
+        ax.scatter3D([e.item() for e in x[pep]], [e.item() for e in y[pep]], [e.item() for e in z[pep]])
+
+    return plt.show()
+
+
+
+
+
+def plot_protein(coordinate_dict):
+    '''
+    Plot a protein unisng plotly
+
+    Parameters
+    ----------
+    coordinate_dict : dict
+        The dict containing your atoms and their coordinates,
+        in the form:
+            {atom : [x, y, z]}
+
+    Returns
+    -------
+    plotly plot
+        A 3D interactive plot of your protein.
+
+    '''
+    x = []
+    y = []
+    z = []
+
+    for residue in coordinate_dict:
+        point = coordinate_dict[residue]
+        x.append(point[0])
+        y.append(point[1])
+        z.append(point[2])
+
+
+    x = np.asarray(x)
+    y = np.asarray(y)
+    z = np.asarray(z)
+
+    fig = go.Figure(data = [go.Scatter3d (x = x, y = y, z= z)])
+    return fig.show()
 
 

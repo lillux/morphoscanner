@@ -8,33 +8,72 @@ import torch
 #import tqdm
 
 
- # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
-def get_coordinate_tensor_from_dict(coordinate_dict):
-    '''Convert a frame_dict to a tensor, for parallel euclidean distance calculation.
-    
-    Inputs: coordinate_dict, dict.
-    
-    Return: torch.tensor'''
 
-    #variables wit dict dimension
+def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
+    '''
+        Convert a coordinate_dict to a torch.tensor, for parallel euclidean distance calculation.
+        Works on dict in the form {atom_key : [x, y, z]}
+
+    Parameters
+    ----------
+    coordinate_dict : dict
+        Is the coordinate_dict in the form {key : [x, y, z]}.
+        It also works for N-dimensional points.
+
+    Returns
+    -------
+    zero : torch.tensor
+        Returns a torch.tensor of shape n x m
+        'n'  are the keys in coordinate_dict al len(coordinate_dict)
+        'm' is the number of dimensions of your data points
+        
+        It save on gpu if torch.cuda.is_available(), else on cpu
+        If you want to move your data on cpu, e.g. for visualization,
+        you need to output_tensor.cpu()
+    '''
+    
+
+    #variables with dict dimension
     dim0 = len(coordinate_dict)
-    dim1 = len(coordinate_dict[0])
-    dim2 = len(coordinate_dict[0][0])
+    first_key = [k for k in coordinate_dict.keys()][0]
+    dim1 = len(coordinate_dict[first_key])
 
     #initialize a 0s tensor
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32, device=device)
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    zero = torch.zeros([dim0,dim1], dtype=torch.float32, device=device)
 
-
-    for peptide in coordinate_dict:
-
-        for aminoacid in coordinate_dict[peptide]:
+    for index, peptide in enumerate(coordinate_dict):
             
-            zero[peptide][aminoacid] = torch.tensor(coordinate_dict[peptide][aminoacid], device=device)
-                
+        zero[index] = torch.tensor(coordinate_dict[peptide], device=device)
                 
     return zero
 
+
+
+def get_coordinate_tensors_from_dict_multi(coordinate_dict):
+    '''
+    Generate tensor from multichain coordinate dict.
+    Your coordinate_dict is in the form:
+        
+        {chain : {atom : [x, y, z] }}
+
+    Parameters
+    ----------
+    coordinate_dict : dict
+        Your coordinate_dict.
+        It is in the form:
+        {chain : {atom : [x, y, z] }}.
+
+    Returns
+    -------
+    tensor_dict : dict
+        It is a dict of tensor, one tensor per chain.
+
+    '''
+    tensor_dict = {}
+    for chain in coordinate_dict:
+        tensor_dict[chain] = get_coordinate_tensor_from_dict_single(coordinate_dict[chain])
+    return tensor_dict
 
 
 
@@ -99,16 +138,43 @@ def compute_euclidean_norm_torch(coordinate_tensor):
 
 
 
-def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None):
-    '''Minimal function to calculate euclidean distance between two set of points
+def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device='cpu'):
+    '''
+    Minimal function to calculate euclidean distance between two set of points
     using quadratic expansion. Thanks to:
-    https://discuss.pytorch.org/t/efficient-distance-matrix-computation/9065
+            https://discuss.pytorch.org/t/efficient-distance-matrix-computation/9065
+            https://github.com/pytorch/pytorch/pull/25799
+            https://github.com/pytorch/pytorch/issues/15253
     
-    Input: 2d tensor of shape (n,3), 2d tensor of shape (m,3)
+
+    Parameters
+    ----------
+    peptide1_tensor : torch.tensor
+        torch.tensor of shape n x d.
+        
+    peptide2_tensor : torch.tensor, optional
+        The default is None.
+        torch.tensor for which you want to calculate te distance from peptide1_tensor
+        If None, this will be a copy of peptide_tensor1
+        for pairwise distance matrix calculation
+        shape m x p
+        
+    device : str, optional
+        The default is 'cpu'.
+        Is the device on which to compute the calculation
+        You can set it to 'cuda' if you have an Nvidia GPU and CUDA driver installed
+
+    Returns
+    -------
+    distance_map : torch.tensor
+        shape n x p
+        tensor with the distances data
+        If you use 'cuda' device, you need to move output to main memory, with:
+
+        distance_map.cpu()
+
+    '''
     
-    Output: 2d tensor of shape (n,m)
-            
-     '''
 
     if peptide2_tensor == None:
         peptide2_tensor = peptide1_tensor
@@ -117,13 +183,17 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None):
     x_norm = torch.pow(peptide1_tensor, 2).sum(1).view(-1,1)
     y_t = torch.transpose(peptide2_tensor, 0, 1)
     y_norm = torch.pow(peptide2_tensor, 2).sum(1).view(1,-1)
-
+    
     distance_map = torch.sqrt(x_norm + y_norm - 2.0 * torch.mm(peptide1_tensor, y_t))
-
-    # put transpose of distance map in lower triangle   
-    #convert nan to 0  (using this instead of torch.clamp())       
+    
+    # convert nan to 0  (using this instead of torch.clamp())       
     distance_map[torch.isnan(distance_map)] = 0
-
+    
+    # if you are calculating pointwise distance a single tensor
+    # main diagonal is 0, to fix stability errors
+    if peptide1_tensor is peptide2_tensor:
+        distance_map = distance_map.fill_diagonal_(0)
+    
     return distance_map
 
 
