@@ -49,18 +49,6 @@ conda activate morphoscanner
 
 ## Morphoscanner installation
 
-### Morphoscanner Installation as Module
-
-Inside the env you have to install morphoscanner:
-
-```bash
-pip install git+https://github.com/lillux/sap_analysis.git#egg=morphoscanner
-```
-You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*.
-
-Then it will be installed in your env. You can now use morphoscanner from your *IDE* or *Python Console*.
-
-
 ### Morphoscanner as Script
 
 You can download morphoscanner from its [Github repository](https://github.com/lillux/sap_analysis "Morphoscanner repository").
@@ -72,6 +60,17 @@ python main.py
 ```
 
 The script will start and the input paths of the trajectory files will be requested.
+
+### Morphoscanner Installation as Module
+
+Inside the env you have to install morphoscanner:
+
+```bash
+pip install git+https://github.com/lillux/sap_analysis.git#egg=morphoscanner
+```
+You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*.
+
+Then it will be installed in your env. You can now use morphoscanner from your *IDE* or *Python Console*.
 
 
 ## Getting started
