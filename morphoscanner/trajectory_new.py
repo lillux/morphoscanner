@@ -1,8 +1,6 @@
 import morphoscanner
-from morphoscanner import backend
-from morphoscanner.backend.check_val import isInt
-import sys
-
+from morphoscanner import backend, data_acquisition, trj_object
+import tqdm
 
 class trajectory:
     '''Class to operate on trajectory files.
@@ -49,8 +47,8 @@ class trajectory:
         
         '''
         
-        splitting_dict = get_splitting_dict(to_split, split_size)
-        self.peptide_length_list = get_new_peptides_length(self.peptide_length_list, splitting_dict)
+        splitting_dict = data_acquisition.get_splitting_dict(to_split, split_size)
+        self.peptide_length_list = data_acquisition.get_new_peptides_length(self.peptide_length_list, splitting_dict)
         print('Splitting done.\n')
         print('"peptide_length_list" attribute has been updated with the new length.')
         
@@ -60,12 +58,12 @@ class trajectory:
     def explore(self):
         
         frame = 0
-        coordinate, sequence, atom_number = get_data_from_trajectory_frame(universe=self.universe, frame=frame, peptide_length_list= self.peptide_length_list)
+        coordinate, sequence, atom_number = backend.topology.get_data_from_trajectory_frame(universe=self.universe, frame=frame, peptide_length_list= self.peptide_length_list)
 
         self.peptide = {}
         for seq, coord, atm_n in zip(sequence, coordinate, atom_number):
 
-            self.peptide[seq] = single_peptide(sequence.get(seq), atom_number.get(atm_n))
+            self.peptide[seq] = trj_object.trj_objects.single_peptide(sequence.get(seq), atom_number.get(atm_n))
                 
             self.peptide[seq].get_coordinate_from_frame(frame=frame, coordinates=coordinate.get(coord))
         

@@ -7,7 +7,32 @@ Created on Thu Mar 19 20:11:57 2020
 import torch
 #import tqdm
 
+ # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
+def get_coordinate_tensor_from_dict(coordinate_dict):
+    '''Convert a frame_dict to a tensor, for parallel euclidean distance calculation.
+    
+    Inputs: coordinate_dict, dict.
+    
+    Return: torch.tensor'''
 
+    #variables wit dict dimension
+    dim0 = len(coordinate_dict)
+    dim1 = len(coordinate_dict[0])
+    dim2 = len(coordinate_dict[0][0])
+
+    #initialize a 0s tensor
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32, device=device)
+
+
+    for peptide in coordinate_dict:
+
+        for aminoacid in coordinate_dict[peptide]:
+            
+            zero[peptide][aminoacid] = torch.tensor(coordinate_dict[peptide][aminoacid], device=device)
+                
+                
+    return zero
 
 def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
     '''
@@ -50,7 +75,7 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
 
 
 
-def get_coordinate_tensors_from_dict_multi(coordinate_dict):
+def get_coordinate_tensor_from_dict_multi(coordinate_dict):
     '''
     Generate tensor from multichain coordinate dict.
     Your coordinate_dict is in the form:
@@ -78,7 +103,7 @@ def get_coordinate_tensors_from_dict_multi(coordinate_dict):
 
 
 #compute euclidean norm, fast
-def compute_euclidean_norm_torch(coordinate_tensor):
+def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
     '''Use matrix to compute euclidean distance dataset wise
         and return a set of distance matrix for everi couple of peptides
 
@@ -91,7 +116,7 @@ def compute_euclidean_norm_torch(coordinate_tensor):
     '''
 
     #create tensor of 0s with shape n_pep x n_pep * n_res + n_res
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     zero = torch.zeros((coordinate_tensor.shape[0], coordinate_tensor.shape[0], coordinate_tensor.shape[1], coordinate_tensor.shape[1]), dtype=torch.float32, device = device)
     
     #cicle on peptide
@@ -124,7 +149,8 @@ def compute_euclidean_norm_torch(coordinate_tensor):
     #convert nan to 0  (using this instead of torch.clamp())       
     zero[torch.isnan(zero)] = 0
     
-    if torch.cuda.is_available():
+    #if device=='cuda' and torch.cuda.is_available():
+    if device == 'cuda':
         # move to system memory and cast to numpy array
         zero = zero.cpu().numpy()
         
@@ -134,7 +160,7 @@ def compute_euclidean_norm_torch(coordinate_tensor):
     return zero
 
 #https://discuss.pytorch.org/t/efficient-distance-matrix-computation/9065
-#https://www.dropbox.com/h?preview=Parallel+Euclidean+distance+matrix+computation+on+big+datasets.pdf      
+#https://hal.archives-ouvertes.fr/hal-02047514     
 
 
 

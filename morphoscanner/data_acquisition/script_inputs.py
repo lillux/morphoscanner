@@ -239,7 +239,7 @@ def check_for_compatibility(list1, list2):
     if len(list1) == len(list2):
         
         for e1, e2 in zip(list1, list2):
-            if e1%e2 != 0:
+            if e1 % e2 != 0:
                 print('%d is not multiple of %d' % (e1,e2))
                 return False
             
@@ -257,7 +257,7 @@ def get_splitting_dict(to_split, split_size):
     
     for length, split_dim in zip(to_split, split_size):
         #check for divisibility
-        if (length%split_dim) == 0:
+        if (length % split_dim) == 0:
             splitting_dict[length] = split_dim
     
     return splitting_dict

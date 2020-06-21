@@ -64,16 +64,6 @@ def nx_graph_search(denoised_dict, minimum_contacts = 3):
 
     return graph
 
-#A novel graph clustering algorithm based on discrete-time quantum random walk
-#S.G. Roya, A. Chakrabarti
-
-# working with networkX
- 
-# when you add_edge, nodes are created if they are not there
-# you can put info in edge (as distance, n of contacts, contact map)
-
-
-
 
 # create a full graph
 def full_graph(denoised_dict):

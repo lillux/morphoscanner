@@ -312,3 +312,46 @@ def get_coordinate_dict_from_trajectory(trj_gro, trj_xtc, peptide_length=None, s
 
     return trj_dict
 
+
+## WORKING NICELY FAST
+def get_data_from_trajectory_frame(universe, frame, peptide_length_list, atom_to_select='BB'):
+
+    # move universe frame to memory
+    universe.trajectory[frame]
+ 
+    coordinate_dict = {}
+    residues_dict = {}
+    atom_number_dict = {}
+    
+    res_counter = 0
+
+    for pep_index, peptide in enumerate(peptide_length_list):
+
+        coordinate_dict[pep_index] = {}
+        residues_dict[pep_index] = {}
+        atom_number_dict[pep_index] = {}
+        
+        for res in range(peptide):
+
+            actual_res = universe.residues[res_counter]
+            
+            for index, atom in enumerate(actual_res.atoms):
+
+                atom_type = str(atom).split()[2]
+
+                if atom_type == atom_to_select:
+                    
+                    atom_number = (int(str(atom).split()[1].split(':')[0]) - 1)
+
+                    residue_name = (str(atom).split()[8].split(',')[0])
+
+                    coordi = universe.atoms[atom_number].position
+
+                    coordinate_dict[pep_index][res] = coordi
+                    residues_dict[pep_index][res] = residue_name
+                    atom_number_dict[pep_index][res] = atom_number
+                    
+                    res_counter += 1
+                    
+    return coordinate_dict, residues_dict, atom_number_dict
+
