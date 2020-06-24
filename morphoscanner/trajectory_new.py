@@ -98,3 +98,58 @@ class trajectory:
             peptide_dict[pep] = self.peptide[pep].frames[frame]
         
         return peptide_dict
+    
+    
+    def get_peptide_in_all_frame(self, peptide):
+    
+        frame_dict = {}
+        for frame in self.peptide[peptide].frames:
+            
+            frame_dict[frame] = self.peptide[peptide].frames[frame]
+            
+        return frame_dict
+    
+
+    
+    def analysis(self, frame):
+    
+        frame = frame
+        print('Analyzing frame n° ', frame)
+    
+        frame_dict = self.get_frame(frame)
+    
+        frame_tensor = distance_tensor.get_coordinate_tensor_from_dict(frame_dict)
+    
+        start_dist = timer()
+        frame_distance_maps = distance_tensor.compute_euclidean_norm_torch(frame_tensor)
+        end_dist = timer()
+        print('Time to compute distance is: ', (end_dist - start_dist))
+    
+        start_contc = timer()
+        frame_contact = pattern_recognition.compute_contact_maps_as_array(frame_distance_maps)
+        end_contc = timer()
+        print('Time to compute contact is: ', (end_contc - start_contc))
+    
+        start_den = timer()
+        frame_denoised, df = pattern_recognition.denoise_contact_maps(frame_contact)
+        end_den = timer()
+        print('Time to denoise: ', (end_den-start_den))
+    
+        frame_graph_full = graph.graph_v1(frame_denoised, df)
+        
+        subgraphs = graph.find_subgraph(frame_graph_full)        
+
+        
+        try:
+            self.results[frame] = results(frame)       
+
+        except:
+            self.results = {}
+            self.results[frame] = results(frame)       
+
+        self.results[frame].get_data('graph', frame_graph_full)
+        self.results[frame].get_data('subgraphs', subgraphs)
+        self.results[frame].get_data('cross_correlation', df)
+        
+        print('Finished analysis of frame n° %d' % frame)
+        

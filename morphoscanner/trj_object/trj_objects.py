@@ -1,7 +1,6 @@
-class frames(object):
-    
-    pass
-    
+from timeit import default_timer as timer
+from ..backend import distance_tensor, pattern_recognition, graph
+
         
 class single_peptide():
     
@@ -33,3 +32,20 @@ class single_peptide():
             self.frames = {}
             self.frames[frame] = coordinates
         return
+    
+
+    def get_data(self, data_name, data):
+        
+        setattr(self, data_name, data)
+        
+    
+
+class results():
+    
+    def __init__(self, frame):
+        self.frame = frame
+        pass
+
+    def get_data(self, data_name, data):
+        
+        setattr(self, data_name, data)
