@@ -101,6 +101,36 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict):
     return tensor_dict
 
 
+# group tensors of same size in a single tensor, and put them in a dict
+def cat_tensor_for_size(tensor_dict):
+    '''Group 2D tensors of same shape in a 3D tensor,
+        and then put in a dict.
+
+    Parameters
+    ----------
+    tensor_dict : dict
+        output of get_coordinate_tensor_from_dict_multi
+
+    Returns
+    -------
+    container_tensor : dict
+        a dict for a key for each tensor size, of which value is a 3D tensor
+        that contains all the 2D tensor of same shape.
+
+    '''
+    
+    container_tensor = {}
+    for i in tensor_dict:
+        actual_tensor_len = len(tensor_dict[i])
+
+        if actual_tensor_len in container_tensor.keys():
+            container_tensor[actual_tensor_len] = torch.cat((container_tensor[actual_tensor_len],tensor_dict[i].unsqueeze(0)))
+
+        else:
+            container_tensor[actual_tensor_len] = tensor_dict[i].unsqueeze(0)
+
+    return container_tensor
+
 
 #compute euclidean norm, fast
 def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
@@ -222,6 +252,49 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device
     
     return distance_map
 
+
+## This works if i multiply a tensor with a matrix
+def fast_cdist(x1, x2):
+    '''Euclidean distance calculation between tensors.
+    
+    Parameters
+    ----------
+    x1 : torch.tensor
+        Your first tensor to multiply.
+        dims: a x b x c
+        
+    x2 : torch.tensor
+        Your second tensor to multiply.
+        dims: a x n x c
+        You have to broadcast if it is a matrix
+        all dims should be equal between tensors, except -2
+
+    Returns
+    -------
+    res : torch.tensor
+        the euclidean distance between the two tensors
+        dims: a x b x n
+
+    '''
+    adjustment = x1.mean(-2, keepdim=True)
+    x1 = x1 - adjustment
+    x2 = x2 - adjustment  # x1 and x2 should be identical in all dims except -2 at this point
+
+    # Compute squared distance matrix using quadratic expansion
+    # But be clever and do it with a single matmul call
+    x1_norm = x1.pow(2).sum(dim=-1, keepdim=True)
+    x1_pad = torch.ones_like(x1_norm)
+    x2_norm = x2.pow(2).sum(dim=-1, keepdim=True)
+    x2_pad = torch.ones_like(x2_norm)
+    x1_ = torch.cat([-2. * x1, x1_norm, x1_pad], dim=-1)
+    x2_ = torch.cat([x2, x2_pad, x2_norm], dim=-1)
+    res = x1_.matmul(x2_.transpose(-2, -1))
+
+    # Zero out negative values
+    #res.clamp_min_(1e-30).sqrt_()
+    res = res.sqrt()
+    res[torch.isnan(res)]=0
+    return res
 
         
         
