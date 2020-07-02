@@ -293,7 +293,7 @@ def fast_cdist(x1, x2):
     # Zero out negative values
     #res.clamp_min_(1e-30).sqrt_()
     res = res.sqrt()
-    res[torch.isnan(res)]=0
+    res[torch.isnan(res)] = 0
     return res
 
         

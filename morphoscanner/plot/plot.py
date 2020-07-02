@@ -61,10 +61,9 @@ def plot_single_peptide(peptide_coordinate_dict, centroid=False):
 # The box axis have arbitrary scale dependent on the aminoacids distance
 # you can select to show the centroid
 def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
-    '''
-    Plot peptides from a trajectory frame.
+    '''Plot peptides from a trajectory frame.
     Using jupyter-notebook, use '%matplotlib notebook' to
-    plot the points cloud in 3D.
+    plot the points cloud in 3D interactive mode.
 
     Parameters
     ----------
@@ -92,9 +91,7 @@ def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
     -------
     3D plot
         Return a scattered 3D plot.
-
     '''
-    
       
     # if no peptide specified, plot all
     if peptide_list == None:
@@ -108,14 +105,12 @@ def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
         return plot_single_peptide(coordinate_dict[peptide_list[0]])
     
     else:
-        
         x = []
         y = []
         z = []
         x_median = float
         y_median = float
         z_median = float
-
 
         for peptide in range(len(peptide_list)):
             x.append([peptide])
@@ -145,9 +140,6 @@ def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
             y_median = assemble_coordinate(y)
             z_median = assemble_coordinate(z)
 
-
-        #%matplotlib notebook
-
         fig = plt.figure()
 
         ax = plt.axes(projection='3d')
@@ -161,8 +153,6 @@ def plot_peptide_list(coordinate_dict, peptide_list=None, centroid=False):
 
                 ax.scatter3D(x_median[pep], y_median[pep], z_median[pep], c='red')
 
-
-        #return  plt.show(), [x,y,z], [x_median, y_median, z_median]         
     return plt.show()
 
 
@@ -236,10 +226,8 @@ def plot_peptide_from_tensor(coordinate_dict, peptide_list, centroid=False):
 # plot from trajectory positions  ### WORKING BUT YOU NEED TO:
 # make_universe
 # positions = universe.select_atoms('name BB').positions
-def plot_peptide_from_trajectory_frame(positions, peptide_list=None, centroid=False):
-    
-    '''
-    Plot atoms from universe.trajectory[frame]
+def plot_peptide_from_trajectory_frame(positions, peptide_list=None, centroid=False):    
+    '''Plot atoms from universe.trajectory[frame]
     '''
     
     if peptide_list == None:
@@ -278,12 +266,8 @@ def plot_peptide_from_trajectory_frame(positions, peptide_list=None, centroid=Fa
     return plt.show()
 
 
-
-
-
 def plot_protein(coordinate_dict):
-    '''
-    Plot a protein unisng plotly
+    '''Plot a protein using plotly
 
     Parameters
     ----------
@@ -313,7 +297,7 @@ def plot_protein(coordinate_dict):
     y = np.asarray(y)
     z = np.asarray(z)
 
-    fig = go.Figure(data = [go.Scatter3d (x = x, y = y, z= z)])
+    fig = go.Figure(data = [go.Scatter3d (x=x, y=y, z=z)])
     return fig.show()
 
 

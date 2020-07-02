@@ -1,6 +1,9 @@
 import morphoscanner
 from morphoscanner import backend, data_acquisition, trj_object
+from morphoscanner.backend import distance_tensor, pattern_recognition, graph
 import tqdm
+from timeit import default_timer as timer
+
 
 class trajectory:
     '''Class to operate on trajectory files.
