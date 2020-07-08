@@ -8,6 +8,7 @@ Created on Thu Mar 19 12:38:50 2020
 from . import backend
 from timeit import default_timer as timer
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class trajectory:
 
@@ -294,10 +295,29 @@ class trajectory:
         
 
 
-
-
-
-
+    def plot_contacts(self):
+        index = self.database.index
+        contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
+        parallel = self.database['parallel']
+        antiparallel = self.database['antiparallel']
+        plt.plot(index, contact, 'ro', label='sum of contacts')
+        plt.plot(index, parallel, 'bo', label='parallel contacts')
+        plt.plot(index, antiparallel, 'go', label='antiparallel contacts')
+        plt.xlabel('Frames')
+        plt.ylabel('N° of contacts between peptides')
+        plt.legend(loc='center right', bbox_to_anchor=(1,1.15))
+        
+        return
+    
+    
+    def plot_aggregates(self.database):
+        index = self.database.index
+        aggregates = self.database['n° of macroaggreates']
+        plt.plot(index, aggregates,'o')
+        plt.xlabel('Frames')
+        plt.ylabel('N° of macroaggregates')
+        
+        return
 
 
 
