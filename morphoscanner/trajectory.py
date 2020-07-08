@@ -310,7 +310,7 @@ class trajectory:
         return
     
     
-    def plot_aggregates(self.database):
+    def plot_aggregates(self):
         index = self.database.index
         aggregates = self.database['n° of macroaggreates']
         plt.plot(index, aggregates,'o')
