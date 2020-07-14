@@ -18,7 +18,7 @@ def get_molnames(path):
     return name_list
 
 #from martini_v2.2_aminoacids.itp
-aminoacids_name = ['GLY',
+aminoacids_name =   ['GLY',
                      'ALA',
                      'CYS',
                      'VAL',
@@ -49,30 +49,43 @@ aminoacids_name = ['GLY',
 water_list = ['W', 'WF']
 
 #from martini_v2.0_solvents.itp
-solvents_list = ['BUT',
-                 'POP',
-                 'OCT',
-                 'DEC',
-                 'HD',
-                 'OD',
-                 'ODE',
-                 'ODT',
-                 'BENZ',
-                 'CHEX',
-                 'BOL',
-                 'POL',
-                 'EOL',
-                 'OCO',
-                 'PRX',
-                 'CLF',
-                 'MES',
-                 'ETH',
-                 'PON',
-                 'PAM',
-                 'ACH',
-                 'ACE',
-                 'TO',
-                 'CB']
+solvents_list =     ['BUT',
+                    'POP',
+                    'OCT',
+                    'DEC',
+                    'HD',
+                    'OD',
+                    'ODE',
+                    'ODT',
+                    'BENZ',
+                    'CHEX',
+                    'BOL',
+                    'POL',
+                    'EOL',
+                    'OCO',
+                    'PRX',
+                    'CLF',
+                    'MES',
+                    'ETH',
+                    'PON',
+                    'PAM',
+                    'ACH',
+                    'ACE',
+                    'TO',
+                    'CB']
 
 #from martini_v2.0_ions.itp
 ions_list = ['NA+', 'CL-', 'NC3+', 'CA+']
+
+#from martini_v2.0_sugars.itp
+sugars_list =   ['GLUC',
+                 'FRUC',
+                 'SUCR',
+                 'MALT',
+                 'CELL',
+                 'KOJI',
+                 'SOPH',
+                 'NIGE',
+                 'LAMI',
+                 'TREH',
+                 'Maltoheptaose']
