@@ -17,8 +17,10 @@ def get_molnames(path):
                     flag = True
     return name_list
 
+
+
 #from martini_v2.2_aminoacids.itp
-aminoacids_name =   ['GLY',
+aminoacids_list =   ['GLY',
                      'ALA',
                      'CYS',
                      'VAL',
@@ -89,3 +91,10 @@ sugars_list =   ['GLUC',
                  'LAMI',
                  'TREH',
                  'Maltoheptaose']
+
+
+
+costituents = {'aminoacids' : set(aminoacids_list),
+              'sugars' : set(sugars_list),
+              'peptide' :  set(aminoacids_list).union(set(sugars_list))
+              }
