@@ -8,11 +8,13 @@ Created on Thu Mar 19 20:03:20 2020
 import MDAnalysis as mda
 from .readGro import clean_gro
 import tqdm
-
+from ..molnames import costituents
+from .check_val import isInt
+from ..trj_object.trj_objects import single_peptide
 
 
 #get a list of the number of residues of every peptide in the topology
-def get_peptide_length_list(topology):
+def old_get_peptide_length_list(topology):
     '''
     Take the .gro file and get back a list, in which each
     element is the length in atoms of a single peptide.
@@ -83,6 +85,91 @@ def get_peptide_length_list(topology):
     peptide_length_list.append(len(temporary_list))
 
     return peptide_length_list
+
+def get_peptide_length_list(path, select=None):
+    '''Take the .gro file and get back a list, in which each
+    element is the length in atoms of a single peptide.
+    
+    Only atoms specified in 'select' are selected.
+    
+    It relies on the number in front of the residue name
+    in the .gro file and on the residue name, matching
+    for name in morphoscanner.molnames.costituents['select']    
+
+    Parameters
+    ----------
+    path : str
+        .gro file path as 'user/data/file.gro'
+        The path of the .gro file on your system
+        
+        DESCRIPTION.
+    select : list of str, optional
+        The default is None.
+        This is used to select which residues to count to compose the peptide.
+        It should be a list like:
+            ['peptide']
+        Available options are the keys retrievable with:
+            morphoscanner.molnames.costituents.keys()
+
+    Returns
+    -------
+    peptide_len_list : list
+        A list of int. Each element is the length of that peptides,
+        counting only the residues selected in 'select' argument
+
+    '''
+
+    if select == None:
+        select = ['peptide']
+
+    accepted_costituents = []
+
+    for element in select:
+        if element in costituents.keys():
+            try:
+                accepted_costituents.extend(costituents.get(element))
+
+            except:
+                accepted_costituents.append(costituents.get(element))
+
+    with open(path) as gro:
+        peptide_len_list = []
+        temporary_list = []
+        for line in gro:
+            splitted = line.split()
+            if len(splitted) > 1:
+                # Parse residue number and name (first item of the line)
+                first = (splitted[0])
+
+                text = [i for i in first if not isInt(i)]
+                text_unite = ''.join(text)
+
+                if text_unite in accepted_costituents:
+
+                    number = [i for i in first if isInt(i)]
+                    number_unite = ''.join(number)
+                    number_unite = int(number_unite)
+
+                    if len(temporary_list) == 0:
+                        temporary_list.append(number_unite)
+    
+                    else:
+                        # get only the first atom of a residue
+                        if number_unite != temporary_list[-1]:
+
+                            if number_unite < temporary_list[-1]:
+                                peptide_len_list.append(len(temporary_list))
+                                temporary_list = []
+                                temporary_list.append(number_unite)
+
+                            else:
+                                temporary_list.append(number_unite)
+                        else:
+                            pass
+
+        peptide_len_list.append(len(temporary_list))
+
+    return peptide_len_list
 
 
 def get_peptide_length_dict(peptide_length_list):
@@ -314,7 +401,7 @@ def get_coordinate_dict_from_trajectory(trj_gro, trj_xtc, peptide_length=None, s
 
 
 ## WORKING NICELY FAST
-def get_data_from_trajectory_frame(universe, frame, peptide_length_list, atom_to_select='BB'):
+def old_get_data_from_trajectory_frame(universe, frame, peptide_length_list, atom_to_select='BB'):
 
     # move universe frame to memory
     universe.trajectory[frame]
@@ -355,3 +442,53 @@ def get_data_from_trajectory_frame(universe, frame, peptide_length_list, atom_to
                     
     return coordinate_dict, residues_dict, atom_number_dict
 
+
+## WORKING NICELY FAST
+def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list: list, select: str):
+
+    # move universe frame to memory
+    universe.trajectory[frame]
+
+    # get dictionary of accepted residues
+    try:
+        atom_to_select = costituents[select]
+    except:
+        raise ValueError('%s is not a valid keys for morphoscanner.molnames.costituents' % str(select))
+
+    coordinate_dict = {}
+    residues_dict = {}
+    atom_number_dict = {}
+
+    res_counter = 0
+    object_dict = {} # new
+
+    for pep_index, peptide in enumerate(peptide_length_list):
+
+        coordinate_dict[pep_index] = {}
+        residues_dict[pep_index] = {}
+        atom_number_dict[pep_index] = {}
+
+        for res in range(peptide):
+
+            actual_res = universe.residues[res_counter]
+            if str(actual_res).split()[1].split(',')[0] in atom_to_select:
+                
+                # get only first atoms of residues, is BB for aminoacids
+                atom = actual_res.atoms[0]
+                #atom_type = str(atom).split()[2]
+
+                atom_number = (int(str(atom).split()[1].split(':')[0]) - 1)
+
+                residue_name = (str(atom).split()[8].split(',')[0])
+
+                coordi = universe.atoms[atom_number].position
+
+                coordinate_dict[pep_index][res] = coordi
+                residues_dict[pep_index][res] = residue_name
+                atom_number_dict[pep_index][res] = atom_number
+
+                res_counter += 1
+
+        object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
+
+    return object_dict

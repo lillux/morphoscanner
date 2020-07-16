@@ -40,3 +40,27 @@ def contact_list_from_dict(contact_dict):
             new_data = [contact[0], contact[1], contact[2][0], contact[2][1], contact[2][2], contact[2][3]]
             contact_list.append(new_data)
     return contact_list
+
+
+# return string in a string with numbers
+def return_if_string(string):
+    digits = []
+    for i in string:
+        if not i.isdigit():
+            digits.append(i)
+
+    string = ''.join(digits)
+
+    return string
+
+
+# return numbers in a string with numbers
+def return_if_digit(string):
+    digits = []
+    for i in string:
+        if i.isdigit():
+            digits.append(i)
+
+    string = ''.join(digits)
+
+    return string

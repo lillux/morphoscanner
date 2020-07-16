@@ -96,5 +96,7 @@ sugars_list =   ['GLUC',
 
 costituents = {'aminoacids' : set(aminoacids_list),
               'sugars' : set(sugars_list),
-              'peptide' :  set(aminoacids_list).union(set(sugars_list))
+              'peptide' :  set(aminoacids_list).union(set(sugars_list)),
+              'water' : set(water_list),
+              'solvents' : set(solvents_list)
               }
