@@ -444,7 +444,7 @@ def old_get_data_from_trajectory_frame(universe, frame, peptide_length_list, ato
 
 
 ## WORKING NICELY FAST
-def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list: list, select: str):
+def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list: list, select: list):
 
     # move universe frame to memory
     universe.trajectory[frame]
@@ -459,7 +459,7 @@ def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list:
             except:
                 accepted_costituents.append(costituents.get(element))
         else:
-            raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(select))
+            raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(element))
 
     coordinate_dict = {}
     residues_dict = {}

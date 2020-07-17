@@ -5,6 +5,7 @@ Created on Thu Mar 19 20:11:57 2020
 """
 
 import torch
+from .topology import 
 #import tqdm
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
@@ -104,7 +105,7 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict):
 # group tensors of same size in a single tensor, and put them in a dict
 def cat_tensor_for_size(tensor_dict):
     '''Group 2D tensors of same shape in a 3D tensor,
-        and then put in a dict.
+        and then put in a dict.    
 
     Parameters
     ----------
@@ -116,21 +117,66 @@ def cat_tensor_for_size(tensor_dict):
     container_tensor : dict
         a dict for a key for each tensor size, of which value is a 3D tensor
         that contains all the 2D tensor of same shape.
+        
+    peptide_index_in_tensor : dict
+        a dict to track peptide index, in the form:
+            {new_index: original_index}
 
     '''
     
     container_tensor = {}
+    peptide_index_in_tensor = {}
+    
     for i in tensor_dict:
         actual_tensor_len = len(tensor_dict[i])
 
+
         if actual_tensor_len in container_tensor.keys():
             container_tensor[actual_tensor_len] = torch.cat((container_tensor[actual_tensor_len],tensor_dict[i].unsqueeze(0)))
-
+            peptide_index_in_tensor[actual_tensor_len][len(peptide_index_in_tensor[actual_tensor_len])] = i
         else:
             container_tensor[actual_tensor_len] = tensor_dict[i].unsqueeze(0)
+            peptide_index_in_tensor[actual_tensor_len] = {}
+            peptide_index_in_tensor[actual_tensor_len][len(peptide_index_in_tensor[actual_tensor_len])] = i
 
-    return container_tensor
 
+    return container_tensor, peptide_index_in_tensor
+
+
+def compute_distance_between_each_peptide(coordinate_dict):
+    '''Parallel euclidean distance matrix calculation for frame coordinate dict.
+    Compute in parallel for frame containing peptide of different length.
+
+    Parameters
+    ----------
+    coordinate_dict : dict
+        Coordinate of a frame, in the form {peptide_index: {atom_index: atom_coordinate}}.
+
+    Returns
+    -------
+    distance_maps_dict : dict
+        A dict containing the computed distance maps, in the form:
+            {peptide_i : {peptide_j : distance_maps_ij}}.
+
+    '''
+    
+    coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
+    group_tensor, order_tensor = cat_tensor_for_size(coordinate_tensor)
+    
+    #start = timer()
+    distance_maps_dict = {}
+    for tensor in coordinate_tensor:
+        distance_maps_dict[tensor] = {}
+        for tensor_group in group_tensor:
+            index_dict = order_tensor[tensor_group]
+            distance = fast_cdist(coordinate_tensor[tensor],group_tensor[tensor_group])
+            for map_index, m in enumerate(distance):
+                real_index = index_dict[map_index]
+                distance_maps_dict[tensor][real_index] = m
+
+    #end = timer()
+    #print(end-start)
+    return distance_maps_dict
 
 #compute euclidean norm, fast
 def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
