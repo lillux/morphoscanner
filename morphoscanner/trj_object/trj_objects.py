@@ -24,6 +24,12 @@ class frames():
     
         pass
     
+# save results in this
+
+class results():
+    
+    pass
+    
         
 
 # Classes in dev
@@ -43,15 +49,16 @@ class single_peptide():
         return
 
     # do this for each peptide to gather distances
-    # this is not optimized but still faster than before
+    # this is not optimized but still faster than before#
 #    def distance(self):
-        
+#        
 #        tt = distance_tensor.get_coordinate_tensor_from_dict_single(t_test.frames[0].peptides[0].coordinates)
-
-#       self.distances = {}
-#       for tens in frame_tensor:
 #
+#        self.distances = {}
+#        for tens in frame_tensor:
+
 #            dists[tens] = morphoscanner.backend.distance_tensor.fast_cdist(frame_tensor[tens], tt.unsqueeze(0))
 
-#       return dists
+#        return dists
+        
         

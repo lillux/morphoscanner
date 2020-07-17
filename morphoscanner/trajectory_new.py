@@ -1,32 +1,40 @@
 import morphoscanner
 from morphoscanner import backend, data_acquisition, trj_object
-from morphoscanner.backend import distance_tensor, pattern_recognition, graph
+from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology
+from morphoscanner.backend.check_val import isInt
+
 import tqdm
 from timeit import default_timer as timer
+import sys
+
 
 
 class trajectory:
     '''Class to operate on trajectory files.
+    It makes an object that contain the trajectory of the simulation.
+    From this object is possible to conduct analysis'''
 
-    It makes an object that contain the trajectory of the simulation'''
-
-    def __init__(self, trj_gro, trj_xtc):
+    def __init__(self, trj_gro, trj_xtc, select = None):
         
         self.trj_gro = trj_gro
         self.trj_xtc = trj_xtc
         self.universe = backend.topology.make_universe(self.trj_gro, self.trj_xtc)
         self.number_of_frames = len(self.universe.trajectory)
-        self.number_of_BB_atoms = len(self.universe.select_atoms('name BB'))
+        
+        if select == None:
+            select = ['peptide']
+            
+        self.select = select
        
-        self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro)
+        self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro, self.select)
+        
         self.len_dict = backend.topology.get_peptide_length_dict(self.peptide_length_list)
         
         print('In your trajectory there are %d frames.\n' % self.number_of_frames)
-        print('In each frame there are %d BB atoms.\n' % self.number_of_BB_atoms)
+
         morphoscanner.backend.topology.print_peptides_length(self.len_dict)
         
-        return
-        
+        return            
         
     def split(self, to_split: list, split_size: list):
         '''Manually split peptide_length_list in case of seeds.
@@ -50,73 +58,63 @@ class trajectory:
         
         '''
         
-        splitting_dict = data_acquisition.get_splitting_dict(to_split, split_size)
-        self.peptide_length_list = data_acquisition.get_new_peptides_length(self.peptide_length_list, splitting_dict)
+        splitting_dict = data_acquisition.script_inputs.get_splitting_dict(to_split, split_size)
+        self.peptide_length_list = data_acquisition.script_inputs.get_new_peptides_length(self.peptide_length_list, splitting_dict)
         print('Splitting done.\n')
         print('"peptide_length_list" attribute has been updated with the new length.')
         
-        return
-    
+        return    
     
     def explore(self):
-        
+        # v1 with frame priority
+
         frame = 0
-        coordinate, sequence, atom_number = backend.topology.get_data_from_trajectory_frame(universe=self.universe, frame=frame, peptide_length_list= self.peptide_length_list)
-
-        self.peptide = {}
-        for seq, coord, atm_n in zip(sequence, coordinate, atom_number):
-
-            self.peptide[seq] = trj_object.trj_objects.single_peptide(sequence.get(seq), atom_number.get(atm_n))
-                
-            self.peptide[seq].get_coordinate_from_frame(frame=frame, coordinates=coordinate.get(coord))
-        
+        self.frames = {}
+        self.frames[frame] = trj_object.trj_objects.frames(frame)
+        self.frames[frame].peptides = topology.get_data_from_trajectory_frame_v1(universe=self.universe, frame=frame, peptide_length_list=self.peptide_length_list, select=self.select)
         print('Exploration of frame %d done.\n' % frame)
-        
-        return
+
+        return    
     
-    
-    def compose_database(self, sampling_interval):
+    def compose_database(self, sampling_interval=1):
         
-        steps = [s for s in range(self.number_of_frames) if s%sampling_interval==0 and s != 0]
+        steps = [s for s in range(self.number_of_frames) if (s % sampling_interval)==0 and (s != 0)]
         for step in tqdm.tqdm(steps):
             self.universe.trajectory[step]
-
-            for pep in self.peptide:
+            self.frames[step] = trj_object.trj_objects.frames(step)
+            self.frames[step].peptides = {}
+            for pep in self.frames[0].peptides:
                 c_list = {}
 
-                for idx, i in enumerate(self.peptide[pep].atom_numbers.values()):
+                for idx, i in enumerate(self.frames[0].peptides[pep].atom_numbers.values()):
                     p = self.universe.atoms[i].position
                     c_list[idx] = p
 
-                self.peptide[pep].get_coordinate_from_frame(step, c_list)
+                self.frames[step].peptides[pep] = trj_object.trj_objects.single_peptide(self.frames[0].peptides[pep].sequence,self.frames[0].peptides[pep].atom_numbers,c_list)
 
         return
         
-        
     def get_frame(self, frame):
         
-        peptide_dict = {}
-        for pep in self.peptide:
+        a_frame = {}
 
-            peptide_dict[pep] = self.peptide[pep].frames[frame]
-        
-        return peptide_dict
-    
-    
-    def get_peptide_in_all_frame(self, peptide):
-    
-        frame_dict = {}
-        for frame in self.peptide[peptide].frames:
-            
-            frame_dict[frame] = self.peptide[peptide].frames[frame]
-            
-        return frame_dict
-    
+        for pep in self.frames[frame].peptides:
+            a_frame[pep] = self.frames[frame].peptides[pep].coordinates
 
+        return a_frame
+    
+    def get_peptide(self, peptide):
+    
+        a_peptide = {}
+        for frame in self.frames:
+            
+            a_peptide[frame] = self.frames[frame].peptides[peptide].coordinates
+            
+        return a_peptide
     
     def analysis(self, frame):
     
-        frame = frame
+        #frame = frame
         print('Analyzing frame n° ', frame)
     
         frame_dict = self.get_frame(frame)
@@ -140,19 +138,31 @@ class trajectory:
     
         frame_graph_full = graph.graph_v1(frame_denoised, df)
         
-        subgraphs = graph.find_subgraph(frame_graph_full)        
-
+        subgraphs = graph.find_subgraph(frame_graph_full)  
         
-        try:
-            self.results[frame] = results(frame)       
-
-        except:
-            self.results = {}
-            self.results[frame] = results(frame)       
-
-        self.results[frame].get_data('graph', frame_graph_full)
-        self.results[frame].get_data('subgraphs', subgraphs)
-        self.results[frame].get_data('cross_correlation', df)
-        
+        self.frames[frame].results = trj_object.trj_objects.results()
+        self.frames[frame].results.cross_correlation = df
+        self.frames[frame].results.graph = frame_graph_full
+        self.frames[frame].results.subgraphs = subgraphs
         print('Finished analysis of frame n° %d' % frame)
         
+        return
+    
+        
+    def analyze_inLoop(self):
+        
+        print('processing started...')
+        start = timer()
+        for frame in self.frames:
+            start_an = timer()
+            self.analysis(frame)
+            end_an = timer()
+            text = 'Time needed to analyze frame %d was %f seconds' % (frame, (end_an-start_an))
+            print(text)
+
+        end = timer()
+
+
+        print('Total time to analyze dataset was %f seconds' % (end -start))
+        return
+    

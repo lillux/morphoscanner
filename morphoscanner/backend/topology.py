@@ -449,11 +449,17 @@ def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list:
     # move universe frame to memory
     universe.trajectory[frame]
 
-    # get dictionary of accepted residues
-    try:
-        atom_to_select = costituents[select]
-    except:
-        raise ValueError('%s is not a valid keys for morphoscanner.molnames.costituents' % str(select))
+    accepted_costituents = []
+
+    for element in select:
+        if element in costituents.keys():
+            try:
+                accepted_costituents.extend(costituents.get(element))
+
+            except:
+                accepted_costituents.append(costituents.get(element))
+        else:
+            raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(select))
 
     coordinate_dict = {}
     residues_dict = {}
@@ -471,7 +477,7 @@ def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list:
         for res in range(peptide):
 
             actual_res = universe.residues[res_counter]
-            if str(actual_res).split()[1].split(',')[0] in atom_to_select:
+            if str(actual_res).split()[1].split(',')[0] in accepted_costituents:
                 
                 # get only first atoms of residues, is BB for aminoacids
                 atom = actual_res.atoms[0]
