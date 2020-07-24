@@ -271,10 +271,6 @@ class trajectory:
 
         return
 
-    
-    
-    
-
 
     def get_data(self):
         self.get_sense()
@@ -284,31 +280,28 @@ class trajectory:
         
         return
     
-    
-    
-    
+        
     def get_database(self):
         
         self.database = pd.concat((self.subgraph_len_pep_df, self.sense_df, self.number_of_peptide_df, self.macroaggregate_df), axis=1)
 
-        return
-        
+        return 
 
 
     def plot_contacts(self):
         index = self.database.index
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
-        parallel = self.database['parallel']
         antiparallel = self.database['antiparallel']
-        plt.plot(index, contact, 'ro', label='sum of contacts')
-        plt.plot(index, parallel, 'bo', label='parallel contacts')
-        plt.plot(index, antiparallel, 'go', label='antiparallel contacts')
-        plt.xlabel('Frames')
-        plt.ylabel('N° of contacts between peptides')
-        plt.legend(loc='center right', bbox_to_anchor=(1,1.15))
-        
-        return
     
+        antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
+        tss = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
+        
+        plt.plot(tss, antip_total_ratio, 'bo')
+        plt.xlabel('Time (ns)')
+        plt.ylabel('Antiparallel / Total contacts')
+    
+        return
+
     
     def plot_aggregates(self):
         index = self.database.index
