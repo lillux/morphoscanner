@@ -73,8 +73,6 @@ def nx_graph_search(denoised_dict, minimum_contacts = 3):
 # you can put info in edge (as distance, n of contacts, contact map)
 
 
-
-
 # create a full graph
 def full_graph(denoised_dict):
     ''' Create a full graph of all the peptides in the frame.
@@ -110,8 +108,6 @@ def full_graph(denoised_dict):
     return graph
 
 
-
-
 ## THIS IS WORKING in object trajectory
 
 def graph_v1(denoised_dict, df):
@@ -128,6 +124,9 @@ def graph_v1(denoised_dict, df):
     return: networkx.MultiGraph
 
     '''
+    colors = {'parallel' : 'g',
+              'antiparallel' : 'b'}
+    
     # Instantiate graph
     graph = nx.MultiGraph()
 
@@ -154,12 +153,9 @@ def graph_v1(denoised_dict, df):
 
             sense = df.iloc[group]['sense']
 
-            graph.add_edge(peptide_1, peptide_2, length = number_of_contacts, sense=sense)
+            graph.add_edge(peptide_1, peptide_2, weight=number_of_contacts, color=colors[sense])
 
     return graph
-
-
-
 
 
 #FIND SUBGRAPH
@@ -205,9 +201,6 @@ def find_subgraph_in_order(graph):
     return subgraph_list
 
 
-
-
-
 def find_subgraph(graph):
     '''
     Find subgraph of joined peptides that have no node in common with other subgraph.
@@ -248,9 +241,6 @@ def find_subgraph(graph):
 
     return subgraph_list
 
-  
-
-
 
 def get_not_in_subgraph(coordinate_dict, subgraph):
     '''Get peptide alone or in cluster of 2 in a frame.
@@ -267,7 +257,7 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     
     nx_graph_search: get all the node with 0 and 1 neighbour
                     if you leave the 'minimum_contact' parameter
-                    of the nx_graph_search funtion to the default value of 3.
+                    of the nx_graph_search function to the default value of 3.
                     
     graph_v1 :      get node without neighbours
     
@@ -290,7 +280,6 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     return out
 
 
-
 def subgraph_length(aggregate):
     '''Get information about the size of the aggregates in the trajectory
     
@@ -299,9 +288,7 @@ def subgraph_length(aggregate):
     Argument: aggregate
 
     return: dict, keys = frame number,
-                  value = a sorted list (big to small) of the aggregate size in that frame
-
-
+                  value = a sorted list (big to small) of the aggregate size in that frame.
     '''
 
     subgraph_len_dict = {}
@@ -324,8 +311,6 @@ def subgraph_length(aggregate):
         return subgraph_len_dict
     
     
-
-
 def contact_sense_in_subgraph(graph, subgraph_list):
     '''Get information about the orientation of the contact between contacting node in the graph.
     
@@ -350,11 +335,7 @@ def contact_sense_in_subgraph(graph, subgraph_list):
 
     return subgraph_sense_dict
     
-    
-    
-    
-    
-    
+      
 def sense_in_subgraph(graph, subgraphs_list):
     '''Get number of contact per sense in subgraph.
     
@@ -383,8 +364,6 @@ def sense_in_subgraph(graph, subgraphs_list):
 
         sense_counter_dict[index] = { 'parallel' : parallel,
                                        'antiparallel' : antiparallel}
-        
-        
 
     return sense_counter_dict
 

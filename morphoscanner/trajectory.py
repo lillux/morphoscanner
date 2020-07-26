@@ -9,6 +9,7 @@ from . import backend
 from timeit import default_timer as timer
 import pandas as pd
 import matplotlib.pyplot as plt
+import networkx as nx
 
 class trajectory:
 
@@ -294,10 +295,10 @@ class trajectory:
         antiparallel = self.database['antiparallel']
     
         antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
-        tss = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
+        tss = [self.universe.trajectory[i].time for ts in self.universe.trajectory for i in index]
         
         plt.plot(tss, antip_total_ratio, 'bo')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('Antiparallel / Total contacts')
     
         return
@@ -313,19 +314,176 @@ class trajectory:
         return
 
 
+    def get_subgraphs_sense(self, frame):
+        '''Retrive information about contact sense of each aggregate
+        found in self.frames[frame]['subgraphs_full']
 
+        Parameters
+        ----------
+        frame : int
+            The frame of which you want to get contact sense informations.
 
+        Returns
+        -------
+        sense_dict : dict
+            A dict containing the informations about contacts, in the form:
+                {'parallel' : int,
+                 'antiparallel' : int,
+                 'value' : str}
+            The key 'value' contains the sense of the predominant contact sense,
+            'parallel' or 'antiparallale',
+            or the str 'equal' if both sense have the same number of contacts.
 
+        '''
+        
+        # check if requested frame have been parsed
+        if frame not in self.frames:
+            print('Frame %d is not in the sampled frames\n' % frame)
+        else:
+            # check if in the frame there are aggregate
+            if len(self.frames[frame]['subgraphs_full']) < 1:
+                print('There are no aggregate in frame %d.\n' % frame)
+            else:
+                # if checks are passed
+                # create empty dict
+                sense_dict = {}
+                
+                # iterate subgraphs
+                for index_sub, subgraph in enumerate(self.frames[frame]['subgraphs_full']):
+                    
+                    # create a new dict for each aggregate, to store contact sense information
+                    sense_dict[index_sub] = {'parallel' : 0,
+                                             'antiparallel' : 0,
+                                             'value' : 0   }
+                    # get information about contacts from database
+                    #  use only peptide1 column to gather contacts one time only 
+                    for index_contact, contact in enumerate(self.frames[frame]['frame_data'].peptide1):
+                        if contact in subgraph:
+                            sense = (self.frames[frame]['frame_data'].iloc[index_contact].sense)
+                            # add 1 to the right sense counter in the sense_dict
+                            sense_dict[index_sub][sense] += 1
+                    # check if contacts number is equal in both senses
+                    if sense_dict[index_sub]['parallel'] == sense_dict[index_sub]['antiparallel']:
+                        sense_dict[index_sub]['value'] = 'equal'
+                    else:
+                        # if contacts are not equal, get the predominant contact sense
+                        sense_dict[index_sub]['value'] = max(sense_dict[index_sub], key=sense_dict[index_sub].get)
+    
+                return sense_dict
+    
+    
+    def plot_frame_aggregate(self, frame: int):
+        '''Plot the frame with color code that identify the
+        sense of the majority of contacts in an aggregate.
+        Grey: no contact,
+        Green: majority of parallel contacts,
+        Blue: majority of antparallel contacts,
+        Yellow: equal number of parallel and antiparallel contacts
+        
+        The plot can be made interactive using jupyter-notebook,
+        with:
+            %matplotlib notebook
 
+        Parameters
+        ----------
+        frame : int
+            The frame that you want to plot
 
+        Returns
+        -------
+        plot
+            Return a matplotlib.pyplot 3d scatter plot.
 
+        '''
+        
+        # get predominant contact sense for each aggregate
+        sense_dict = self.get_subgraphs_sense(self, frame)
+        # get subgraphs
+        subgraphs = self.frames[frame]['subgraphs_full']
+        # get coordinate dict
+        coordinate_dict = self.frames[frame]['frame_dict']
+        # make a flat (1D) list of peptide in the aggregates
+        flat_subgraphs = [pep for group in subgraphs for pep in group]
+        # create a color dictionary with each sense corresponding to a color
+        colors = {'parallel' : 'limegreen',
+                  'antiparallel' : 'b',
+                  'equal' : 'y',
+                  'no' : 'gray'}    
+        
+        # instantiate empty dict to plot aggregates
+        x = {}
+        y = {}
+        z = {}
+        # iterate through aggregates
+        for index_sub, subgraph in enumerate(subgraphs):
+            # create a list to gather coordinate of each aggregate's atom
+            x[index_sub] = []
+            y[index_sub] = []
+            z[index_sub] = []
+            # for each peptide in the aggregate
+            for peptide in subgraph:
+                # for each atom of the peptide
+                for atom in coordinate_dict[peptide]:
+                    # get x, y and z coordinates and save it in the correct list
+                    x[index_sub].append(coordinate_dict[peptide][atom][0])
+                    y[index_sub].append(coordinate_dict[peptide][atom][1])
+                    z[index_sub].append(coordinate_dict[peptide][atom][2])
+        
+        # instantiate lists for non contacting peptides
+        x_not = []
+        y_not = []
+        z_not = []
+        # get coordinate of non contacting peptides
+        for pep in coordinate_dict:
+            if pep not in flat_subgraphs:
+                for atom in coordinate_dict[pep]:
+                    x_not.append(coordinate_dict[pep][atom][0])
+                    y_not.append(coordinate_dict[pep][atom][1])
+                    z_not.append(coordinate_dict[pep][atom][2])
+        
+        fig = plt.figure()
+    
+        ax = plt.axes(projection='3d')
+    
+        # scatter aggregates atoms
+        for group in x:
+    
+            ax.scatter3D(x[group],y[group],z[group], color=colors[sense_dict[group]['value']])
+        
+        # scatter non contacting peptides atoms
+        ax.scatter3D(x_not, y_not, z_not, color=colors['no'])
+        
+        return plt.show()
+    
+    
+    def plot_graph(self, frame: int):
+        '''Plot the frame graph, with visual information about
+            number of contacts between peptides and sense of the contacts.
+            
+            Edge thickness scale with the number of contacts between two
+            contacting peptides.
+            
+            Green edges are parallel contacts.
+            Blue edges are antiparallel contacts.
 
+        Parameters
+        ----------
+        frame : int
+            The frame of which you want to plot the graph.
 
-
-
-
-
-
-
-
-
+        Returns
+        -------
+        plot
+            matplotlib.pyplot 3d scatter plot.
+        '''
+    
+        graph = self.frames[frame]['frame_graph_full']
+        
+        # Used to plot
+        edges = graph.edges()
+        colors = [graph[u][v][0]['color'] for u,v in edges]
+        weights = [graph[u][v][0]['weight'] for u,v in edges]
+        
+        # output a plot
+        return nx.draw_networkx(graph, edges=edges, edge_color=colors, width=weights)
+        
