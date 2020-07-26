@@ -397,7 +397,7 @@ class trajectory:
         '''
         
         # get predominant contact sense for each aggregate
-        sense_dict = self.get_subgraphs_sense(self, frame)
+        sense_dict = self.get_subgraphs_sense(frame)
         # get subgraphs
         subgraphs = self.frames[frame]['subgraphs_full']
         # get coordinate dict
