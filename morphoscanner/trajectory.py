@@ -306,9 +306,11 @@ class trajectory:
     
     def plot_aggregates(self):
         index = self.database.index
+        tss = [self.universe.trajectory[i].time for ts in self.universe.trajectory for i in index]
+
         aggregates = self.database['n° of macroaggreates']
-        plt.plot(index, aggregates,'o')
-        plt.xlabel('Frames')
+        plt.plot(tss, aggregates,'bo')
+        plt.xlabel('Time (ps')
         plt.ylabel('N° of macroaggregates')
         
         return
