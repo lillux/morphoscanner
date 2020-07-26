@@ -153,7 +153,7 @@ def graph_v1(denoised_dict, df):
 
             sense = df.iloc[group]['sense']
 
-            graph.add_edge(peptide_1, peptide_2, weight=number_of_contacts, color=colors[sense])
+            graph.add_edge(peptide_1, peptide_2, weight=number_of_contacts, color=colors[sense], sense=sense)
 
     return graph
 
