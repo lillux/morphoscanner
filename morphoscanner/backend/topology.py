@@ -510,7 +510,7 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
 
     object_dict = {} # new
 
-    select = ['peptide']
+    #select = ['peptide']
 
     accepted_costituents = []
 
@@ -528,11 +528,11 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
     for res in universe.residues:
         if res.resname in accepted_costituents:
 
-            res_num = res.resnum - 1 # -1 becaus id start from 1, but indexing start from 0
+            res_num = res.resnum - 1 # -1 because id start from 1, but indexing start from 0
 
             atom = res.atoms[0] # always take the first atom of the residues (backbone)
 
-            atom_index = atom.id - 1 # -1 becaus id start from 1, but indexing start from 0
+            atom_index = atom.id - 1 # -1 because id start from 1, but indexing start from 0
 
             atom_coordinate = atom.position
 
@@ -553,7 +553,7 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
             else:
                 if temporary_list[-1] > res_num:
 
-                    object_dict[pep_index] = morphoscanner.trj_object.trj_objects.single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
+                    object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
 
                     pep_index += 1
 
@@ -574,6 +574,6 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
             residues_dict[pep_index][res_num] = resname
             atom_number_dict[pep_index][res_num] = atom_index
 
-    object_dict[pep_index] = morphoscanner.trj_object.trj_objects.single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
+    object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
     
     return object_dict
