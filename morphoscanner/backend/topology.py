@@ -120,7 +120,7 @@ def get_peptide_length_list(path, select=None):
     '''
 
     if select == None:
-        select = ['peptide']
+        select = ['aminoacids']
 
     accepted_costituents = []
 
@@ -229,8 +229,6 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
     universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
 
     return universe
-
-  
 
 
 # create a dict from a Universe in which each entry is a timestep of the MD simulation
@@ -497,4 +495,85 @@ def get_data_from_trajectory_frame_v1(universe, frame: int, peptide_length_list:
 
         object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
 
+    return object_dict
+
+def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
+    # move to frame
+    universe.trajectory[frame]
+    
+    temporary_list = []
+    pep_index = 0
+
+    coordinate_dict = {}
+    residues_dict = {}
+    atom_number_dict = {}
+
+    object_dict = {} # new
+
+    select = ['peptide']
+
+    accepted_costituents = []
+
+    for element in select:
+        if element in costituents.keys():
+            try:
+                accepted_costituents.extend(costituents.get(element))
+
+            except:
+                accepted_costituents.append(costituents.get(element))
+        else:
+            raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(select))
+
+
+    for res in universe.residues:
+        if res.resname in accepted_costituents:
+
+            res_num = res.resnum - 1 # -1 becaus id start from 1, but indexing start from 0
+
+            atom = res.atoms[0] # always take the first atom of the residues (backbone)
+
+            atom_index = atom.id - 1 # -1 becaus id start from 1, but indexing start from 0
+
+            atom_coordinate = atom.position
+
+            resname = atom.resname
+
+
+            if len(temporary_list) == 0:
+
+                temporary_list.append(res_num)
+
+                object_dict[pep_index] = {}
+
+                coordinate_dict[pep_index] = {}
+                residues_dict[pep_index] = {}
+                atom_number_dict[pep_index] = {}
+
+
+            else:
+                if temporary_list[-1] > res_num:
+
+                    object_dict[pep_index] = morphoscanner.trj_object.trj_objects.single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
+
+                    pep_index += 1
+
+                    temporary_list = []
+                    temporary_list.append(res_num)
+
+                    object_dict[pep_index] = {}
+
+                    coordinate_dict[pep_index] = {}
+                    residues_dict[pep_index] = {}
+                    atom_number_dict[pep_index] = {}
+
+
+                else:
+                    temporary_list.append(res_num)
+
+            coordinate_dict[pep_index][res_num] = atom_coordinate
+            residues_dict[pep_index][res_num] = resname
+            atom_number_dict[pep_index][res_num] = atom_index
+
+    object_dict[pep_index] = morphoscanner.trj_object.trj_objects.single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
+    
     return object_dict
