@@ -269,3 +269,5 @@ def denoise_contact_maps(contact_maps):
     
     return full_denoised_dict, df
 
+
+### Torch functions

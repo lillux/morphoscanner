@@ -299,7 +299,10 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device
     return distance_map
 
 
-## This works if i multiply a tensor with a matrix
+## This works if also to multiply a tensor with a matrix via broadcasting
+## Taken from a discussion on the web
+## TO PUT REFERENCE AND CITATION
+## From Gaussian Process
 def fast_cdist(x1, x2):
     '''Euclidean distance calculation between tensors.
     
@@ -327,7 +330,6 @@ def fast_cdist(x1, x2):
     x2 = x2 - adjustment  # x1 and x2 should be identical in all dims except -2 at this point
 
     # Compute squared distance matrix using quadratic expansion
-    # But be clever and do it with a single matmul call
     x1_norm = x1.pow(2).sum(dim=-1, keepdim=True)
     x1_pad = torch.ones_like(x1_norm)
     x2_norm = x2.pow(2).sum(dim=-1, keepdim=True)
@@ -336,11 +338,87 @@ def fast_cdist(x1, x2):
     x2_ = torch.cat([x2, x2_pad, x2_norm], dim=-1)
     res = x1_.matmul(x2_.transpose(-2, -1))
 
+    # Compute square root to have actual distance
     # Zero out negative values
-    #res.clamp_min_(1e-30).sqrt_()
     res = res.sqrt()
     res[torch.isnan(res)] = 0
     return res
+
+
+### WORKING 25/08/2020
+def compute_distance_and_contact_maps(coordinate_dict, threshold = 5):
+
+    # instantiate tensor
+    coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
+    # group tensor for size
+    group_tensor, order_tensor = cat_tensor_for_size(coordinate_tensor)
+
+    distance_maps_dict = {}
+    contact_maps_dict = {}
+
+    # move through tensor
+    for tensor in coordinate_tensor:
+        distance_maps_dict[tensor] = {}
+        contact_maps_dict[tensor] = {}
+        # move through tensor size
+        for tensor_group in group_tensor:
+            index_dict = order_tensor[tensor_group]
+
+            #calculate distance
+            distance = fast_cdist(coordinate_tensor[tensor],group_tensor[tensor_group])
+
+            #crate mask for contact threshold
+            contact_mask = distance.new_full(distance.shape, fill_value=threshold)
+            #calculate contacts
+            contact = distance - contact_mask
+            #clean masks
+            contact[contact > 0] = 0
+            contact[contact < 0] = 1
+
+            #save data maps in dictionary
+            for map_index, m in enumerate(distance):
+                real_index = index_dict[map_index]
+                distance_maps_dict[tensor][real_index] = m
+
+            for cont_index, c in enumerate(contact):
+                real_index = index_dict[cont_index]
+                contact_maps_dict[tensor][real_index] = c
+                
+    return distance_maps_dict, contact_maps_dict
+
+
+def get_median_c_alpha_distance(distance_maps):
+    '''Calculate the median distance between the consecutive
+    C-alpha of all peptides of a frame's distance maps.
+    This function is used to compute a contact distance threshold that
+    will be used to compute the contact_maps.
+
+    Parameters
+    ----------
+    distance_maps : dict
+        A dict containing the distance maps of a trajectory frame's peptides.
+
+    Returns
+    -------
+    threshold : torch.float32
+        Is the median distance between all of the consecutive C-alpha
+
+    '''
+    # instantiate an empty list
+    median_list = []
+    # move through peptide (key of the dict)
+    for row in distance_maps:
+        # get the distance map of the peptide with itself
+        self_distance_map = distance_maps[row][row]
+        # get the diagonal +1 (that is the diagonal containing the
+        # distance between atom[i] and atom[i+1], that are consecutive
+        # c-alpha)
+        intrapep_distance_median = torch.median(torch.diag(self_distance_map,1))
+        # calculate the median of that peptide's c-alpha distance
+        median_list.append(intrapep_distance_median)
+    # calculate the median distance for all the peptides
+    threshold = torch.median(torch.tensor(median_list))
+    return threshold
 
         
         
