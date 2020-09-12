@@ -22,7 +22,7 @@ class trajectory:
         self.number_of_frames = len(self.universe.trajectory)
         
         if select == None:
-            select = ['peptide']
+            select = ['aminoacids']
             
         self.select = select
        
@@ -65,13 +65,11 @@ class trajectory:
         
         return    
     
-    def explore(self):
-        # v1 with frame priority
-
-        frame = 0
+    def explore(self, frame=0): # you can change the frame number if you want to manually explore other frames
+    
         self.frames = {}
         self.frames[frame] = trj_object.trj_objects.frames(frame)
-        self.frames[frame].peptides = topology.get_data_from_trajectory_frame_v1(universe=self.universe, frame=frame, peptide_length_list=self.peptide_length_list, select=self.select)
+        self.frames[frame].peptides = backend.topology.get_data_from_trajectory_frame_v2(universe=self.universe, frame=frame, select=self.select)
         print('Exploration of frame %d done.\n' % frame)
 
         return    

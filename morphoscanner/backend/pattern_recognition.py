@@ -8,6 +8,7 @@ Functions for pattern recognition of beta sheet
 
 from .utilities import contact_list_from_dict
 
+import torch
 import numpy as np
 import pandas as pd
 import tqdm
@@ -271,3 +272,174 @@ def denoise_contact_maps(contact_maps):
 
 
 ### Torch functions
+
+def shift_library_maker_torch(contact_map_to_analyze):
+
+    ''' Create shift matrix library to perform pattern recognition on a contact map.
+    
+    Inputs: numpy.array, a single contact map
+    
+    returns: dict of shift matrix to analyze the given contact map
+
+            shift matrix are diagonal matrix spanning all the given contact map
+            
+    '''
+    
+    row = contact_map_to_analyze.shape[0]
+    col = contact_map_to_analyze.shape[1]
+
+    kron_dict = {}
+    kron_list_parallel = []
+    kron_list_antiparallel = []
+
+    for e in range(-row+1, col):
+        array = np.eye(row, col, e)
+        kron_list_parallel.append(array)
+        kron_list_antiparallel.append(np.fliplr(array))
+
+    kron_array_parallel = torch.from_numpy(np.asarray(kron_list_parallel))
+    kron_array_antiparallel = torch.from_numpy(np.asarray(kron_list_antiparallel))
+    kron_dict['parallel'] = kron_array_parallel
+    kron_dict['antiparallel'] = kron_array_antiparallel
+    
+    #print((kron_array_parallel.dtype))
+    #print(type(kron_array_antiparallel.dtype))
+
+    return kron_dict
+
+
+def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
+    '''
+    Calculate normalized cross correlation function between a contact map and an ideal map.
+
+    Arguments : contact map, as output from get_contact_maps function
+                shift_matrix_stack, as output from shift_matrix_maker function
+
+    Return : a list [ncc_value, index (in the shift_matrix_stack) of the shift matrix
+                that is matching the contact map
+
+            '''
+    contact_map = contact_map.double()
+    shift_matrix_library = shift_library_maker_torch(contact_map)
+
+    cross_correlation_values = []
+    max_val = []
+    sum_contact_map = torch.sum(contact_map)
+    #print("sum_contact_map dtype is: %s " % str(type(sum_contact_map)))
+
+    if sum_contact_map < minimum_contact:
+        pass
+
+    else:
+        for sense in shift_matrix_library:
+            for index, z in enumerate(shift_matrix_library[sense]):
+
+                shift_matrix = shift_matrix_library[sense][index]
+                sum_shift_matrix = torch.sum(shift_matrix)
+                #print("contact_map type is: %s" % str(contact_map.dtype))
+                ncc_value = (torch.sum((contact_map * shift_matrix))/((torch.sqrt(sum_contact_map))*(torch.sqrt(sum_shift_matrix))))  # normalized cross correlation function of contact matrix and shift matrix
+                cross_correlation_values.append([ncc_value, index, sum_contact_map, sense])
+
+            max_val = max(cross_correlation_values) # get only the best match (highest value of ncc)
+
+    return max_val
+
+
+def denoise_contact_maps_torch(contact_maps):
+    
+    '''Denoise the contact_maps dataset using the shift_matrix
+    
+    Arguments : contact_maps, normalized_cross_correlation_result
+    
+    return : a dict with key:value = row : row, col, denoised_map
+    
+    '''
+
+    normalized_cross_correlation_results, df = cross_correlation_function_for_dataset_with_dataframe_torch(contact_maps)
+
+
+    denoised_dict = {}
+
+    for peptide_1 in normalized_cross_correlation_results:
+        denoised_dict[peptide_1] = {}
+        for index, peptide_2 in enumerate(normalized_cross_correlation_results[peptide_1]):
+
+            row = peptide_2[0]
+            col = peptide_2[1]
+
+
+
+            contact_map = contact_maps[row][col]
+            sense = peptide_2[2][3]
+            shift_matrix_index = normalized_cross_correlation_results[peptide_1][index][2][1]
+
+            shift_matrix = shift_library_maker_torch(contact_map)
+            shift_matrix = shift_matrix[sense][shift_matrix_index]
+            denoised_map = contact_map.double() * shift_matrix
+
+            denoised_dict[row][col] = denoised_map
+            
+            
+    full_denoised_dict = {}
+    for peptide_1 in tqdm.tqdm(denoised_dict):
+        for peptide_2 in denoised_dict[peptide_1]:
+            contact_map = denoised_dict[peptide_1][peptide_2]
+
+            if peptide_1 in full_denoised_dict:
+                full_denoised_dict[peptide_1][peptide_2] = contact_map
+
+            if peptide_1 not in full_denoised_dict:
+                full_denoised_dict[peptide_1] = {peptide_2:contact_map}
+
+            if peptide_2 in full_denoised_dict:
+                #full_denoised_dict[peptide_2][peptide_1] = contact_map.T #this is for numpy
+                full_denoised_dict[peptide_2][peptide_1] = contact_map.transpose(1,0) # this is for pytorch
+
+
+            if peptide_2 not in full_denoised_dict:
+                #full_denoised_dict[peptide_2] = {peptide_1:contact_map.T} #this is for numpy
+                full_denoised_dict[peptide_2] = {peptide_1:contact_map.transpose(1,0)} # this is for pytorch
+    
+    return full_denoised_dict, df
+
+#contact_array = frame_contact
+def cross_correlation_function_for_dataset_with_dataframe_torch(contact_array):
+    '''Perform Normalized Cross Correlation function on the dataset
+        to check for contact. Get a dict for processing and a pandas.DataFrame
+        for data analysis
+
+        Input: contact maps
+
+        Output: contact_dict,         for further processing
+                pandas.DataFrame,     for data analysis
+
+
+    '''
+    contact_dict = {}
+
+    for row in range(len(contact_array)):
+
+        for col in range((row+1), len(contact_array[row])):
+            best_match = []
+            #print('row is %d and col is %d' % (row, col))
+            #print(type(contact_array[row][col]))
+            #print(contact_array[row][col])
+            best_match = normalized_cross_correlation_function_torch(contact_array[row][col])
+
+            if len(best_match) == 0:
+                pass
+
+            else:
+                if row in contact_dict:
+                    contact_dict[row].append([row, col, best_match])
+
+                else:
+                    contact_dict[row] = [[row, col, best_match]]
+
+    contact_list = contact_list_from_dict(contact_dict)
+
+    columns_names = ['peptide1', 'peptide2', 'NCC Value', 'shift index', 'contacts', 'sense']
+
+    df = pd.DataFrame(contact_list, columns=columns_names)
+
+    return contact_dict, df

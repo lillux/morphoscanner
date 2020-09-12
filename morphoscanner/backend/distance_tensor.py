@@ -5,8 +5,8 @@ Created on Thu Mar 19 20:11:57 2020
 """
 
 import torch
-#from .topology import 
-#import tqdm
+
+
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
 def get_coordinate_tensor_from_dict(coordinate_dict):
@@ -276,7 +276,6 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device
         distance_map.cpu()
 
     '''
-    
 
     if peptide2_tensor == None:
         peptide2_tensor = peptide1_tensor
@@ -345,8 +344,8 @@ def fast_cdist(x1, x2):
     return res
 
 
-### WORKING 25/08/2020
-def compute_distance_and_contact_maps(coordinate_dict, threshold = 5):
+### WORKING
+def compute_distance_and_contact_maps(coordinate_dict, threshold=None, contacts_calculation=True):
 
     # instantiate tensor
     coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
@@ -367,24 +366,30 @@ def compute_distance_and_contact_maps(coordinate_dict, threshold = 5):
             #calculate distance
             distance = fast_cdist(coordinate_tensor[tensor],group_tensor[tensor_group])
 
-            #crate mask for contact threshold
-            contact_mask = distance.new_full(distance.shape, fill_value=threshold)
-            #calculate contacts
-            contact = distance - contact_mask
-            #clean masks
-            contact[contact > 0] = 0
-            contact[contact < 0] = 1
-
             #save data maps in dictionary
             for map_index, m in enumerate(distance):
                 real_index = index_dict[map_index]
                 distance_maps_dict[tensor][real_index] = m
-
-            for cont_index, c in enumerate(contact):
-                real_index = index_dict[cont_index]
-                contact_maps_dict[tensor][real_index] = c
+            
+            if contacts_calculation == True:
                 
-    return distance_maps_dict, contact_maps_dict
+                #crate mask for contact threshold
+                contact_mask = distance.new_full(distance.shape, fill_value=threshold)
+                #calculate contacts
+                contact = distance - contact_mask
+                #clean masks
+                contact[contact > 0] = 0
+                contact[contact < 0] = 1
+                
+                #save contact maps in dict 
+                for cont_index, c in enumerate(contact):
+                    real_index = index_dict[cont_index]
+                    contact_maps_dict[tensor][real_index] = c
+    
+    if contacts_calculation == True:
+        return distance_maps_dict, contact_maps_dict
+    else:
+        return distance_maps_dict
 
 
 def get_median_c_alpha_distance(distance_maps):
@@ -412,7 +417,7 @@ def get_median_c_alpha_distance(distance_maps):
         self_distance_map = distance_maps[row][row]
         # get the diagonal +1 (that is the diagonal containing the
         # distance between atom[i] and atom[i+1], that are consecutive
-        # c-alpha)
+        # c-alpha.
         intrapep_distance_median = torch.median(torch.diag(self_distance_map,1))
         # calculate the median of that peptide's c-alpha distance
         median_list.append(intrapep_distance_median)
