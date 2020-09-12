@@ -37,7 +37,7 @@ def contact_list_from_dict(contact_dict):
 
         for contact in contact_dict[peptide]:
 
-            new_data = [contact[0], contact[1], contact[2][0], contact[2][1], contact[2][2], contact[2][3]]
+            new_data = [contact[0], contact[1], contact[2][0], contact[2][1], contact[2][2], contact[2][3], contact[2][4]]
             contact_list.append(new_data)
     return contact_list
 

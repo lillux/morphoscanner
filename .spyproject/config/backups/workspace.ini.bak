@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['main.py', 'morphoscanner/trajectory.py', 'morphoscanner/backend/topology.py', 'morphoscanner/backend/graph.py', 'morphoscanner/backend/distance_tensor.py', 'morphoscanner/backend/pattern_recognition.py', 'morphoscanner/backend/distance.py', 'morphoscanner/molnames.py', 'morphoscanner/backend/readGro.py', 'morphoscanner/trj_object/trj_objects.py', 'morphoscanner/trj_object/__init__.py', 'morphoscanner/__init__.py', 'morphoscanner/trajectory_new.py', '../../TesiCNTE/alpha_helix/Alpha-helix-Recognition/classifier_helix_beta_PDB.py', 'morphoscanner/backend/utilities.py']
+recent_files = ['main.py', 'morphoscanner/trajectory.py', 'morphoscanner/backend/topology.py', 'morphoscanner/backend/graph.py', 'morphoscanner/backend/distance_tensor.py', 'morphoscanner/backend/pattern_recognition.py', 'morphoscanner/backend/distance.py', 'morphoscanner/molnames.py', 'morphoscanner/backend/readGro.py', 'morphoscanner/trj_object/trj_objects.py', 'morphoscanner/trj_object/__init__.py', 'morphoscanner/__init__.py', 'morphoscanner/trajectory_new.py', '../../TesiCNTE/alpha_helix/Alpha-helix-Recognition/classifier_helix_beta_PDB.py', 'morphoscanner/backend/utilities.py', 'morphoscanner/backend/math_utilities.py']
 

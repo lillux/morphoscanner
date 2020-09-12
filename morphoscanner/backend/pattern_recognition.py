@@ -437,8 +437,7 @@ def cross_correlation_function_for_dataset_with_dataframe_torch(contact_array):
                     contact_dict[row] = [[row, col, best_match]]
 
     contact_list = contact_list_from_dict(contact_dict)
-
-    columns_names = ['peptide1', 'peptide2', 'NCC Value', 'shift index', 'contacts', 'sense']
+    columns_names = ['peptide1', 'peptide2', 'NCC Value', 'shift index', 'contacts', 'sense', 'shift']
 
     df = pd.DataFrame(contact_list, columns=columns_names)
 
