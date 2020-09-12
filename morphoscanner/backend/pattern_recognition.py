@@ -319,12 +319,14 @@ def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
                 that is matching the contact map
 
             '''
+    minimum_contact=2
     contact_map = contact_map.double()
     shift_matrix_library = shift_library_maker_torch(contact_map)
 
     cross_correlation_values = []
     max_val = []
     sum_contact_map = torch.sum(contact_map)
+    shift_matrix_center_index = ((contact_map.shape[0] + contact_map.shape[1]) -1)//2
     #print("sum_contact_map dtype is: %s " % str(type(sum_contact_map)))
 
     if sum_contact_map < minimum_contact:
@@ -340,7 +342,10 @@ def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
                 ncc_value = (torch.sum((contact_map * shift_matrix))/((torch.sqrt(sum_contact_map))*(torch.sqrt(sum_shift_matrix))))  # normalized cross correlation function of contact matrix and shift matrix
                 cross_correlation_values.append([ncc_value, index, sum_contact_map, sense])
 
-            max_val = max(cross_correlation_values) # get only the best match (highest value of ncc)
+        max_val = max(cross_correlation_values) # get only the best match (highest value of ncc)
+
+        shift = abs(shift_matrix_center_index - max_val[1])
+        max_val.append(shift)
 
     return max_val
 
