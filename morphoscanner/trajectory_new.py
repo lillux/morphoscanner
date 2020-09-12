@@ -121,7 +121,7 @@ class trajectory:
         except:
             dic_0 = self.get_frame(0)
             frame_distance_0 = distance_tensor.compute_distance_and_contact_maps(dic_0, threshold=0, contacts_calculation=False)
-            threshold = distance_tensor.get_threshold_distance(frame_distance_0) * threshold_multiplier
+            threshold = distance_tensor.get_median_c_alpha_distance(frame_distance_0) * threshold_multiplier
             self.contact_threshold = threshold
             print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom" % str(self.contact_threshold))
     
