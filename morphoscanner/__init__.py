@@ -3,7 +3,6 @@ from . import backend
 from . import trajectory
 from . import plot
 from . import trj_object
-from . import trajectory_new
 from . import molnames
 
 __version__ = '0.0.2'
