@@ -68,8 +68,8 @@ class trajectory:
         
         return    
     
-    def explore(self, frame=0): # you can change the frame number if you want to manually explore other frames
-    
+    def explore(self):
+        frame = 0
         self.frames = {}
         self.frames[frame] = trj_object.trj_objects.frames(frame)
         self.frames[frame].peptides = backend.topology.get_data_from_trajectory_frame_v2(universe=self.universe, frame=frame, select=self.select)
@@ -129,24 +129,14 @@ class trajectory:
         print('Analyzing frame n° ', frame)
     
         frame_dict = self.get_frame(frame)
-    
-        #frame_tensor = distance_tensor.get_coordinate_tensor_from_dict(frame_dict)
-    
+        
         start_dist = timer()
-        #frame_distance_maps = distance_tensor.compute_euclidean_norm_torch(frame_tensor)
         frame_distance, frame_contact = distance_tensor.compute_distance_and_contact_maps(frame_dict, threshold=threshold)
         end_dist = timer()
         print('Time to compute distance is: ', (end_dist - start_dist))
-    
-        #start_contc = timer()
-        #frame_contact = pattern_recognition.compute_contact_maps_as_array(frame_distance_maps)
-        #end_contc = timer()
-        #print('Time to compute contact is: ', (end_contc - start_contc))
-    
-        start_den = timer()
-        #frame_denoised, df = pattern_recognition.denoise_contact_maps(frame_contact)
-        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch(frame_contact)
 
+        start_den = timer()
+        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch(frame_contact)
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den))
     
@@ -165,7 +155,6 @@ class trajectory:
         return
     
     
-        
     def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45):
         
         if threshold != None:
@@ -184,12 +173,10 @@ class trajectory:
 
         end = timer()
 
-
         print('Total time to analyze dataset was %f seconds' % (end -start))
         return
     
     ###
-    
     ### THESE HAVE BEEN PORTED FROM OLD TRAJECTORY TO STREAMLINE ANALYSIS OF GLICOSILATED PEPTIDES!
     ###
     
@@ -199,37 +186,26 @@ class trajectory:
         ''' Analyze self.frames to retrieve the number of contact 
             per sense ("parallel" and "antiparallel")
         '''
-
         # instantiate main dict
         sense_dict = {}
-
         # loop trough frames
         for frame in self.frames:
-
             group = self.frames[frame].results.cross_correlation.groupby('sense').groups
-
             # check for antiparallel key in the frame_data
             if 'antiparallel' in group:
-
                 # get number of antiparallel contacts
                 antiparallel = len(group['antiparallel'])
-
             else:
                 antiparallel = 0
-
             # check for parallel key in the frame_data
             if 'parallel' in group:
-
                 # get number of parallel contacts
                 parallel = len(group['parallel'])
-
             else:
                 parallel = 0
-
             # add frame data to main dict
             sense_dict[frame] = {  'parallel' : parallel,
                                'antiparallel' : antiparallel}
-
         # at the end convert dict to pandas.DataFrame
         self.sense_df = pd.DataFrame.from_dict(sense_dict, orient='index')
 
@@ -289,7 +265,6 @@ class trajectory:
         return
     
     
-    
     def number_of_macroaggregate_per_frame(self):
         number_of_peptide = {}
         for i in self.subgraph_size_peptide:
@@ -301,17 +276,80 @@ class trajectory:
     
     
     def shift_profile(self):
-        shift_profile = {}
-        for frame in self.frames:
-            shift_profile[frame] = {} 
-            for shift_value in self.frames[frame].results.cross_correlation['shift']:
-                try:
-                    shift_profile[frame][shift_value] += 1
-                except:
-                    shift_profile[frame][shift_value] = 1
+        '''Calculate shift profile for the current trajectory.
 
-            f = {k[0]:k[1] for k in sorted(shift_profile[frame].items())}
-            self.frames[frame].results.shift_profile = f
+        Returns
+        -------
+        Save data in self.frames[frame_number].results.shift....
+        '''
+        # instantiate main dict to store trajectory data
+        shift_profile = {}
+        # iterate through frames
+        for frame in self.frames:
+            # create a dict for each frame to store frame data
+            shift_profile[frame] = {} 
+            # max shift possible is the max legth of the peptides in the trajectory
+            # (in number of residues)
+            max_shift = max(self.peptide_length_list)
+            # get cross_corr dataframe gruped by contact sense 
+            a = self.frames[frame].results.cross_correlation.groupby('sense')
+            # for each contact sense
+            for group in a.groups:
+                # create a nested dict for the contact sense
+                shift_profile[frame][group] = {}
+                # if sense of the contact is parallel
+                # positive or negative shift is not important
+                if group == 'parallel':
+                    # for dataframe index (contact data)
+                    for index in a.groups[group]:
+                        #shift of the current contact
+                        shift = abs(self.frames[frame].results.cross_correlation.iloc[index]['shift'])
+                        # if is there, add 1 to current shift counter
+                        try:
+                            shift_profile[frame][group][shift] += 1
+                        # if is not there, just add the first contact to counter
+                        except:
+                            shift_profile[frame][group][shift] = 1
+                        # fill with 0 shift values not found (to plot)
+                        for i in range(max_shift):
+                            if i not in shift_profile[frame][group]:
+                                shift_profile[frame][group][i] = 0
+                        # order dict by ascending keys (to plot)
+                        shift_profile[frame][group] = {k[0]:k[1] for k in sorted(shift_profile[frame][group].items())}
+                        # add data to frame.results
+                        self.frames[frame].results.shift_profile_parallel = shift_profile[frame][group]
+                # if sense of the contact is antiparallel
+                # positive or negative shift is important
+                # because C and N terminal of respective peptides
+                # can interact differently
+                if group == 'antiparallel':
+                    for index in a.groups[group]:
+                        shift = self.frames[frame].results.cross_correlation.iloc[index]['shift']
+                        
+                        if shift > 0:
+                            shift_profile[frame][group]['negative'] = {}
+                            try:
+                                shift_profile[frame][group]['negative'][shift] += 1
+                            except:
+                                shift_profile[frame][group]['negative'][shift] = 1
+                            for i in range(max_shift):
+                                if i not in shift_profile[frame][group]['negative']:
+                                    shift_profile[frame][group]['negative'][i] = 0
+                            shift_profile[frame][group]['negative'] = {k[0]:k[1] for k in sorted(shift_profile[frame][group]['negative'].items())}
+                            self.frames[frame].results.shift_profile_antiparallel_negative = shift_profile[frame][group]['negative']
+    
+                        if shift <= 0:
+                            shift = abs(shift)
+                            shift_profile[frame][group]['positive'] = {}
+                            try:
+                                shift_profile[frame][group]['positive'][shift] += 1
+                            except:
+                                shift_profile[frame][group]['positive'][shift] = 1
+                            for i in range(max_shift):
+                                if i not in shift_profile[frame][group]['positive']:
+                                    shift_profile[frame][group]['positive'][i] = 0
+                            shift_profile[frame][group]['positive'] = {k[0]:k[1] for k in sorted(shift_profile[frame][group]['positive'].items())}
+                            self.frames[frame].results.shift_profile_antiparallel_positive = shift_profile[frame][group]['positive']
         return
 
 
@@ -340,14 +378,9 @@ class trajectory:
         index = self.database.index
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
         antiparallel = self.database['antiparallel']
-    
         antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
-        tss = [self.universe.trajectory[i].time for ts in self.universe.trajectory for i in index]
-        
+        tss = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
         plt.plot(tss, antip_total_ratio, 'bo')
-        #plt.xticks([0,250000,500000,750000,1000000],[0,250,500,750,1000])
-        #plt.xlabel('Time (ps)')
-        #plt.ylabel('Antiparallel / Total contacts')
         plt.xlabel('Time (ns)')
         plt.ylabel('β-Sheet Organizational Index')
     
@@ -356,10 +389,9 @@ class trajectory:
     
     def plot_peptides_in_beta(self):
         index = self.database.index
-        tss = [self.universe.trajectory[i].time for ts in self.universe.trajectory for i in index]
+        tss = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
         beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
         plt.plot(tss,beta,'bo')
-        #plt.xticks([0,250000,500000,750000,1000000],[0,250,500,750,1000])
         plt.xlabel('Time (ns)')
         plt.ylabel('Peptides in β-sheet')
     
@@ -368,22 +400,55 @@ class trajectory:
     
     def plot_aggregates(self):
         index = self.database.index
-        tss = [self.universe.trajectory[i].time for ts in self.universe.trajectory for i in index]
+        tss = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
         aggregates = self.database['n° of macroaggreates']
         plt.plot(tss, aggregates,'bo')
-        #plt.xlabel('Time (ps')
-        #plt.xticks([0,250000,500000,750000,1000000],[0,250,500,750,1000])
         plt.xlabel('Time (ns)')
         plt.ylabel('N° of macroaggregates')
 
         return
     
-    def plot_shift(self, frame=None):
-        f = self.frames[frame].results.shift_profile
+    def plot_shift_parallel(self, frame=None):
+        try:
+            f = self.frames[frame].results.shift_profile_parallel
+        
+        except:
+            max_shift = max(self.peptide_length_list)
+            f = {k:0 for k in range(max_shift)}
+
         x = [val for val in f.keys()]
         y = [k for k in f.values()]
         plt.plot(x, y)
-        plt.xlabel('Shift value')
+        plt.xlabel('Parallel Shift')
+        plt.ylabel('Number of contacts')
+        plt.show()
+        return
+    
+    def plot_shift_antiparallel_positive(self, frame=None):
+        try:
+            f = self.frames[frame].results.shift_profile_antiparallel_positive
+        except:
+            max_shift = max(self.peptide_length_list)
+            f = {k:0 for k in range(max_shift)}    
+        x = [val for val in f.keys()]
+        y = [k for k in f.values()]
+        plt.plot(x, y)
+        plt.xlabel('Antiparallel + Shift')
+        plt.ylabel('Number of contacts')
+        plt.show() 
+        return
+    
+    def plot_shift_antiparallel_negative(self, frame=None):
+        try:
+            f = self.frames[frame].results.shift_profile_antiparallel_negative
+        except:
+            max_shift = max(self.peptide_length_list)
+            f = {k:0 for k in range(max_shift)} 
+            
+        x = [val for val in f.keys()]
+        y = [k for k in f.values()]
+        plt.plot(x, y)
+        plt.xlabel('Antiparallel - Shift')
         plt.ylabel('Number of contacts')
         plt.show() 
         return

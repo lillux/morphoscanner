@@ -194,7 +194,8 @@ def cross_correlation_function_for_dataset_with_dataframe(contact_array):
             best_match = []
             best_match = normalized_cross_correlation_function(contact_array[row][col])
 
-            if len(best_match) == 0:
+            #if len(best_match) == 0:
+            if best_match == None:
                 pass
 
             else:
@@ -228,7 +229,6 @@ def denoise_contact_maps(contact_maps):
 
     normalized_cross_correlation_results, df = cross_correlation_function_for_dataset_with_dataframe(contact_maps)
 
-
     denoised_dict = {}
 
     for peptide_1 in normalized_cross_correlation_results:
@@ -237,8 +237,6 @@ def denoise_contact_maps(contact_maps):
 
             row = peptide_2[0]
             col = peptide_2[1]
-
-
 
             contact_map = contact_maps[row][col]
             sense = peptide_2[2][3]
@@ -249,7 +247,6 @@ def denoise_contact_maps(contact_maps):
             denoised_map = contact_map * shift_matrix
 
             denoised_dict[row][col] = denoised_map
-            
             
     full_denoised_dict = {}
     for peptide_1 in tqdm.tqdm(denoised_dict):
@@ -302,9 +299,6 @@ def shift_library_maker_torch(contact_map_to_analyze):
     kron_dict['parallel'] = kron_array_parallel
     kron_dict['antiparallel'] = kron_array_antiparallel
     
-    #print((kron_array_parallel.dtype))
-    #print(type(kron_array_antiparallel.dtype))
-
     return kron_dict
 
 
@@ -319,7 +313,7 @@ def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
                 that is matching the contact map
 
             '''
-    minimum_contact=2
+    minimum_contact = 2
     contact_map = contact_map.double()
     shift_matrix_library = shift_library_maker_torch(contact_map)
 
@@ -340,14 +334,24 @@ def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
                 sum_shift_matrix = torch.sum(shift_matrix)
                 #print("contact_map type is: %s" % str(contact_map.dtype))
                 ncc_value = (torch.sum((contact_map * shift_matrix))/((torch.sqrt(sum_contact_map))*(torch.sqrt(sum_shift_matrix))))  # normalized cross correlation function of contact matrix and shift matrix
+                
                 cross_correlation_values.append([ncc_value, index, sum_contact_map, sense])
 
         max_val = max(cross_correlation_values) # get only the best match (highest value of ncc)
 
-        shift = abs(shift_matrix_center_index - max_val[1])
-        max_val.append(shift)
-
-    return max_val
+        denoised_map = contact_map * shift_matrix_library[max_val[3]][max_val[1]]
+        sum_denoised = torch.sum(denoised_map)
+        
+        if sum_denoised >= minimum_contact:
+            
+            shift = shift_matrix_center_index - max_val[1]
+            max_val[2] = sum_denoised
+            max_val.append(shift)
+            
+            return max_val
+        
+        else:
+            pass
 
 
 def denoise_contact_maps_torch(contact_maps):
@@ -362,7 +366,6 @@ def denoise_contact_maps_torch(contact_maps):
 
     normalized_cross_correlation_results, df = cross_correlation_function_for_dataset_with_dataframe_torch(contact_maps)
 
-
     denoised_dict = {}
 
     for peptide_1 in normalized_cross_correlation_results:
@@ -371,8 +374,6 @@ def denoise_contact_maps_torch(contact_maps):
 
             row = peptide_2[0]
             col = peptide_2[1]
-
-
 
             contact_map = contact_maps[row][col]
             sense = peptide_2[2][3]
@@ -383,7 +384,6 @@ def denoise_contact_maps_torch(contact_maps):
             denoised_map = contact_map.double() * shift_matrix
 
             denoised_dict[row][col] = denoised_map
-            
             
     full_denoised_dict = {}
     for peptide_1 in tqdm.tqdm(denoised_dict):
@@ -417,8 +417,6 @@ def cross_correlation_function_for_dataset_with_dataframe_torch(contact_array):
 
         Output: contact_dict,         for further processing
                 pandas.DataFrame,     for data analysis
-
-
     '''
     contact_dict = {}
 
@@ -431,7 +429,8 @@ def cross_correlation_function_for_dataset_with_dataframe_torch(contact_array):
             #print(contact_array[row][col])
             best_match = normalized_cross_correlation_function_torch(contact_array[row][col])
 
-            if len(best_match) == 0:
+            #if len(best_match) == 0:
+            if best_match == None:
                 pass
 
             else:
