@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(name = 'morphoscanner',
-     version = '0.0.1',
-     description = 'A library to handle gromacs simulation data of Self Assembling Peptides',
+     version = '0.0.2',
+     description = 'A library to handle Martini CG Gromacs trajectory data of Self Assembling Peptides',
      url = 'https://github.com/lillux/sap_analysis',
      author = 'Calogero Carlino, Federico Fontana',
      author_email = 'calogero.carlino28@gmail.com',
@@ -13,6 +13,8 @@ setup(name = 'morphoscanner',
                        'pandas>=1.0.1',
                        'torch>=1.1.0',
                        'networkx>=2.4',
+                       'plotly',
+                       'matplotlib',
                        'openpyxl',
                        'tqdm'],
                        

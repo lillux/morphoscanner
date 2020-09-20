@@ -9,7 +9,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
-
+import numpy as np
+import plotly.graph_objects as go
 
 
 class trajectory:
@@ -625,3 +626,114 @@ class trajectory:
 # Use the .gro file but do not select by using the BB nomenclature
 # Use instead the aminoacids names and numbers on the first element
 # and compare it with the data inside molnames
+
+    ### Use this to plot 3d data from trajectory object
+
+    def plot3d_parallel(self):
+        # Read timestep from trajectory
+        index = self.database.index
+        # get timestep of each frame (in nanoseconds)
+        y = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
+        # get the shift range
+        x = [i for i in range(max(self.peptide_length_list))]
+        # calculate total contacts per frame
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        z = []
+        for f_index, frame in enumerate(self.frames):
+
+            try:
+                # compute contact ratio
+                f = [i/total_contact[f_index] if i!=0 else 0 for i in self.frames[frame].results.shift_profile_parallel.values()]
+
+            except:
+                # if no contact, fill with 0
+                max_shift = max(self.peptide_length_list)
+                f = [0 for k in range(max_shift)]
+             # append frame data
+            z.append(f)
+        # cast to np.array
+        z = np.asarray(z)
+        fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
+        fig.update_layout(autosize=True,
+                          scene = dict(
+                        xaxis_title='Parallel Shift',
+                        yaxis_title='Time (ps)',
+                        zaxis_title='Contact %',
+                        zaxis = dict(nticks=20, range=[0,100])),
+                            title='Parallel Shift')
+        fig.show()
+
+        return
+
+
+    def plot3d_antiparallel_negative(self):
+        # Read timestep from trajectory
+        index = self.database.index
+        # get timestep of each frame (in nanoseconds)
+        y = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
+        # get the shift range
+        x = [i for i in range(max(self.peptide_length_list))]
+        # calculate total contacts per frame
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        z = []
+        for f_index, frame in enumerate(self.frames):
+
+            try:
+                # compute contact ratio
+                f = [i/total_contact[f_index] if i!=0 else 0 for i in self.frames[frame].results.shift_profile_antiparallel_negative.values()]
+
+            except:
+                # if no contact, fill with 0
+                max_shift = max(self.peptide_length_list)
+                f = [0 for k in range(max_shift)]
+             # append frame data
+            z.append(f)
+        # cast to np.array
+        z = np.asarray(z)
+        fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
+        fig.update_layout(autosize=True,
+                          scene = dict(
+                        xaxis_title='Antiparallel - Shift',
+                        yaxis_title='Time (ps)',
+                        zaxis_title='Contact %',
+                        zaxis = dict(nticks=20, range=[0,100])),
+                            title='Antiparallel - Shift')
+        fig.show()
+
+        return
+
+    def plot3d_antiparallel_positive(self):
+        # Read timestep from trajectory
+        index = self.database.index
+        # get timestep of each frame (in nanoseconds)
+        y = [self.universe.trajectory[i].time/1000 for ts in self.universe.trajectory for i in index]
+        # get the shift range
+        x = [i for i in range(max(self.peptide_length_list))]
+        # calculate total contacts per frame
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        z = []
+        for f_index, frame in enumerate(self.frames):
+
+            try:
+                # compute contact ratio
+                f = [i/total_contact[f_index] if i!=0 else 0 for i in self.frames[frame].results.shift_profile_antiparallel_positive.values()]
+
+            except:
+                # if no contact, fill with 0
+                max_shift = max(self.peptide_length_list)
+                f = [0 for k in range(max_shift)]
+             # append frame data
+            z.append(f)
+        # cast to np.array
+        z = np.asarray(z)
+        fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
+        fig.update_layout(autosize=True,
+                          scene = dict(
+                        xaxis_title='Antiparallel + Shift',
+                        yaxis_title='Time (ps)',
+                        zaxis_title='Contact %',
+                        zaxis = dict(nticks=20, range=[0,100])),
+                            title='Antiparallel + Shift')
+        fig.show()
+    
+        return
