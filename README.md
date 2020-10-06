@@ -53,7 +53,7 @@ conda activate morphoscanner
 
 Inside the env you have to install morphoscanner:
 ```bash
-pip install git+https://github.com/lillux/sap_analysis.git#egg=morphoscanner
+pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
 ```
 You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*.
 
@@ -61,13 +61,13 @@ Then it will be installed in your env. You can now use morphoscanner from your *
 
 Other branches other than ***master*** can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url:
 ```bash
-pip install git+https://github.com/lillux/sap_analysis.git@branch_name#egg=morphoscanner
+pip install git+https://github.com/lillux/morphoscanner.git@branch_name#egg=morphoscanner
 ```
 
 
 ### Morphoscanner as Script
 
-You can download morphoscanner from its [Github repository](https://github.com/lillux/sap_analysis "Morphoscanner repository").
+You can download morphoscanner from its [Github repository](https://github.com/lillux/morphoscanner "Morphoscanner repository").
 
 It will be downloaded as a compressed archive. Decompress it in a directory. Then move to the directory and launch:
 ```bash
