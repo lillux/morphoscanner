@@ -4,7 +4,6 @@ from scipy.interpolate import interpolate
 import plotly.graph_objects as go
 
 
-# Run this cell to use functions on multiple trajectory objects
 
 # WORKING
 def trajectory_antiparallel_positive(self):
