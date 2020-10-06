@@ -79,7 +79,7 @@ def trajectory_parallel(self):
     z = np.asarray(z)
     return x, y, z
 
-def plot_3d_antiparallel_positive_shift(x,y,z):
+def _plot_3d_antiparallel_positive_shift(x,y,z):
     fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
     fig.update_layout(autosize=True,
                           scene = dict(
@@ -91,7 +91,7 @@ def plot_3d_antiparallel_positive_shift(x,y,z):
     fig.show()
     return
 
-def plot_3d_antiparallel_negative_shift(x,y,z):
+def _plot_3d_antiparallel_negative_shift(x,y,z):
     fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
     fig.update_layout(autosize=True,
                           scene = dict(
@@ -103,7 +103,7 @@ def plot_3d_antiparallel_negative_shift(x,y,z):
     fig.show()
     return
 
-def plot_3d_parallel_shift(x,y,z):
+def _plot_3d_parallel_shift(x,y,z):
     fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
     fig.update_layout(autosize=True,
                           scene = dict(
@@ -124,7 +124,7 @@ def plot_3d_antiparallel_positive_average(data: list):
     y_av = max([i[1] for i in mp])
     z_av = np.mean(np.asarray([i[2] for i in mp]), axis=0)
     
-    plot_3d_antiparallel_positive_shift(x_av, y_av, z_av)
+    _plot_3d_antiparallel_positive_shift(x_av, y_av, z_av)
     
     return
     
@@ -136,7 +136,7 @@ def plot_3d_antiparallel_negative_average(data: list):
     y_av = max([i[1] for i in mp])
     z_av = np.mean(np.asarray([i[2] for i in mp]), axis=0)
     
-    plot_3d_antiparallel_negative_shift(x_av, y_av, z_av)
+    _plot_3d_antiparallel_negative_shift(x_av, y_av, z_av)
     
     return
     
@@ -148,7 +148,7 @@ def plot_3d_parallel_average(data: list):
     y_av = max([i[1] for i in mp])
     z_av = np.mean(np.asarray([i[2] for i in mp]), axis=0)
     
-    plot_3d_parallel_shift(x_av, y_av, z_av)
+    _plot_3d_parallel_shift(x_av, y_av, z_av)
     
     return
     
