@@ -1,5 +1,5 @@
 """
-class distance():
+
 
                 Function for analysis of distances
 

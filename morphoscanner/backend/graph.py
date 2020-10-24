@@ -18,8 +18,8 @@ import networkx as nx
 
 # graph clustering
 def nx_graph_search(denoised_dict, minimum_contacts = 3):
-    
-    ''' Graph clustering of peptides in the aggregate.
+    '''
+    Graph clustering of peptides in the aggregate.
     
     Input: denoised contact maps dict
     
@@ -29,7 +29,6 @@ def nx_graph_search(denoised_dict, minimum_contacts = 3):
     
     Search for group of minimum 3 peptides (beta_sheet),
     joined at least with 'minimum_contacts'. default = 3
-    
     '''
     # Instantiate graph
     graph = nx.MultiGraph()
@@ -67,7 +66,8 @@ def nx_graph_search(denoised_dict, minimum_contacts = 3):
 
 # create a full graph
 def full_graph(denoised_dict):
-    ''' Create a full graph of all the peptides in the frame.
+    '''
+    Create a full graph of all the peptides in the frame.
 
     Every peptide is a node in the graph.
     Edges join contacting peptides.
@@ -77,7 +77,6 @@ def full_graph(denoised_dict):
 
     Arguments: denoised contact maps dict
     return: networkx.MultiGraph
-
     '''
     
     # Instantiate graph
@@ -105,7 +104,8 @@ def full_graph(denoised_dict):
 ## THIS IS WORKING in object trajectory
 
 def graph_v1(denoised_dict, df):
-    ''' Create a full graph of all the peptides in the frame.
+    '''
+    Create a full graph of all the peptides in the frame.
     Every peptide is a node in the graph.
     Edges join contacting peptides.
     Edges have attribute:   'length', that gives the number of contact between the peptides
@@ -114,6 +114,7 @@ def graph_v1(denoised_dict, df):
     Arguments: denoised contact maps dict
     return: networkx.MultiGraph
     '''
+    
     colors = {'parallel' : 'g',
               'antiparallel' : 'b'}
     
@@ -146,9 +147,6 @@ def graph_v1(denoised_dict, df):
             graph.add_edge(peptide_1, peptide_2, weight=number_of_contacts, color=colors[sense], sense=sense)
 
     return graph
-
-
-
 
 
 #FIND SUBGRAPH
@@ -194,9 +192,6 @@ def find_subgraph_in_order(graph):
     return subgraph_list
 
 
-
-
-
 def find_subgraph(graph):
     '''
     Find subgraph of joined peptides that have no node in common with other subgraph.
@@ -237,9 +232,6 @@ def find_subgraph(graph):
 
     return subgraph_list
 
-  
-
-
 
 def get_not_in_subgraph(coordinate_dict, subgraph):
     '''Get peptide alone or in cluster of 2 in a frame.
@@ -279,7 +271,6 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     return out
 
 
-
 def subgraph_length(aggregate):
     '''Get information about the size of the aggregates in the trajectory
     
@@ -312,8 +303,6 @@ def subgraph_length(aggregate):
 
         return subgraph_len_dict
     
-    
-
 
 def contact_sense_in_subgraph(graph, subgraph_list):
     '''Get information about the orientation of the contact between contacting node in the graph.
@@ -338,10 +327,6 @@ def contact_sense_in_subgraph(graph, subgraph_list):
             subgraph_sense_dict[index] = sense_list
 
     return subgraph_sense_dict
-    
-    
-    
-    
     
     
 def sense_in_subgraph(graph, subgraphs_list):
@@ -373,8 +358,6 @@ def sense_in_subgraph(graph, subgraphs_list):
         sense_counter_dict[index] = { 'parallel' : parallel,
                                        'antiparallel' : antiparallel}
         
-        
-
     return sense_counter_dict
 
 

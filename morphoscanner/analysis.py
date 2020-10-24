@@ -1,22 +1,56 @@
+# This module is used to perform cumulative analysis
+# on more than one trajectory object.
+#
+# Trajectory objects are made from module trajectory.py
+#
+# Here you will find functions
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interpolate
 import plotly.graph_objects as go
 
 
-
 # WORKING
-def trajectory_antiparallel_positive(self):
+def _trajectory_antiparallel_positive(self):
+    '''
+    Gather data regarding antiparallel positive peptides contact from a trajectory
+    
+    Parameters
+    -------
+    self : morphoscanner.trajectory.trajectory object
+    
+    Returns
+    -------
+    x : list
+        list of int in range(0, max(self.peptide_length_list)).
+        where max(self.peptide_length_list) is the number of aminoacids
+        in the peptide of the system with the most aminoacids.
+        
+    y : list
+        list of float that are the timesteps of the trajectory.
+        
+    z : numpy.ndarray
+        ndarray of shape(i,j) where i=len(y) and j=len(x).
+        z(i,j) is the ratio (ap+ / tc), between [0, 1]
+        where ap+ is the antiparallel positive contacts of shift x[j] at timestep y[i] 
+        and tc are the total contact of that timestep.
+    '''
 
-    # Read timestep from trajectory
+    # Read timesteps from trajectory
     index = self.database.index
-    # get timestep of each frame (in nanoseconds)
+    # get timestep of each frame
+    # time is in picosecond, so time/1000 for time in nanoseconds
     y = [self.universe.trajectory[i].time/1000 for i in index]
     # get the shift range
+    # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
     # calculate total contacts per frame
     total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+    
     z = []
+    # for each sampled frame
     for f_index, frame in enumerate(self.frames):
 
         try:
@@ -31,17 +65,44 @@ def trajectory_antiparallel_positive(self):
     return x, y, z
 
 
-def trajectory_antiparallel_negative(self):
+def _trajectory_antiparallel_negative(self):
+    '''
+    Gather data regarding antiparallel negative peptides contact from a trajectory
+    
+    Parameters
+    -------
+    self : morphoscanner.trajectory.trajectory object
+    
+    Returns
+    -------
+    x : list
+        list of int in range(0, max(self.peptide_length_list)).
+        where max(self.peptide_length_list) is the number of aminoacids
+        in the peptide of the system with the most aminoacids.
+        
+    y : list
+        list of float that are the timesteps of the trajectory.
+        
+    z : numpy.ndarray
+        ndarray of shape(i,j) where i=len(y) and j=len(x).
+        z(i,j) is the ratio (ap- / tc), between [0, 1]
+        where ap- is the antiparallel negative contacts of shift x[j] at timestep y[i] 
+        and tc are the total contact of that timestep.
+    '''
 
-    # Read timestep from trajectory
+    # Read timesteps from trajectory
     index = self.database.index
-    # get timestep of each frame (in nanoseconds)
+    # get timestep of each frame
+    # time is in picosecond, so time/1000 for time in nanoseconds
     y = [self.universe.trajectory[i].time/1000 for i in index]
     # get the shift range
+    # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
     # calculate total contacts per frame
     total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+    
     z = []
+    # for each sampled frame
     for f_index, frame in enumerate(self.frames):
 
         try:
@@ -55,17 +116,44 @@ def trajectory_antiparallel_negative(self):
     z = np.asarray(z)
     return x, y, z
 
-def trajectory_parallel(self):
+def _trajectory_parallel(self):
+    '''
+    Gather data regarding parallel peptides contact from a trajectory
+    
+    Parameters
+    -------
+    self : morphoscanner.trajectory.trajectory object
+    
+    Returns
+    -------
+    x : list
+        list of int in range(0, max(self.peptide_length_list)).
+        where max(self.peptide_length_list) is the number of aminoacids
+        in the peptide of the system with the most aminoacids.
+        
+    y : list
+        list of float that are the timesteps of the trajectory.
+        
+    z : numpy.ndarray
+        ndarray of shape(i,j) where i=len(y) and j=len(x).
+        z(i,j) is the ratio (p / tc), between [0, 1]
+        where p is the parallel contacts of shift x[j] at timestep y[i] 
+        and tc are the total contact of that timestep.
+    '''
 
-    # Read timestep from trajectory
+    # Read timesteps from trajectory
     index = self.database.index
-    # get timestep of each frame (in nanoseconds)
+    # get timestep of each frame
+    # time is in picosecond, so time/1000 for time in nanoseconds
     y = [self.universe.trajectory[i].time/1000 for i in index]
     # get the shift range
+    # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
     # calculate total contacts per frame
     total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+
     z = []
+    # for each sampled frame
     for f_index, frame in enumerate(self.frames):
 
         try:
@@ -118,7 +206,7 @@ def _plot_3d_parallel_shift(x,y,z):
 
 def plot_3d_antiparallel_positive_average(data: list):
     
-    mp = [i for i in map(trajectory_antiparallel_positive, data)]
+    mp = [i for i in map(_trajectory_antiparallel_positive, data)]
     
     x_av = max([i[0] for i in mp])
     y_av = max([i[1] for i in mp])
@@ -130,7 +218,7 @@ def plot_3d_antiparallel_positive_average(data: list):
     
 def plot_3d_antiparallel_negative_average(data: list):
     
-    mp = [i for i in map(trajectory_antiparallel_negative, data)]
+    mp = [i for i in map(_trajectory_antiparallel_negative, data)]
     
     x_av = max([i[0] for i in mp])
     y_av = max([i[1] for i in mp])
@@ -142,7 +230,7 @@ def plot_3d_antiparallel_negative_average(data: list):
     
 def plot_3d_parallel_average(data: list):
     
-    mp = [i for i in map(trajectory_parallel, data)]
+    mp = [i for i in map(_trajectory_parallel, data)]
     
     x_av = max([i[0] for i in mp])
     y_av = max([i[1] for i in mp])

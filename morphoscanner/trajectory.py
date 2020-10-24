@@ -594,14 +594,16 @@ class trajectory:
     
     
     def plot_graph(self, frame: int):
-        '''Plot the frame graph, with visual information about
-            number of contacts between peptides and sense of the contacts.
-            
-            Edge thickness scale with the number of contacts between two
-            contacting peptides.
-            
-            Green edges are parallel contacts.
-            Blue edges are antiparallel contacts.
+        '''
+        Plot the frame graph, with visual information about
+        number of contacts between peptides and sense of the contacts.
+        
+        Edge thickness scale with the number of contacts between two
+        contacting peptides.
+        
+        Green edges are parallel contacts.
+        Blue edges are antiparallel contacts.
+        
         Parameters
         ----------
         frame : int
@@ -620,7 +622,8 @@ class trajectory:
         weights = [graph[u][v][0]['weight'] for u,v in edges]
         
         # output a plot
-        return nx.draw_networkx(graph, edges=edges, edge_color=colors, width=weights)
+        #return nx.draw_networkx(graph, edges=edges, edge_color=colors, width=weights) #for networkx 2.4
+        return nx.draw_networkx(graph, edge_color=colors, width=weights)  # for networkx 2.5
 
     
 # Use the .gro file but do not select by using the BB nomenclature
