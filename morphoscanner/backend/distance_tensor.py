@@ -9,29 +9,44 @@ import torch
 
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
-def get_coordinate_tensor_from_dict(coordinate_dict):
-    '''Convert a frame_dict to a tensor, for parallel euclidean distance calculation.
+def get_coordinate_tensor_from_dict(coordinate_dict, device='cpu'):
+    '''
+    Convert a frame_dict to a torch.tensor,
+    for parallel euclidean distance calculation.
     
-    Inputs: coordinate_dict, dict.
-    
-    Return: torch.tensor'''
+    Works only if all the peptides in the coordinate_dict 
+    have the same number of aminoacids.
 
-    #variables wit dict dimension
+    Parameters
+    ----------
+    coordinate_dict : dict
+        dict in the form {peptide_index : {atom_index : [x,y,z]}}
+        
+    device : str, optional
+        Choose between 'cpu' or 'gpu'. The default is 'cpu'.
+        It is the device in which the tensor is instantiated.
+        
+    Returns
+    -------
+    torch.tensor
+        DESCRIPTION.
+
+    '''
+
+    #variables with dict dimensions
     dim0 = len(coordinate_dict)
     dim1 = len(coordinate_dict[0])
     dim2 = len(coordinate_dict[0][0])
 
     #initialize a 0s tensor
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     zero = torch.zeros([dim0,dim1,dim2], dtype=torch.float32, device=device)
-
 
     for peptide in coordinate_dict:
 
         for aminoacid in coordinate_dict[peptide]:
             
             zero[peptide][aminoacid] = torch.tensor(coordinate_dict[peptide][aminoacid], device=device)
-                
                 
     return zero
 
@@ -58,7 +73,6 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
         you need to output_tensor.cpu()
     '''
     
-
     #variables with dict dimension
     dim0 = len(coordinate_dict)
     first_key = [k for k in coordinate_dict.keys()][0]

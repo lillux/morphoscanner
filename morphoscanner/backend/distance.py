@@ -1,15 +1,10 @@
 """
-
-
                 Function for analysis of distances
-
 @author: lillo
 """
 import numpy as np
 
 import tqdm
-
-
 
 
 # compute euclidean distance
@@ -18,9 +13,6 @@ def get_euclidean_distance(point_1, point_2):
     euclidean_distance = np.sqrt(np.sum([((point_1[0] - point_2[0])**2), ((point_1[1] - point_2[1])**2), ((point_1[2] - point_2[2])**2)]))
 
     return euclidean_distance
-
-
-
 
 
 # compute distance map between two peptides
@@ -45,8 +37,6 @@ def compute_distance_map(coordinate_dict, peptide_1, peptide_2):
     return distance_map
 
 
-
-
 # compute distance map and return a n_peptide x n_peptide x n_res x n_res array
 def compute_distance_maps_from_coordinate_dict(coordinate_dict):
 
@@ -69,10 +59,6 @@ def compute_distance_maps_from_coordinate_dict(coordinate_dict):
     return aggregate_distance_array
 
 
-
-
-
-
 # get average distance map from distance maps set
 # THIS SHOULD BE FUNCTION OF AN OBJECT. YOU WILL NEED A MAP FOR EACH PEPTIDE SIZE OF THE SIMULATION
 # AND PEPTIDE COMPOSITION? HOW WILL YOU ACCOUNT FOR PEPTIDE OF SAME SIZE BUT MADE OF DIFFERENT AMINOACIDS???
@@ -85,7 +71,6 @@ def get_mean_distance_map(distance_maps):
     return: np.array with average intrapeptide distance
 
     '''
-
     # create array of zeros of shape number_of_residues * number_of_residues
     # depending on peptide residue number ### TO FIX FOR MULTIMONOMERIC ASSEMBLY
     base = np.zeros((distance_maps[0][0].shape[0], distance_maps[0][0].shape[1]))
@@ -134,11 +119,8 @@ def decompose_distance_map(distance_map):
     Jeong-Mi Yoon, Yash Gad, Zhijun Wu
 
     Argument: distance map (numpy.array 2D)
-    return: X : actual decomposition
-
-
+    return: X : matrix decomposition
     '''
-
     # initialize a zeros matrix of same shape as the input map
     D = np.zeros(distance_map.shape)
 
@@ -172,10 +154,8 @@ def decompose_distance_map(distance_map):
     # the non necessary dimension can give data to better reconstruct the peptide structure
     X = svd[0]*np.sqrt(svd[1])
 
-
     #return X, svd, D, rank
     return X
-
 
 
 def get_coordinate_from_decomposition(decomposition):
@@ -186,7 +166,6 @@ def get_coordinate_from_decomposition(decomposition):
     return: dict with reconstructed 3d coordinate vector
 
     '''
-
     # take only the first three value to compose a 3D coordinate vector
     coordinate = [e[:3] for e in decomposition]
 
@@ -202,7 +181,8 @@ def get_coordinate_from_decomposition(decomposition):
 
 # reconstruct 3d coordinate from a distance map
 def get_coordinate_from_distance_map(distance_map):
-    ''' compute 3d coordinate from distance map
+    '''
+    Compute 3d coordinate from distance map
 
     Argument: distance_map (numpy.array)
 

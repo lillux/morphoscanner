@@ -13,9 +13,10 @@ from .check_val import isInt
 from ..trj_object.trj_objects import single_peptide
 
 
-def get_peptide_length_list(path, select=None):
-    '''Take the .gro file and get back a list, in which each
-    element is the length in atoms of a single peptide.
+def get_peptide_length_list(path : str, select=None):
+    '''
+    Take the .gro file and get back a list, in which each
+    element i is the number of atoms (grains) of peptide i.
     
     Only atoms specified in 'select' are selected.
     
@@ -27,12 +28,12 @@ def get_peptide_length_list(path, select=None):
     ----------
     path : str
         .gro file path as 'user/data/file.gro'
-        The path of the .gro file on your system
+        The path of the .gro file on your system.
         
-        DESCRIPTION.
-    select : list of str, optional
+   select : list of str, optional
         The default is None.
-        This is used to select which residues to count to compose the peptide.
+        
+        select is used to select which residues to count to compose the peptide.
         It should be a list like:
             ['peptide']
         Available options are the keys retrievable with:
@@ -138,15 +139,14 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
         as [part1.trr, part2.trr, ...]
     in_memory : bool, optional
         The default is True.
-        Move to memory for faster (~100x faster)
+        Move data to memory for faster (~100x faster)
         frames coordinate retrival.
-        Needs a lot of memory.
+        Needs more memory.
 
     Returns
     -------
     universe : MDAnalysis.Universe()
-        DESCRIPTION.
-
+        
     '''
 
     universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
@@ -189,6 +189,10 @@ def create_trajectory_dict(universe):
     return trajectory_dict
 
 
+# Do not select by using the BB nomenclature
+# Use instead the aminoacids names and numbers on the first element
+# and compare it with the data inside molnames
+
 def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
     # move to frame
     universe.trajectory[frame]
@@ -215,7 +219,6 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
                 accepted_costituents.append(costituents.get(element))
         else:
             raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(select))
-
 
     for res in universe.residues:
         if res.resname in accepted_costituents:
@@ -257,7 +260,6 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
                     coordinate_dict[pep_index] = {}
                     residues_dict[pep_index] = {}
                     atom_number_dict[pep_index] = {}
-
 
                 else:
                     temporary_list.append(res_num)

@@ -63,11 +63,8 @@ def compute_contact_maps_as_array(distance_maps_array, radius_multiplier=1.5):  
 
     return contact_array
 
- 
-
-        
+         
 #### ANALYSIS
-
 def shift_library_maker(contact_map_to_analyze):
 
     ''' Create shift matrix library to perform pattern recognition on a contact map.
@@ -76,8 +73,7 @@ def shift_library_maker(contact_map_to_analyze):
     
     returns: dict of shift matrix to analyze the given contact map
 
-            shift matrix are diagonal matrix spanning all the given contact map
-            
+            shift matrix are diagonal matrix spanning all the given contact map    
     '''
     
     row = contact_map_to_analyze.shape[0]
@@ -99,8 +95,6 @@ def shift_library_maker(contact_map_to_analyze):
     kron_dict['antiparallel'] = kron_array_antiparallel
 
     return kron_dict
-
-
 
 
 def normalized_cross_correlation_function(contact_map, minimum_contact=2):
@@ -137,8 +131,6 @@ def normalized_cross_correlation_function(contact_map, minimum_contact=2):
     return max_val
 
 
-
-
 def normalized_cross_correlation_for_dataset(contact_array):
     '''Calculate normalized cross correlation function between the full contacts map and
     the shift matrix.
@@ -172,7 +164,6 @@ def normalized_cross_correlation_for_dataset(contact_array):
     return contact_dict
 
 
-
 #contact_array = frame_contact
 def cross_correlation_function_for_dataset_with_dataframe(contact_array):
     '''Perform Normalized Cross Correlation function on the dataset
@@ -183,8 +174,6 @@ def cross_correlation_function_for_dataset_with_dataframe(contact_array):
 
         Output: contact_dict,         for further processing
                 pandas.DataFrame,     for data analysis
-
-
     '''
     contact_dict = {}
 
@@ -212,8 +201,6 @@ def cross_correlation_function_for_dataset_with_dataframe(contact_array):
     df = pd.DataFrame(contact_list, columns=columns_names)
 
     return contact_dict, df
-
-
 
 
 #denoise dataset. GET SENSE 'PARALLEL' OR 'ANTIPARALLEL'....'NEED TO KNOW AMINOACID OF PEPTIDES'
@@ -271,17 +258,14 @@ def denoise_contact_maps(contact_maps):
 ### Torch functions
 
 def shift_library_maker_torch(contact_map_to_analyze):
-
     ''' Create shift matrix library to perform pattern recognition on a contact map.
-    
-    Inputs: numpy.array, a single contact map
-    
-    returns: dict of shift matrix to analyze the given contact map
+        Shift matrix are diagonal matrix spanning all the given contact map. 
 
-            shift matrix are diagonal matrix spanning all the given contact map
-            
-    '''
+    Arguments : numpy.array, a single contact map
     
+    returns : dict of shift matrix to analyze the given contact map
+
+    '''
     row = contact_map_to_analyze.shape[0]
     col = contact_map_to_analyze.shape[1]
 
@@ -309,10 +293,9 @@ def normalized_cross_correlation_function_torch(contact_map, minimum_contact=2):
     Arguments : contact map, as output from get_contact_maps function
                 shift_matrix_stack, as output from shift_matrix_maker function
 
-    Return : a list [ncc_value, index (in the shift_matrix_stack) of the shift matrix
+    return : a list [ncc_value, index (in the shift_matrix_stack) of the shift matrix
                 that is matching the contact map
-
-            '''
+    '''
     minimum_contact = 2
     contact_map = contact_map.double()
     shift_matrix_library = shift_library_maker_torch(contact_map)
