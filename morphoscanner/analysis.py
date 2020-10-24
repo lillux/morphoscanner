@@ -3,7 +3,7 @@
 #
 # Trajectory objects are made from module trajectory.py
 #
-# Here you will find functions
+# Here you will find functions to plot 
 
 
 import numpy as np
