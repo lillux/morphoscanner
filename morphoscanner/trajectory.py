@@ -137,7 +137,7 @@ class trajectory:
         print('Time to compute distance is: ', (end_dist - start_dist))
 
         start_den = timer()
-        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch(frame_contact)
+        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact)
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den))
     
@@ -655,7 +655,7 @@ class trajectory:
              # append frame data
             z.append(f)
         # cast to np.array
-        z = np.asarray(z)
+        z = np.asarray(z, dtype=object)
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
@@ -692,7 +692,7 @@ class trajectory:
              # append frame data
             z.append(f)
         # cast to np.array
-        z = np.asarray(z)
+        z = np.asarray(z, dtype=object)
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
@@ -728,7 +728,7 @@ class trajectory:
              # append frame data
             z.append(f)
         # cast to np.array
-        z = np.asarray(z)
+        z = np.asarray(z, dtype=object)
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
