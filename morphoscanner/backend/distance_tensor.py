@@ -177,7 +177,6 @@ def compute_distance_between_each_peptide(coordinate_dict):
     coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
     group_tensor, order_tensor = cat_tensor_for_size(coordinate_tensor)
     
-    #start = timer()
     distance_maps_dict = {}
     for tensor in coordinate_tensor:
         distance_maps_dict[tensor] = {}
@@ -188,9 +187,8 @@ def compute_distance_between_each_peptide(coordinate_dict):
                 real_index = index_dict[map_index]
                 distance_maps_dict[tensor][real_index] = m
 
-    #end = timer()
-    #print(end-start)
     return distance_maps_dict
+
 
 #compute euclidean norm, fast
 def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
@@ -262,7 +260,6 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device
             https://github.com/pytorch/pytorch/pull/25799
             https://github.com/pytorch/pytorch/issues/15253
     
-
     Parameters
     ----------
     peptide1_tensor : torch.tensor
@@ -359,10 +356,10 @@ def fast_cdist(x1, x2):
 
 
 ### WORKING
-def compute_distance_and_contact_maps(coordinate_dict, threshold=None, contacts_calculation=True):
+def compute_distance_and_contact_maps(coordinate_dict, threshold=None, contacts_calculation=True, device='cpu'):
 
     # instantiate tensor
-    coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
+    coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict, device=device)
     # group tensor for size
     group_tensor, order_tensor = cat_tensor_for_size(coordinate_tensor)
 
@@ -438,6 +435,3 @@ def get_median_c_alpha_distance(distance_maps):
     # calculate the median distance for all the peptides
     threshold = torch.median(torch.tensor(median_list))
     return threshold
-
-        
-        

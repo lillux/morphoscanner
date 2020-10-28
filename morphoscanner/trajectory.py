@@ -3,6 +3,7 @@ from morphoscanner import backend, data_acquisition, trj_object
 from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology
 from morphoscanner.backend.check_val import isInt
 
+import torch
 import tqdm
 from timeit import default_timer as timer
 import sys
@@ -39,35 +40,7 @@ class trajectory:
         morphoscanner.backend.topology.print_peptides_length(self.len_dict)
         
         return            
-        
-    def split(self, to_split: list, split_size: list):
-        '''Manually split peptide_length_list in case of seeds.
-        
-        Input:
-            to_split: list
-                list of int or ints.
-                Each int refers to the length of a peptides seed
-                from self.len_dict.keys() that you want to split in single peptide.
-                For example if in len dict there are seeds of length 96 that you want to split,
-                to_split = [96]
-                
-            split_size: list
-                list of int or ints.
-                This is the size in which you want to split your to_split seeds.
-                For example if you want to split your seeds of length 96 in peptides of length 12,
-                split_size = [12]
-                
-        Output:
-            Change the original self.peptide_length_list with a new list of splitted peptides.
-        
-        '''
-        
-        splitting_dict = data_acquisition.script_inputs.get_splitting_dict(to_split, split_size)
-        self.peptide_length_list = data_acquisition.script_inputs.get_new_peptides_length(self.peptide_length_list, splitting_dict)
-        print('Splitting done.\n')
-        print('"peptide_length_list" attribute has been updated with the new length.')
-        
-        return    
+
     
     def explore(self):
         frame = 0
@@ -115,13 +88,13 @@ class trajectory:
         return a_peptide
     
     # add something to ask for threshold in main.py
-    def analysis(self, frame, threshold_multiplier=1.45):
+    def analysis(self, frame, threshold_multiplier=1.45, device='cpu'):
         # check if threshold is given
         try:
             threshold = self.contact_threshold
         except:
             dic_0 = self.get_frame(0)
-            frame_distance_0 = distance_tensor.compute_distance_and_contact_maps(dic_0, threshold=0, contacts_calculation=False)
+            frame_distance_0 = distance_tensor.compute_distance_and_contact_maps(dic_0, threshold=0, contacts_calculation=False, device=device)
             threshold = distance_tensor.get_median_c_alpha_distance(frame_distance_0) * threshold_multiplier
             self.contact_threshold = threshold
             print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom" % str(self.contact_threshold))
@@ -132,12 +105,14 @@ class trajectory:
         frame_dict = self.get_frame(frame)
         
         start_dist = timer()
-        frame_distance, frame_contact = distance_tensor.compute_distance_and_contact_maps(frame_dict, threshold=threshold)
+        frame_distance, frame_contact = distance_tensor.compute_distance_and_contact_maps(frame_dict, threshold=threshold, device=device)
         end_dist = timer()
         print('Time to compute distance is: ', (end_dist - start_dist))
 
         start_den = timer()
-        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact)
+
+        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact, device=device)
+
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den))
     
@@ -156,7 +131,7 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45):
+    def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45, device='cpu'):
         
         if threshold != None:
             self.contact_threshold=threshold
@@ -167,7 +142,7 @@ class trajectory:
         start = timer()
         for frame in self.frames:
             start_an = timer()
-            self.analysis(frame, threshold_multiplier=threshold_multiplier)
+            self.analysis(frame, threshold_multiplier=threshold_multiplier, device=device)
             end_an = timer()
             text = 'Time needed to analyze frame %d was %f seconds' % (frame, (end_an-start_an))
             print(text)
