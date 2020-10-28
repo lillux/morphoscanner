@@ -732,3 +732,4 @@ class trajectory:
         fig.show()
     
         return
+    
