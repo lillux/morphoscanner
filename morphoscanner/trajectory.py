@@ -304,7 +304,8 @@ class trajectory:
                     # for dataframe index (contact data)
                     for index in a.groups[group]:
                         #shift of the current contact
-                        shift = abs(self.frames[frame].results.cross_correlation.iloc[index]['shift'])
+                        shift = int(abs(self.frames[frame].results.cross_correlation.iloc[index]['shift']))
+                        #print(int(shift))
                         # if is there, add 1 to current shift counter
                         try:
                             shift_profile[frame][group][shift] += 1
@@ -325,8 +326,8 @@ class trajectory:
                 # can interact differently
                 if group == 'antiparallel':
                     for index in a.groups[group]:
-                        shift = self.frames[frame].results.cross_correlation.iloc[index]['shift']
-                        
+                        shift = int(self.frames[frame].results.cross_correlation.iloc[index]['shift'])
+        
                         if shift > 0:
                             shift_profile[frame][group]['negative'] = {}
                             try:
@@ -338,7 +339,7 @@ class trajectory:
                                     shift_profile[frame][group]['negative'][i] = 0
                             shift_profile[frame][group]['negative'] = {k[0]:k[1] for k in sorted(shift_profile[frame][group]['negative'].items())}
                             self.frames[frame].results.shift_profile_antiparallel_negative = shift_profile[frame][group]['negative']
-    
+        
                         if shift <= 0:
                             shift = abs(shift)
                             shift_profile[frame][group]['positive'] = {}
