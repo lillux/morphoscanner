@@ -154,41 +154,6 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
     return universe
 
 
-# create a dict from a Universe in which each entry is a timestep of the MD simulation
-def create_trajectory_dict(universe):
-    
-    '''
-    Parse all the universe trajectory coordinate
-    and put it in a dict. It does not group peptides,
-    it just get all the coordinates of BB atoms for
-    each trajectory frame.
-
-    Parameters
-    ----------
-    universe : mdAnalysis.Universe
-        It uses mdAnalysis parsing capability to read
-        the trajectory data
-
-    Returns
-    -------
-    trajectory_dict : dict
-        Is a dict in which each keys is an integer
-        that indicate the trajectory frame, starting
-        from zero.
-        Values are the coordinate of all the BB atoms
-        of that frame.
-
-    '''
-    
-    bb = universe.select_atoms('name BB')
-    trajectory_dict = {}
-    
-    for index, time_steps in enumerate(universe.trajectory):
-        trajectory_dict[index] = bb.positions
-    
-    return trajectory_dict
-
-
 # Do not select by using the BB nomenclature
 # Use instead the aminoacids names and numbers on the first element
 # and compare it with the data inside molnames

@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import plotly.graph_objects as go
+from scipy.interpolate import make_interp_spline, BSpline, interp1d,interpolate
 
 
 class trajectory:
@@ -356,8 +357,13 @@ class trajectory:
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
         antiparallel = self.database['antiparallel']
         antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
-        tss = [self.universe.trajectory[i].time/1000 for i in index]
-        plt.plot(tss, antip_total_ratio, 'bo')
+        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+        x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
+        spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = 'cubic')
+        antip_total_ratio_smooth = spl(x)
+        
+        plt.plot(x, antip_total_ratio_smooth,'-')
+        plt.title('β-sheets alignment over time')
         plt.xlabel('Time (ns)')
         plt.ylabel('β-Sheet Organizational Index')
     
@@ -366,20 +372,34 @@ class trajectory:
     
     def plot_peptides_in_beta(self):
         index = self.database.index
-        tss = [self.universe.trajectory[i].time/1000 for i in index]
         beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
-        plt.plot(tss,beta,'bo')
-        plt.xlabel('Time (ns)')
-        plt.ylabel('Peptides in β-sheet')
-    
-        return 
+        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+        number_of_peptides = len(self.frames[0].peptides)
+        x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
+        spl = interpolate.interp1d(tss, beta, kind ='cubic')
+        beta_smooth  = spl(x)
+        beta_smooth_norm = (beta_smooth/number_of_peptides) * 100
 
+        plt.plot(x, beta_smooth_norm, '-')
+        plt.title('% of peptides involved in β-sheets')
+        plt.ylim((0,100))
+        plt.xlabel('Time (ns)')
+        plt.ylabel('% of Peptides in β-sheet')
+    
+        return
     
     def plot_aggregates(self):
         index = self.database.index
-        tss = [self.universe.trajectory[i].time/1000 for i in index]
+        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).asarray(int)
         aggregates = self.database['n° of macroaggreates']
-        plt.plot(tss, aggregates,'bo')
+        x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
+        spl = interpolate.interp1d(tss_int, aggregates, kind='cubic')
+        aggregates_smooth = spl(x)
+        y_max = len(self.frames[0].peptides)//2
+
+        plt.plot(x, aggregates_smooth,'-')
+        plt.yticks([i for i in range(0, y_max+2, 2)])
+        plt.title('Aggregation Order')
         plt.xlabel('Time (ns)')
         plt.ylabel('N° of macroaggregates')
 
@@ -388,15 +408,13 @@ class trajectory:
     def plot_shift_parallel(self, frame=None):
         try:
             f = self.frames[frame].results.shift_profile_parallel
-        
         except:
             max_shift = max(self.peptide_length_list)
             f = {k:0 for k in range(max_shift)}
-
         x = [val for val in f.keys()]
         y = [k for k in f.values()]
         plt.plot(x, y)
-        plt.xlabel('Parallel Shift')
+        plt.xlabel('P Shift')
         plt.ylabel('Number of contacts')
         plt.show()
         return
@@ -410,7 +428,7 @@ class trajectory:
         x = [val for val in f.keys()]
         y = [k for k in f.values()]
         plt.plot(x, y)
-        plt.xlabel('Antiparallel + Shift')
+        plt.xlabel('A+ Shift')
         plt.ylabel('Number of contacts')
         plt.show() 
         return
@@ -425,7 +443,7 @@ class trajectory:
         x = [val for val in f.keys()]
         y = [k for k in f.values()]
         plt.plot(x, y)
-        plt.xlabel('Antiparallel - Shift')
+        plt.xlabel('A- Shift')
         plt.ylabel('Number of contacts')
         plt.show() 
         return
@@ -601,13 +619,8 @@ class trajectory:
         #return nx.draw_networkx(graph, edges=edges, edge_color=colors, width=weights) #for networkx 2.4
         return nx.draw_networkx(graph, edge_color=colors, width=weights)  # for networkx 2.5
 
-    
-# Use the .gro file but do not select by using the BB nomenclature
-# Use instead the aminoacids names and numbers on the first element
-# and compare it with the data inside molnames
 
     ### Use this to plot 3d data from trajectory object
-
     def plot3d_parallel(self):
         # Read timestep from trajectory
         index = self.database.index
@@ -635,8 +648,8 @@ class trajectory:
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
-                        xaxis_title='Parallel Shift',
-                        yaxis_title='Time (ps)',
+                        xaxis_title='P Shift',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                             title='Parallel Shift')
@@ -672,11 +685,11 @@ class trajectory:
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
-                        xaxis_title='Antiparallel - Shift',
-                        yaxis_title='Time (ps)',
+                        xaxis_title='AP- Shift',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
-                            title='Antiparallel - Shift')
+                            title='Antiparallel Negative Shift')
         fig.show()
 
         return
@@ -708,11 +721,11 @@ class trajectory:
         fig = go.Figure(data=[go.Surface(z=z*100, x=x, y=y)])
         fig.update_layout(autosize=True,
                           scene = dict(
-                        xaxis_title='Antiparallel + Shift',
+                        xaxis_title='AP+ Shift',
                         yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
-                            title='Antiparallel + Shift')
+                            title='Antiparallel Positive Shift')
         fig.show()
     
         return

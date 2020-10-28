@@ -23,8 +23,8 @@ def get_coordinate_tensor_from_dict(coordinate_dict, device='cpu'):
         dict in the form {peptide_index : {atom_index : [x,y,z]}}
         
     device : str, optional
-        Choose between 'cpu' or 'gpu'. The default is 'cpu'.
-        It is the device in which the tensor is instantiated.
+        The default is 'cpu'.
+        Let you choose the device in which to perform the computation, between 'cpu' and 'cuda'
         
     Returns
     -------
@@ -60,7 +60,11 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
     coordinate_dict : dict
         Is the coordinate_dict in the form {key : [x, y, z]}.
         It also works for N-dimensional points.
-
+        
+    device : str, optional
+        The default is 'cpu'.
+        Let you choose the device in which to perform the computation, between 'cpu' and 'cuda'
+   
     Returns
     -------
     zero : torch.tensor
@@ -68,9 +72,9 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
         'n'  are the keys in coordinate_dict al len(coordinate_dict)
         'm' is the number of dimensions of your data points
         
-        It save on gpu if torch.cuda.is_available(), else on cpu
+        It save on the device.
         If you want to move your data on cpu, e.g. for visualization,
-        you need to output_tensor.cpu()
+        you need to use .cpu() on the resulting tensor, in this case zero.cpu()
     '''
     
     #variables with dict dimension
@@ -103,6 +107,10 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict, device='cpu'):
         Your coordinate_dict.
         It is in the form:
         {chain : {atom : [x, y, z] }}.
+        
+    device : str, optional
+        The default is 'cpu'.
+        Let you choose the device in which to perform the computation, between 'cpu' and 'cuda'
 
     Returns
     -------
@@ -110,6 +118,7 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict, device='cpu'):
         It is a dict of tensor, one tensor per chain.
 
     '''
+
     tensor_dict = {}
     for chain in coordinate_dict:
         tensor_dict[chain] = get_coordinate_tensor_from_dict_single(coordinate_dict[chain], device=device)
@@ -192,17 +201,25 @@ def compute_distance_between_each_peptide(coordinate_dict):
 
 #compute euclidean norm, fast
 def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
-    '''Use matrix to compute euclidean distance dataset wise
-        and return a set of distance matrix for everi couple of peptides
-
-    ****Runs in parallel on CUDA devices.
-
-    Argument: tensor of shape n_peptide * n_residue * number of dimension (3 for 3d)
-
-    return: tensor of shape n_peptide * n_peptide * n_residue * n_residue
-
     '''
+    Use matrix to compute euclidean distance dataset wise
+    and return a set of distance matrix for everi couple of peptides
+    
 
+    Parameters
+    ----------
+    coordinate_tensor : torch.tensor()
+        tensor of shape n_peptide * n_residue * number of dimension (3 for 3d)
+    
+    device : str, optional
+        The default is 'cpu'.
+        Let you choose the device in which to perform the computation, between 'cpu' and 'cuda'.
+
+    Returns
+    -------
+    zero : torch.tensor()
+        tensor of shape n_peptide * n_peptide * n_residue * n_residue
+    '''
     #create tensor of 0s with shape n_pep x n_pep * n_res + n_res
     #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     zero = torch.zeros((coordinate_tensor.shape[0], coordinate_tensor.shape[0], coordinate_tensor.shape[1], coordinate_tensor.shape[1]), dtype=torch.float32, device = device)
@@ -357,6 +374,27 @@ def fast_cdist(x1, x2):
 
 ### WORKING
 def compute_distance_and_contact_maps(coordinate_dict, threshold=None, contacts_calculation=True, device='cpu'):
+    '''
+    Perform the computation of the point-wise distance map. Then compute the
+    contact maps using a threshold distance
+
+    Parameters
+    ----------
+    coordinate_dict : dict()
+        DESCRIPTION.
+    threshold : TYPE, optional
+        DESCRIPTION. The default is None.
+    contacts_calculation : TYPE, optional
+        DESCRIPTION. The default is True.
+    device : TYPE, optional
+        DESCRIPTION. The default is 'cpu'.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
 
     # instantiate tensor
     coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict, device=device)
