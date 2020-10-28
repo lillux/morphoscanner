@@ -90,7 +90,7 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
 
 
 
-def get_coordinate_tensor_from_dict_multi(coordinate_dict):
+def get_coordinate_tensor_from_dict_multi(coordinate_dict, device='cpu'):
     '''
     Generate tensor from multichain coordinate dict.
     Your coordinate_dict is in the form:
@@ -112,7 +112,7 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict):
     '''
     tensor_dict = {}
     for chain in coordinate_dict:
-        tensor_dict[chain] = get_coordinate_tensor_from_dict_single(coordinate_dict[chain])
+        tensor_dict[chain] = get_coordinate_tensor_from_dict_single(coordinate_dict[chain], device=device)
     return tensor_dict
 
 
