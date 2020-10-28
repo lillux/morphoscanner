@@ -1,18 +1,15 @@
 import morphoscanner
-from morphoscanner import backend, data_acquisition, trj_object
+from morphoscanner import backend, trj_object
 from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology
-from morphoscanner.backend.check_val import isInt
 
-import torch
 import tqdm
 from timeit import default_timer as timer
-import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import plotly.graph_objects as go
-from scipy.interpolate import make_interp_spline, BSpline, interp1d,interpolate
+from scipy.interpolate import interpolate
 
 
 class trajectory:
@@ -24,7 +21,7 @@ class trajectory:
         
         self.trj_gro = trj_gro
         self.trj_xtc = trj_xtc
-        self.universe = backend.topology.make_universe(self.trj_gro, self.trj_xtc)
+        self.universe = topology.make_universe(self.trj_gro, self.trj_xtc)
         self.number_of_frames = len(self.universe.trajectory)
         
         if select == None:
@@ -32,13 +29,13 @@ class trajectory:
             
         self.select = select
        
-        self.peptide_length_list = backend.topology.get_peptide_length_list(self.trj_gro, self.select)
+        self.peptide_length_list = topology.get_peptide_length_list(self.trj_gro, self.select)
         
-        self.len_dict = backend.topology.get_peptide_length_dict(self.peptide_length_list)
+        self.len_dict = topology.get_peptide_length_dict(self.peptide_length_list)
         
         print('In your trajectory there are %d frames.\n' % self.number_of_frames)
 
-        morphoscanner.backend.topology.print_peptides_length(self.len_dict)
+        topology.print_peptides_length(self.len_dict)
         
         return            
 
@@ -352,14 +349,14 @@ class trajectory:
     #####################
     
     
-    def plot_contacts(self):
+    def plot_contacts(self, kind='cubic'):
         index = self.database.index
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
         antiparallel = self.database['antiparallel']
         antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
         tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-        spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = 'cubic')
+        spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = kind)
         antip_total_ratio_smooth = spl(x)
         
         plt.plot(x, antip_total_ratio_smooth,'-')
@@ -370,13 +367,13 @@ class trajectory:
         return
     
     
-    def plot_peptides_in_beta(self):
+    def plot_peptides_in_beta(self, kind='cubic'):
         index = self.database.index
         beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
         tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
         number_of_peptides = len(self.frames[0].peptides)
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-        spl = interpolate.interp1d(tss, beta, kind ='cubic')
+        spl = interpolate.interp1d(tss_int, beta, kind = kind)
         beta_smooth  = spl(x)
         beta_smooth_norm = (beta_smooth/number_of_peptides) * 100
 
@@ -388,12 +385,12 @@ class trajectory:
     
         return
     
-    def plot_aggregates(self):
+    def plot_aggregates(self, kind='cubic'):
         index = self.database.index
-        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).asarray(int)
+        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
         aggregates = self.database['n° of macroaggreates']
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-        spl = interpolate.interp1d(tss_int, aggregates, kind='cubic')
+        spl = interpolate.interp1d(tss_int, aggregates, kind=kind)
         aggregates_smooth = spl(x)
         y_max = len(self.frames[0].peptides)//2
 
@@ -450,12 +447,15 @@ class trajectory:
 
 
     def get_subgraphs_sense(self, frame):
-        '''Retrive information about contact sense of each aggregate
+        '''
+        Retrive information about contact sense of each aggregate
         found in self.frames[frame]['subgraphs_full']
+        
         Parameters
         ----------
         frame : int
             The frame of which you want to get contact sense informations.
+        
         Returns
         -------
         sense_dict : dict
@@ -503,24 +503,26 @@ class trajectory:
     
                 return sense_dict
     
-
-    
     
     def plot_frame_aggregate(self, frame: int):
-        '''Plot the frame with color code that identify the
+        '''
+        Plot the frame with color code that identify the
         sense of the majority of contacts in an aggregate.
-        Grey: no contact,
-        Green: majority of parallel contacts,
-        Blue: majority of antparallel contacts,
-        Yellow: equal number of parallel and antiparallel contacts
+        
+            - Grey: no contact,
+            - Green: majority of parallel contacts,
+            - Blue: majority of antparallel contacts,
+            - Yellow: equal number of parallel and antiparallel contacts
         
         The plot can be made interactive using jupyter-notebook,
         with:
             %matplotlib notebook
+        
         Parameters
         ----------
         frame : int
             The frame that you want to plot
+        
         Returns
         -------
         plot
@@ -602,6 +604,7 @@ class trajectory:
         ----------
         frame : int
             The frame of which you want to plot the graph.
+        
         Returns
         -------
         plot
