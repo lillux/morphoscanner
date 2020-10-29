@@ -13,135 +13,198 @@ from scipy.interpolate import interpolate
 
 
 class trajectory:
-    '''Class to operate on trajectory files.
-    It makes an object that contain the trajectory of the simulation.
-    From this object is possible to conduct analysis'''
+    '''
+    Class to operate on trajectory files.
+    
+    It makes an object that contain the trajectory information of the MD simulation.
+    From this object is possible to conduct the analysis.
+    '''
 
-    def __init__(self, trj_gro, trj_xtc, select = None):
+    def __init__(self, _sys_config, _sys_traj, select = None):
         
-        self.trj_gro = trj_gro
-        self.trj_xtc = trj_xtc
-        self.universe = topology.make_universe(self.trj_gro, self.trj_xtc)
+        # save data paths as object attribute
+        self._sys_config = _sys_config
+        self._sys_traj = _sys_traj
+        # instantiate MDAnalysis.Universe()
+        self.universe = topology.make_universe(self._sys_config, self._sys_traj)
+        # save the number of frames in the trajectory as object attribute
         self.number_of_frames = len(self.universe.trajectory)
         
+        # if no preference for grain selection, get aminoacids C backbone grains
         if select == None:
             select = ['aminoacids']
-            
+        # save selected grains types as object attribute
         self.select = select
-       
-        self.peptide_length_list = topology.get_peptide_length_list(self.trj_gro, self.select)
-        
+        # parse the _sys_config file to get the number of selected grains for each peptide
+        self.peptide_length_list = topology.get_peptide_length_list(self._sys_config, self.select)
+        # save the number of aminoacids for each peptide in a dict in the form:
+        #    {key:value} where:
+        #       'key' is an int, a certain number of aminoacids
+        #       'value' is the int number of peptides that have 'key' aminoacids
         self.len_dict = topology.get_peptide_length_dict(self.peptide_length_list)
         
         print('In your trajectory there are %d frames.\n' % self.number_of_frames)
-
+        
         topology.print_peptides_length(self.len_dict)
         
-        return            
+        return           
 
     
     def explore(self):
+        '''
+        Parse the first frame of the trajectory to gather peptide sequence, coordinates 
+        and index number in the MDAnalysis.Universe(). 
+        '''
+        # the frame to parse is the first frame of the trajectory 
         frame = 0
+        # instantiate the dict() that will contain the frame information
         self.frames = {}
+        # instantiate the object 'frame'
         self.frames[frame] = trj_object.trj_objects.frames(frame)
+        # instantiate 'peptide' object and fill with frame data
         self.frames[frame].peptides = backend.topology.get_data_from_trajectory_frame_v2(universe=self.universe, frame=frame, select=self.select)
+        # to print when done
         print('Exploration of frame %d done.\n' % frame)
 
-        return    
+        return  
     
     def compose_database(self, sampling_interval=1):
-        
+        '''
+        Sample the trajectory() frames to gather coordinates from the peptides.
+        The informations passed about the sequence and the index number are the same as the
+        frame 0, parsed with the function self.explore().
+        '''
+        # create a list that contains the trajectory step to parse
         steps = [s for s in range(self.number_of_frames) if (s % sampling_interval)==0 and (s != 0)]
+        # for each step
         for step in tqdm.tqdm(steps):
+            # move MDAnalysis.Universe.trajectory to the selected frame
             self.universe.trajectory[step]
+            # create 'frame' object
             self.frames[step] = trj_object.trj_objects.frames(step)
+            # create a dict() for each peptide
             self.frames[step].peptides = {}
+            # for each peptide in the first frame (frame 0)
+            # (number of peptides and their composition is supposed to be the same in each step)
             for pep in self.frames[0].peptides:
+                # instantiate a dict that will contain the information about ol the peptide in the frame
                 c_list = {}
-
+                # for each atom index parsed in frame 0
+                # (atoms are supposed to mantain their index in each step of the trajectory)
                 for idx, i in enumerate(self.frames[0].peptides[pep].atom_numbers.values()):
+                    # get position of atom at atom index 'i' in frame 'step' 
                     p = self.universe.atoms[i].position
+                    # add position to a dict()
                     c_list[idx] = p
-
+                # create peptide object, that contains the data of each grain (atom) of the peptide
                 self.frames[step].peptides[pep] = trj_object.trj_objects.single_peptide(self.frames[0].peptides[pep].sequence,self.frames[0].peptides[pep].atom_numbers,c_list)
 
         return
+    
         
     def get_frame(self, frame):
-        
+        '''
+        Get the position of all the parsed atom of a trajectory frame.
+        '''
+        # instantiate the dict() that will contains the peptides coordinates
         a_frame = {}
-
+        # for each parsed peptide
         for pep in self.frames[frame].peptides:
+            # get coordinate and put them in the dict()
             a_frame[pep] = self.frames[frame].peptides[pep].coordinates
 
         return a_frame
     
-    def get_peptide(self, peptide):
     
+    def get_peptide(self, peptide):
+        '''
+        Get the position of a peptide in all the parsed frames.
+        '''
+        # instantiate the dict() that will contains the peptide coordinates
         a_peptide = {}
+        # for each parsed frame
         for frame in self.frames:
-            
+            # get the peptide coordinates
             a_peptide[frame] = self.frames[frame].peptides[peptide].coordinates
             
         return a_peptide
     
+    
     # add something to ask for threshold in main.py
     def analysis(self, frame, threshold_multiplier=1.45, device='cpu'):
-        # check if threshold is given
+        '''
+        Compute analysis on a frame.
+        '''
+        # check if threshold distance for contact is given
         try:
             threshold = self.contact_threshold
+        # if not given, calculate the threshold
         except:
+            # get the coordinates of each atom in the first frame
             dic_0 = self.get_frame(0)
+            # compute a pairwise distance map of the atoms in the first frame
             frame_distance_0 = distance_tensor.compute_distance_and_contact_maps(dic_0, threshold=0, contacts_calculation=False, device=device)
+            # the threshold is the median distance
+            # between the contiguous alpha carbon of each peptide * threshold_multiplier
             threshold = distance_tensor.get_median_c_alpha_distance(frame_distance_0) * threshold_multiplier
+            # save the threshold as a trajectory() object's attribute
             self.contact_threshold = threshold
+            # print the threshold
             print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom" % str(self.contact_threshold))
     
-        #frame = frame
+        # print the frame to be analyzed
         print('Analyzing frame n° ', frame)
-    
+        # get coordinate of the frame
         frame_dict = self.get_frame(frame)
-        
+        # compute pointwise distance map for each peptide
+        # and compute the contact map for each peptide
+        # using the threshold distance as the maximum distance counted as a contact
         start_dist = timer()
         frame_distance, frame_contact = distance_tensor.compute_distance_and_contact_maps(frame_dict, threshold=threshold, device=device)
         end_dist = timer()
         print('Time to compute distance is: ', (end_dist - start_dist))
-
+        # gather data on the contact network between peptides
         start_den = timer()
-
         frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact, device=device)
-
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den))
-    
+        # compose a graph of the contacting peptides
         frame_graph_full = graph.graph_v1(frame_denoised, df)
-        
+        # find isolate peptides aggregate
         subgraphs = graph.find_subgraph(frame_graph_full)  
-        
+        # save computed data in the object 'results'
         self.frames[frame].results = trj_object.trj_objects.results()
         self.frames[frame].results.distance_maps = frame_distance
         self.frames[frame].results.contact_maps = frame_contact
         self.frames[frame].results.cross_correlation = df
         self.frames[frame].results.graph = frame_graph_full
         self.frames[frame].results.subgraphs = subgraphs
+        # print to confirm the end of the analysis
         print('Finished analysis of frame n° %d' % frame)
         
         return
     
     
     def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45, device='cpu'):
-        
+        '''
+        Compute analysis on the whole sampled dataset.
+        '''
+        # if threshold is given as parameter
         if threshold != None:
+            # threshold for the analysis is the given threshold 
             self.contact_threshold=threshold
         else:
             pass
-        
+        # print to confirm the starting of the proces
         print('processing started...')
         start = timer()
+        # for each sampled frame
         for frame in self.frames:
             start_an = timer()
+            # compute analysis
             self.analysis(frame, threshold_multiplier=threshold_multiplier, device=device)
             end_an = timer()
+            # print the time needed for the analysis
             text = 'Time needed to analyze frame %d was %f seconds' % (frame, (end_an-start_an))
             print(text)
 
@@ -157,8 +220,12 @@ class trajectory:
     
     def get_sense(self):
 
-        ''' Analyze self.frames to retrieve the number of contact 
-            per sense ("parallel" and "antiparallel")
+        '''
+        Analyze self.frames to retrieve the number of contact 
+        per sense ("parallel" and "antiparallel")
+                
+        return: pandas.Dataframe
+
         '''
         # instantiate main dict
         sense_dict = {}
@@ -187,70 +254,80 @@ class trajectory:
     
     
     def subgraph_length_peptide(self):
-        '''Get information about the size of the aggregates in the trajectory
-        Argument: aggregate
-        return: dict, keys = frame number,
-                      value = a sorted list (big to small) of the aggregate size in that frame
         '''
-
+        Get information about the size of the aggregates in the trajectory
+        
+        Argument: self
+        
+        return: pandas.Dataframe
+        '''
+        # if there are sampled frames
         if len(self.frames) > 0:
-
+            # instantiate dict()
             self.subgraph_size_peptide = {}
-
+            # for each sampled frame
             for key in self.frames.keys():
-
+                # instantiate dict()
                 subgraph_dict = {}
-
+                # find aggregates (isolated communities in the graph) and save in the dict()
                 subgraph_dict[key] = morphoscanner.backend.graph.find_subgraph(self.frames[key].results.graph)
-
+                # instantiate list()
                 len_list = []
-
+                # for each cluster isolated community)
                 for i in subgraph_dict[key]:
-
+                    # len(i) is the number of peptides in a cluster, add to the list
                     len_list.append(len(i))
-
+                # sort cluster from bigger to smaller
                 len_list.sort(reverse=True)
-
+                # save frame data in a dict()
                 self.subgraph_size_peptide[key] = [len_list]
-
+        # save pandas.Dataframe with calculated data
         self.subgraph_len_pep_df = pd.DataFrame.from_dict(self.subgraph_size_peptide, orient='index', columns=['n° of peptides in macroaggregates'])
-
-        #else:
-         #   print('You have to analyze one or more frame before analyze the results.')
-         #   print('Use "Analyze" or "AnalyzeInLoop" on the dataset first!')
 
         return
     
     
     def macroaggregate_sense_data(self):
-
+        '''
+        Get data on the sense of the contacts between the peptides 
+        '''
+        # instantiate dict
         macroaggregate_sense_dict = {}
-
+        # for each frame
         for frame in self.frames:
+            # get graph
             graph = self.frames[frame].results.graph
+            # get peptides clusters
             subs = self.frames[frame].results.subgraphs
-            #senses = contact_sense_in_subgraph(graph, subs)
-            #sense_counter = count_sense_in_subgraph(senses)
+            # count contact sense
             sense_counter = morphoscanner.backend.graph.sense_in_subgraph(graph, subs)
+            # save data in dict()
             macroaggregate_sense_dict[frame] = sense_counter
-
+        # save data in pandas.Dataframe
         self.macroaggregate_df = pd.DataFrame.from_dict(macroaggregate_sense_dict, orient='index')
 
         return
     
     
     def number_of_macroaggregate_per_frame(self):
+        '''
+        Calculate number of peptides clusters in each frame
+        '''
+        # instantiate dict()
         number_of_peptide = {}
+        # for each frame data on peptides clusters size
         for i in self.subgraph_size_peptide:
+            # calculate number of clusters per frame and save in a dict()
             number_of_peptide[i] = len(self.subgraph_size_peptide[i][0])
-
+        # create pandas.Dataframe from data
         self.number_of_peptide_df = pd.DataFrame.from_dict(number_of_peptide, orient='index', columns=['n° of macroaggreates'])
 
         return
     
     
     def shift_profile(self):
-        '''Calculate shift profile for the current trajectory.
+        '''
+        Calculate shift profile for the current trajectory.
 
         Returns
         -------
@@ -329,6 +406,9 @@ class trajectory:
 
 
     def get_data(self):
+        '''
+        Single function to compute and assemble data on the whole trajectory
+        '''
         self.get_sense()
         self.subgraph_length_peptide()
         self.macroaggregate_sense_data()
@@ -338,7 +418,9 @@ class trajectory:
     
         
     def get_database(self):
-        
+        '''
+        Compose a pandas.Dataframe with the calculates trajectory() data
+        '''
         self.database = pd.concat((self.subgraph_len_pep_df, self.sense_df, self.number_of_peptide_df, self.macroaggregate_df), axis=1)
 
         return
