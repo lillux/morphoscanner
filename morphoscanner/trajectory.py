@@ -21,6 +21,26 @@ class trajectory:
     '''
 
     def __init__(self, _sys_config, _sys_traj, select = None):
+        '''
+        Construct the trajectory() object.
+
+        Parameters
+        ----------
+        _sys_config : str
+            file path of the initial configuration of the system (.gro file for GROMACS)
+        _sys_traj : str
+            file path of the trajectory file (or files) (.xtc or .trr in GROMACS)
+        select : list(str), optional
+            Choose which atoms to select and analyze. The atoms can be choosen from
+            one of the morphoscanner.molnames.costituents.keys().
+            
+            The default is None and will select only the aminoacids alpha-carbon
+
+        Returns
+        -------
+        None.
+
+        '''
         
         # save data paths as object attribute
         self._sys_config = _sys_config
@@ -57,7 +77,7 @@ class trajectory:
         '''
         # the frame to parse is the first frame of the trajectory 
         frame = 0
-        # instantiate the dict() that will contain the frame information
+        # instantiate the dict() that will contain the information from all the frames in the trajectory
         self.frames = {}
         # instantiate the object 'frame'
         self.frames[frame] = trj_object.trj_objects.frames(frame)
@@ -68,13 +88,26 @@ class trajectory:
 
         return  
     
+    
     def compose_database(self, sampling_interval=1):
         '''
         Sample the trajectory() frames to gather coordinates from the peptides.
-        The informations passed about the sequence and the index number are the same as the
-        frame 0, parsed with the function self.explore().
+        
+        The informations retrieved about the sequence and the index number of each peptide
+        are the same as the one in frame 0, already parsed with the function self.explore().
+        
+        Parameters
+        ----------
+        sampling_interval : int, optional
+            If frame % sampling interval == 0, sample the frame.
+            The default is 1.
+
+        Returns
+        -------
+        None.
+
         '''
-        # create a list that contains the trajectory step to parse
+        # create a list that contains the trajectory steps to parse
         steps = [s for s in range(self.number_of_frames) if (s % sampling_interval)==0 and (s != 0)]
         # for each step
         for step in tqdm.tqdm(steps):
@@ -105,6 +138,18 @@ class trajectory:
     def get_frame(self, frame):
         '''
         Get the position of all the parsed atom of a trajectory frame.
+
+        Parameters
+        ----------
+        frame : int
+            The trajectory frame from which you want to get the atoms coordinates from.
+
+        Returns
+        -------
+        a_frame : dict
+            A dict with the form:
+                {peptide_index : {atom_index : [x,y,z]}}
+
         '''
         # instantiate the dict() that will contains the peptides coordinates
         a_frame = {}
@@ -119,6 +164,18 @@ class trajectory:
     def get_peptide(self, peptide):
         '''
         Get the position of a peptide in all the parsed frames.
+
+        Parameters
+        ----------
+        peptide : int
+            The peptide of which you want to recover coordinates in each sampled frame of the trajectory
+
+        Returns
+        -------
+        a_peptide : dict()
+            A dict() with the form:
+                {frame_index : {atom_index : [x,y,z]}}
+
         '''
         # instantiate the dict() that will contains the peptide coordinates
         a_peptide = {}
@@ -134,6 +191,31 @@ class trajectory:
     def analysis(self, frame, threshold_multiplier=1.45, device='cpu'):
         '''
         Compute analysis on a frame.
+
+        Parameters
+        ----------
+        frame : int
+            The frame to analyze.
+            
+        threshold_multiplier : float, optional
+            The default is 1.45.
+            threshold_multiplier is a factor used to multiply the calculated
+            threshold distance for contact recognition.
+            
+        device : str, optional
+            The device on which the data are saved and the analysis is computed.
+            The option are:
+                'cpu', to perform parallelization on cpu
+                'cuda', to performe parallelization on CUDA compatible device,
+                    usually Nvidia GPUs.
+            
+            The default is 'cpu'.
+            
+
+        Returns
+        -------
+        None.
+
         '''
         # check if threshold distance for contact is given
         try:

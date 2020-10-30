@@ -1,7 +1,3 @@
-from timeit import default_timer as timer
-from ..backend import distance_tensor, pattern_recognition, graph
-
-        
 ### USING THIS ONE
 # to complete
 # i want to get frame and the tensor inside frame object
@@ -14,16 +10,7 @@ class frames():
         self.frame = frame
         
         pass
-        
 
-#    def get_frame(self):
-#
-#        a_frame = {}
-#        for pep in super().frames[self.frame].peptides:
-#            a_frame[pep] = super().frames[self.frame].peptides[pep].coordinates    
-#    
-#        pass
-    
 
 # save results in this
 class results():
@@ -31,7 +18,6 @@ class results():
     pass
     
         
-
 # Classes in dev
 
 class single_peptide():
