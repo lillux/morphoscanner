@@ -89,25 +89,30 @@ class trajectory:
         return  
     
     
-    def compose_database(self, sampling_interval=1):
+    def compose_database(self, sampling_interval=1, direct_parse=False):
         '''
         Sample the trajectory() frames to gather coordinates from the peptides.
         
         The informations retrieved about the sequence and the index number of each peptide
         are the same as the one in frame 0, already parsed with the function self.explore().
-        
+
         Parameters
         ----------
         sampling_interval : int, optional
             If frame % sampling interval == 0, sample the frame.
             The default is 1.
+            
+        direct_parse : bool, optional
+            Choose between parsing the data directly from the MDAnalysis.Universe() (True)
+            or use sequence and atom_index parsede in the frame 0 to recover coordinate data from each other frames.
+            The default is False.
 
         Returns
         -------
         None.
 
         '''
-        # create a list that contains the trajectory steps to parse
+        # create a list that contains the trajectory step to parse
         steps = [s for s in range(self.number_of_frames) if (s % sampling_interval)==0 and (s != 0)]
         # for each step
         for step in tqdm.tqdm(steps):
@@ -115,22 +120,28 @@ class trajectory:
             self.universe.trajectory[step]
             # create 'frame' object
             self.frames[step] = trj_object.trj_objects.frames(step)
-            # create a dict() for each peptide
-            self.frames[step].peptides = {}
-            # for each peptide in the first frame (frame 0)
-            # (number of peptides and their composition is supposed to be the same in each step)
-            for pep in self.frames[0].peptides:
-                # instantiate a dict that will contain the information about ol the peptide in the frame
-                c_list = {}
-                # for each atom index parsed in frame 0
-                # (atoms are supposed to mantain their index in each step of the trajectory)
-                for idx, i in enumerate(self.frames[0].peptides[pep].atom_numbers.values()):
-                    # get position of atom at atom index 'i' in frame 'step' 
-                    p = self.universe.atoms[i].position
-                    # add position to a dict()
-                    c_list[idx] = p
-                # create peptide object, that contains the data of each grain (atom) of the peptide
-                self.frames[step].peptides[pep] = trj_object.trj_objects.single_peptide(self.frames[0].peptides[pep].sequence,self.frames[0].peptides[pep].atom_numbers,c_list)
+            # Parse each atoms full data, slower but directly parse information from each atoms.
+            if direct_parse:
+                # instantiate 'peptide' object and fill with frame data.
+                self.frames[step].peptides = backend.topology.get_data_from_trajectory_frame_v2(universe=self.universe, frame=step, select=self.select)
+            # Parse only coordinate from each atom.
+            # this is way faster, but does not work if atom index change during the MD simulation.
+            else:
+                self.frames[step].peptides = {}
+                # for each peptide in the first frame (frame 0)
+                # (number of peptides and their composition is supposed to be the same in each step)
+                for pep in self.frames[0].peptides:
+                    # instantiate a dict that will contain the information about ol the peptide in the frame
+                    c_list = {}
+                    # for each atom index parsed in frame 0
+                    # (atoms are supposed to mantain their index in each step of the trajectory)
+                    for idx, i in enumerate(self.frames[0].peptides[pep].atom_numbers.values()):
+                        # get position of atom at atom index 'i' in frame 'step' 
+                        p = self.universe.atoms[i].position
+                        # add position to a dict()
+                        c_list[idx] = p
+                    # create peptide object, that contains the data of each grain (atom) of the peptide
+                    self.frames[step].peptides[pep] = trj_object.trj_objects.single_peptide(self.frames[0].peptides[pep].sequence,self.frames[0].peptides[pep].atom_numbers,c_list)
 
         return
     
