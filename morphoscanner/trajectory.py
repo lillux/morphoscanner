@@ -212,6 +212,22 @@ class trajectory:
             The default is 1.45.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
+            The calculate threshold distance is the median distance between all the contiguos 
+            apha-carbon of each peptides aminoacid in a frame.
+            
+            When threshold_mmultiplier is used, the theshold is calculated as:
+                
+                median(median(distance (p[c], p[c+1]) for c in [0, len(p)) for each p in T[f])
+                
+                Where T is the set of the sampled frames
+                f is a frame in T
+                p is a peptide in f
+                c is an alpha-carbon in p
+                len(p) is the number of c in p
+                distance is the euclidean distance
+                median is the median value
+            
+            This parameter is overwritten if threshold is given.
             
         device : str, optional
             The device on which the data are saved and the analysis is computed.
@@ -221,7 +237,6 @@ class trajectory:
                     usually Nvidia GPUs.
             
             The default is 'cpu'.
-            
 
         Returns
         -------
@@ -281,6 +296,47 @@ class trajectory:
     def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
+        
+        Parameters
+        ----------
+        threshold : float, optional
+            The default is None.
+            threshold is the longest distance at which two points i,j are considered in contact.
+            
+        threshold_multiplier : float, optional
+            The default is 1.45.
+            threshold_multiplier is a factor used to multiply the calculated
+            threshold distance for contact recognition.
+            The calculate threshold distance is the median distance between all the contiguos 
+            apha-carbon median  of each peptides aminoacid in a frame.
+            
+            When threshold_mmultiplier is used, the theshold is calculated as:
+                
+                median(median(distance (p[c], p[c+1]) for c in [0, len(p)) for each p in T[f])
+                
+                Where T is the set of the sampled frames
+                f is a frame in T
+                p is a peptide in f
+                c is an alpha-carbon in p
+                len(p) is the number of c in p
+                distance is the euclidean distance
+                median is the median value
+            
+            This parameter is overwritten if threshold is given.
+            
+        device : str, optional
+            The device on which the data are saved and the analysis is computed.
+            The option are:
+                'cpu', to perform parallelization on cpu
+                'cuda', to performe parallelization on CUDA compatible device,
+                    usually Nvidia GPUs.
+            
+            The default is 'cpu'.
+            
+
+        Returns
+        -------
+        None.
         '''
         # if threshold is given as parameter
         if threshold != None:

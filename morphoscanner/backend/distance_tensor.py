@@ -466,9 +466,9 @@ def get_median_c_alpha_distance(distance_maps):
         self_distance_map = distance_maps[row][row]
         # get the diagonal +1 (that is the diagonal containing the
         # distance between atom[i] and atom[i+1], that are consecutive
-        # c-alpha.
+        # c-alpha. # calculate the median of that peptide's c-alpha distance
         intrapep_distance_median = torch.median(torch.diag(self_distance_map,1))
-        # calculate the median of that peptide's c-alpha distance
+        # append the calculated peptide inter c-alpha median distance to a list
         median_list.append(intrapep_distance_median)
     # calculate the median distance for all the peptides
     threshold = torch.median(torch.tensor(median_list))
