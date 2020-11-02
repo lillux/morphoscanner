@@ -293,15 +293,31 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=None, threshold_multiplier=1.45, device='cpu'):
+    def analyze_inLoop(self, threshold=5, threshold_multiplier=1.45, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
         
         Parameters
         ----------
         threshold : float, optional
-            The default is None.
+            The default is 5.
             threshold is the longest distance at which two points i,j are considered in contact.
+            Is unitless, the unit of measurement depends on the one used in your dataset.
+            5 Angstrom is used as a default value.
+            
+            if threshold == None, the threshold is calculated as follow:
+                    
+                    median(median(ed (p[c], p[c+1]) for c in [0, len(p)) for each p in f)
+                    
+                    Where T is the set of the sampled frames
+                    f is a frame in T
+                    p is a peptide in f
+                    c is an alpha-carbon in p
+                    len(p) is the number of c in p
+                    ed is the euclidean distance
+                    median is the median value
+            
+            
             
         threshold_multiplier : float, optional
             The default is 1.45.
