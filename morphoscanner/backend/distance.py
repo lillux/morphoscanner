@@ -104,10 +104,7 @@ def get_mean_distance_map(distance_maps):
     return base
 
 
-
-
-
-# Singolar Value Decomposition of distance_map
+# Singular Value Decomposition of distance_map
 def decompose_distance_map(distance_map):
     '''Use Singular value decomposition to get
 
@@ -197,6 +194,3 @@ def get_coordinate_from_distance_map(distance_map):
     reconstructed_coordinate_dict = get_coordinate_from_decomposition(decomposed_mean_distance_map)
 
     return reconstructed_coordinate_dict
-
-    
-    

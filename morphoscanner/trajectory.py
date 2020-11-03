@@ -199,7 +199,7 @@ class trajectory:
     
     
     # add something to ask for threshold in main.py
-    def analysis(self, frame, threshold_multiplier=1.45, device='cpu'):
+    def analysis(self, frame, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on a frame.
 
@@ -209,7 +209,7 @@ class trajectory:
             The frame to analyze.
             
         threshold_multiplier : float, optional
-            The default is 1.45.
+            The default is 1.5.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
             The calculate threshold distance is the median distance between all the contiguos 
@@ -248,17 +248,21 @@ class trajectory:
             threshold = self.contact_threshold
         # if not given, calculate the threshold
         except:
-            # get the coordinates of each atom in the first frame
-            dic_0 = self.get_frame(0)
-            # compute a pairwise distance map of the atoms in the first frame
-            frame_distance_0 = distance_tensor.compute_distance_and_contact_maps(dic_0, threshold=0, contacts_calculation=False, device=device)
-            # the threshold is the median distance
-            # between the contiguous alpha carbon of each peptide * threshold_multiplier
-            threshold = distance_tensor.get_median_c_alpha_distance(frame_distance_0) * threshold_multiplier
+            # compute measure on sampled data
+            measures = distance_tensor.sample_intrapeptide_distance(self, samples=3)
+            # plot histogram
+            plt.hist(measures)
+            # calculate and print confidence interval and median
+            low, median, high = np.percentile(measures, (2.5, 50, 97.5))
+            print('95% confidence interval is between',low, 'and', high,'Angstrom.\n')
+            print('median value is: %f Angstrom.\n' % median)
+            # compute theshold
+            threshold = median * threshold_multiplier
+            print('Computed threshold is %f Angstrom.\n' % threshold)
             # save the threshold as a trajectory() object's attribute
             self.contact_threshold = threshold
             # print the threshold
-            print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom" % str(self.contact_threshold))
+            print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom.\n" % str(self.contact_threshold))
     
         # print the frame to be analyzed
         print('Analyzing frame n° ', frame)
@@ -270,12 +274,12 @@ class trajectory:
         start_dist = timer()
         frame_distance, frame_contact = distance_tensor.compute_distance_and_contact_maps(frame_dict, threshold=threshold, device=device)
         end_dist = timer()
-        print('Time to compute distance is: ', (end_dist - start_dist))
+        print('Time to compute distance is: ', (end_dist - start_dist), 'seconds.')
         # gather data on the contact network between peptides
         start_den = timer()
         frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact, device=device)
         end_den = timer()
-        print('Time to denoise: ', (end_den-start_den))
+        print('Time to denoise: ', (end_den-start_den), 'seconds.')
         # compose a graph of the contacting peptides
         frame_graph_full = graph.graph_v1(frame_denoised, df)
         # find isolate peptides aggregate
@@ -293,17 +297,17 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=5, threshold_multiplier=1.45, device='cpu'):
+    def analyze_inLoop(self, threshold=5.2, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
         
         Parameters
         ----------
         threshold : float, optional
-            The default is 5.
+            The default is 5.2.
             threshold is the longest distance at which two points i,j are considered in contact.
             Is unitless, the unit of measurement depends on the one used in your dataset.
-            5 Angstrom is used as a default value.
+            5.2 Angstrom is used as a default value.
             
             if threshold == None, the threshold is calculated as follow:
                     
@@ -320,7 +324,7 @@ class trajectory:
             
             
         threshold_multiplier : float, optional
-            The default is 1.45.
+            The default is 1.5.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
             The calculate threshold distance is the median distance between all the contiguos 
@@ -361,7 +365,7 @@ class trajectory:
         else:
             pass
         # print to confirm the starting of the proces
-        print('processing started...')
+        print('processing started...\n')
         start = timer()
         # for each sampled frame
         for frame in self.frames:
@@ -370,12 +374,12 @@ class trajectory:
             self.analysis(frame, threshold_multiplier=threshold_multiplier, device=device)
             end_an = timer()
             # print the time needed for the analysis
-            text = 'Time needed to analyze frame %d was %f seconds' % (frame, (end_an-start_an))
+            text = 'Time needed to analyze frame %d was %f seconds.\n' % (frame, (end_an-start_an))
             print(text)
 
         end = timer()
 
-        print('Total time to analyze dataset was %f seconds' % (end -start))
+        print('Total time to analyze dataset was %f seconds\n.' % (end -start))
         return
     
     ###

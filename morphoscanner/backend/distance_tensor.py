@@ -5,7 +5,7 @@ Created on Thu Mar 19 20:11:57 2020
 """
 
 import torch
-
+import numpy as np
 
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
@@ -473,3 +473,153 @@ def get_median_c_alpha_distance(distance_maps):
     # calculate the median distance for all the peptides
     threshold = torch.median(torch.tensor(median_list))
     return threshold
+
+
+def get_intrapeptide_c_alpha_distance(distance_maps):
+    '''
+    Get the distance between the consecutive
+    C-alpha of each peptides of a frame's distance maps.
+
+    Parameters
+    ----------
+    distance_maps : dict(), in the form {i : {j : torch.tensor}},
+        where i and j are the index of peptides to which the distance maps is refering.
+        
+    Returns
+    -------
+    threshold : numpy.array
+    
+        Is an array filled with the distances between the consecutive C-alpha
+        of each peptide with itself in distance_maps.
+        
+        The used distance maps are distance_maps[i][j], with i == j, that is distance_maps[i][i].
+        That is the pairwise distance of the alpha carbon of peptide i.
+        
+        The contiguous alpha-carbon distance is found in the diagonal above the main diagonal of each distance_map,
+        
+        d[x][x+1] for each x in d.
+        
+        d is a matrix,
+        of which d.shape[0] is the number of aminoacids in peptide i, len(i)
+        and d.shape[1] is the number of aminoacids in peptide j, len(j)
+        d[x][y] is a float, it is the euclidean distance between i[x] and j[y].
+        
+    '''
+    # instantiate an empty list
+    median_list = []
+    # move through peptide (key of the dict)
+    for row in distance_maps:
+        
+        #for col in distance_maps[row]
+        # get the distance map of the peptide with itself
+        self_distance_map = distance_maps[row][row]
+        # get the diagonal +1 (that is the diagonal containing the
+        # distance between atom[i] and atom[i+1], that are consecutive
+        # c-alpha. # calculate the median of that peptide's c-alpha distance
+        intrapep_distance = torch.diag(self_distance_map,1).numpy()
+        # append the calculated peptide inter c-alpha median distance to a list
+        median_list.append(intrapep_distance)
+    # cast to np.array
+    median_list = np.array(median_list)
+
+    return median_list
+
+def get_intrapeptide_c_alpha_distances_from_trajectory(trajectories : list) -> dict:
+    '''
+    Calculate intrapeptide median distance for a list of morphoscanner.trajectory.trajectory()
+    '''
+    data = {}
+    for i_index, i in enumerate(trajectories):
+        data[i_index] = {}
+        for frame in i.frames:        
+            intrapep_median_dist = get_intrapeptide_c_alpha_distance(i.frames[frame].results.distance_maps)
+            try:
+                data[i_index] = np.concatenate((data[i_index], intrapep_median_dist))
+            except:
+                data[i_index] = intrapep_median_dist
+    return data
+
+def get_intrapeptide_median_c_alpha_distance(distance_maps):
+    '''
+    Calculate the median distance between the consecutive
+    C-alpha of each peptides of a frame's distance maps.
+
+    Parameters
+    ----------
+    distance_maps : dict(), in the form {i : {j : torch.tensor}},
+        where i and j are the index of peptides to which the distance maps is refering.
+        
+    Returns
+    -------
+    threshold : numpy.array
+    
+        Is an array filled with the median distance between the consecutive C-alpha
+        of each peptide with itself in distance_maps.
+        
+        The used distance maps are distance_maps[i][j], with i == j, that is distance_maps[i][i].
+        That is the pairwise distance of the alpha carbon of peptide i.
+        
+        The contiguous alpha-carbon distance is found in the diagonal above the main diagonal of each distance_map,
+        
+        d[x][x+1] for each x in d.
+        
+        d is a matrix,
+        of which d.shape[0] is the number of aminoacids in peptide i, len(i)
+        and d.shape[1] is the number of aminoacids in peptide j, len(j)
+        d[x][y] is a float, it is the euclidean distance between i[x] and j[y].
+        
+    '''
+    # instantiate an empty list
+    median_list = []
+    # move through peptide (key of the dict)
+    for row in distance_maps:
+        
+        #for col in distance_maps[row]
+        # get the distance map of the peptide with itself
+        self_distance_map = distance_maps[row][row]
+        # get the diagonal +1 (that is the diagonal containing the
+        # distance between atom[i] and atom[i+1], that are consecutive
+        # c-alpha. # calculate the median of that peptide's c-alpha distance
+        intrapep_distance = np.median(torch.diag(self_distance_map,1).numpy())
+        # append the calculated peptide inter c-alpha median distance to a list
+        median_list.append(intrapep_distance)
+    # cast to np.array
+    median_list = np.array(median_list)
+
+    return median_list
+
+
+def get_intrapeptide_median_c_alpha_distances_from_trajectory(trajectories : list) -> dict:
+    '''
+    Calculate intrapeptide median distance for a list of morphoscanner.trajectory.trajectory()
+    '''
+    data = {}
+    for i_index, i in enumerate(trajectories):
+        data[i_index] = {}
+        for frame in i.frames:        
+            intrapep_median_dist = get_intrapeptide_median_c_alpha_distance(i.frames[frame].results.distance_maps)
+            try:
+                data[i_index] = np.concatenate((data[i_index], intrapep_median_dist))
+            except:
+                data[i_index] = intrapep_median_dist
+    return data
+
+
+def sample_intrapeptide_distance(traj, samples=1, device='cpu'):
+    '''
+    Sample a morphoscanner.trajectory.trajectory() object and get the
+    median distance between contiguos alpha-carbon of each peptide in each sampled frame.
+    '''
+    median_dist = None
+    if len(traj.frames) >= samples:
+        for i in range(samples):
+            frm = [i for i in traj.frames.keys()][i]
+            dict_frm = traj.get_frame(frm)
+            frame_distance_0 = compute_distance_and_contact_maps(dict_frm, threshold=0, contacts_calculation=False, device=device)
+            try:
+                median_dist = np.concatenate((median_dist, get_intrapeptide_median_c_alpha_distance(frame_distance_0)))
+            except:
+                median_dist = get_intrapeptide_median_c_alpha_distance(frame_distance_0)
+
+    return median_dist
+        
