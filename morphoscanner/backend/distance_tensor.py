@@ -29,10 +29,12 @@ def get_coordinate_tensor_from_dict(coordinate_dict, device='cpu'):
     Returns
     -------
     torch.tensor
-        DESCRIPTION.
+        torch.tensor with shape:
+            dim0 = len(coordinate_dict)
+            dim1 = len(coordinate_dict[0])
+            dim2 = len(coordinate_dict[0][0])
 
     '''
-
     #variables with dict dimensions
     dim0 = len(coordinate_dict)
     dim1 = len(coordinate_dict[0])
@@ -50,10 +52,11 @@ def get_coordinate_tensor_from_dict(coordinate_dict, device='cpu'):
                 
     return zero
 
+
 def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
     '''
-        Convert a coordinate_dict to a torch.tensor, for parallel euclidean distance calculation.
-        Works on dict in the form {atom_key : [x, y, z]}
+    Convert a coordinate_dict to a torch.tensor, for parallel euclidean distance calculation.
+    Works on dict in the form {atom_key : [x, y, z]}
 
     Parameters
     ----------
@@ -93,7 +96,6 @@ def get_coordinate_tensor_from_dict_single(coordinate_dict, device='cpu'):
     return zero
 
 
-
 def get_coordinate_tensor_from_dict_multi(coordinate_dict, device='cpu'):
     '''
     Generate tensor from multichain coordinate dict.
@@ -118,7 +120,6 @@ def get_coordinate_tensor_from_dict_multi(coordinate_dict, device='cpu'):
         It is a dict of tensor, one tensor per chain.
 
     '''
-
     tensor_dict = {}
     for chain in coordinate_dict:
         tensor_dict[chain] = get_coordinate_tensor_from_dict_single(coordinate_dict[chain], device=device)
@@ -144,9 +145,7 @@ def cat_tensor_for_size(tensor_dict):
     peptide_index_in_tensor : dict
         a dict to track peptide index, in the form:
             {new_index: original_index}
-
     '''
-    
     container_tensor = {}
     peptide_index_in_tensor = {}
     
@@ -180,9 +179,7 @@ def compute_distance_between_each_peptide(coordinate_dict):
     distance_maps_dict : dict
         A dict containing the computed distance maps, in the form:
             {peptide_i : {peptide_j : distance_maps_ij}}.
-
     '''
-    
     coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict)
     group_tensor, order_tensor = cat_tensor_for_size(coordinate_tensor)
     
@@ -268,7 +265,6 @@ def compute_euclidean_norm_torch(coordinate_tensor, device='cpu'):
 #https://hal.archives-ouvertes.fr/hal-02047514     
 
 
-
 def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device='cpu'):
     '''
     Minimal function to calculate euclidean distance between two set of points
@@ -302,9 +298,7 @@ def distance_matrix_from_2d_tensor(peptide1_tensor, peptide2_tensor=None, device
         If you use 'cuda' device, you need to move output to main memory, with:
 
         distance_map.cpu()
-
     '''
-
     if peptide2_tensor == None:
         peptide2_tensor = peptide1_tensor
 
@@ -395,7 +389,6 @@ def compute_distance_and_contact_maps(coordinate_dict, threshold=None, contacts_
         DESCRIPTION.
 
     '''
-
     # instantiate tensor
     coordinate_tensor = get_coordinate_tensor_from_dict_multi(coordinate_dict, device=device)
     # group tensor for size
