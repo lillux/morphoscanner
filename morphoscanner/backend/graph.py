@@ -112,14 +112,14 @@ def graph_v1(denoised_dict, df):
                             'sense', that gives the sense of the contact
     Useful to analyze peptides aggregation behaviour analysis during molecular dynamics
     Arguments: denoised contact maps dict
-    return: networkx.MultiGraph
+    return: networkx.Graph
     '''
     
     colors = {'parallel' : 'g',
               'antiparallel' : 'b'}
     
     # Instantiate graph
-    graph = nx.MultiGraph()
+    graph = nx.Graph()
 
     # iter dataframe (second output of denoise_contact_maps)
     for group in df.index:
@@ -128,19 +128,11 @@ def graph_v1(denoised_dict, df):
         peptide_1 = df.iloc[group]['peptide1']
         peptide_2 = df.iloc[group]['peptide2']
 
-        # take array from denoised contact map using index peptides as index
-        array_1 = denoised_dict[peptide_1][peptide_2]
+        # check number of contacts between the peptides
+        number_of_contacts = df.iloc[group]['contacts']
         
-        # add peptides nodes in the graph 
-        graph.add_node(peptide_1)
-        graph.add_node(peptide_2)
-
-        #check number of contacts between the peptides
-        number_of_contacts = array_1.sum()
-
-        # if there is a contact between the peptides
-        # ad an edge and data attributes to edge
-        if number_of_contacts >= 1:
+        # double check number of contacts
+        if number_of_contacts >= 2:
 
             sense = df.iloc[group]['sense']
 
@@ -160,7 +152,7 @@ def find_subgraph_in_order(graph):
     
     so if adjacency > 1, or degree > 1 for each node in the graph, it does not work.
     
-    Argument: NetworkX MultiGraph
+    Argument: NetworkX Graph
 
     Return: list of subgraph ordered from one end to the other
 
@@ -305,10 +297,12 @@ def subgraph_length(aggregate):
     
 
 def contact_sense_in_subgraph(graph, subgraph_list):
-    '''Get information about the orientation of the contact between contacting node in the graph.
+    '''
+    Get information about the orientation of the contact between contacting node in the graph.
     
     "subgraph_list" is similar to an "n_bunch" in NetworkX definition,
-    but works if the node in the n_bunch are joined by an edge.'''
+    but works if the node in the n_bunch are joined by an edge.
+    '''
 
     subgraph_sense_dict = {}
 
@@ -319,9 +313,11 @@ def contact_sense_in_subgraph(graph, subgraph_list):
         sense_list = []
 
         for i in graph.edges(subgraph):
+            # for MultiGraph
+            #sense = graph[i[0]][i[1]][0]['sense']
+            # for Graph
+            sense = graph[i[0]][i[1]]['sense']
 
-            #print(i[0], i[1])
-            sense = graph[i[0]][i[1]][0]['sense']
             sense_list.append(sense)
 
             subgraph_sense_dict[index] = sense_list
