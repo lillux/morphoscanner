@@ -297,7 +297,7 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=5.2, threshold_multiplier=1.5, device='cpu'):
+    def analyze_inLoop(self, threshold=5, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
         
@@ -866,8 +866,8 @@ class trajectory:
         
         # Used to plot
         edges = graph.edges()
-        colors = [graph[u][v][0]['color'] for u,v in edges]
-        weights = [graph[u][v][0]['weight'] for u,v in edges]
+        colors = [graph[u][v]['color'] for u,v in edges]
+        weights = [graph[u][v]['weight'] for u,v in edges]
         
         # output a plot
         #return nx.draw_networkx(graph, edges=edges, edge_color=colors, width=weights) #for networkx 2.4
