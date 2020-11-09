@@ -576,20 +576,16 @@ class trajectory:
 
     def get_data(self):
         '''
-        Single function to compute and assemble data on the whole trajectory
+        Single function to compute and assemble data on the whole trajectory.
         '''
+        # recover data
         self.get_sense()
         self.subgraph_length_peptide()
         self.macroaggregate_sense_data()
         self.number_of_macroaggregate_per_frame()
         self.shift_profile()
-        return
-    
         
-    def get_database(self):
-        '''
-        Compose a pandas.Dataframe with the calculates trajectory() data
-        '''
+        # put everything together
         self.database = pd.concat((self.subgraph_len_pep_df, self.sense_df, self.number_of_peptide_df, self.macroaggregate_df), axis=1)
 
         return
@@ -601,6 +597,22 @@ class trajectory:
     
     
     def plot_contacts(self, kind='cubic'):
+        '''
+        Plot the ratio `antiparallel contacts` / `total contact` for each
+        sampled timestep (or frame).
+
+        Parameters
+        ----------
+        kind : str, optional
+            The default is 'cubic'.
+
+        Is the kind of interpolation used to plot the data.
+        The same as `scipy.interpolate.interp1()`
+
+        Returns
+        -------
+        None.
+        '''
         index = self.database.index
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
         antiparallel = self.database['antiparallel']
@@ -619,6 +631,22 @@ class trajectory:
     
     
     def plot_peptides_in_beta(self, kind='cubic'):
+        '''
+        Plot the ratio `peptide in beta` / `total peptide` for each
+        sampled timestep (or frame).
+
+        Parameters
+        ----------
+        kind : str, optional
+            The default is 'cubic'.
+
+        Is the kind of interpolation used to plot the data.
+        The same as `scipy.interpolate.interp1()`
+        
+        Returns
+        -------
+        None.
+        '''
         index = self.database.index
         beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
         tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
@@ -637,6 +665,22 @@ class trajectory:
         return
     
     def plot_aggregates(self, kind='cubic'):
+        '''
+        Plot `the number of macroaggregates` or clusters for each
+        sampled timestep (or frame).        
+
+        Parameters
+        ----------
+        kind : str, optional
+            The default is 'cubic'.
+
+        Is the kind of interpolation used to plot the data.
+        The same as `scipy.interpolate.interp1()`
+
+        Returns
+        -------
+        None.
+        '''
         index = self.database.index
         tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
         aggregates = self.database['n° of macroaggreates']

@@ -186,16 +186,14 @@ def find_subgraph_in_order(graph):
 
 def find_subgraph(graph):
     '''
-    Find subgraph of joined peptides that have no node in common with other subgraph.
-    It start to search from always from peptide 0, and from that does depth first search.
-    The peptide of the subgraph that are touching are in consequential order in the sublist
+    Find subgraph of joined peptides that have no node in common with other subgraphs.
+    It search with a depth first search algorithm from peptide 0.
+    The peptides of the subgraph that are touching are in consequential order in the sublist
 
-    Argument: NetworkX MultiGraph
+    Argument: NetworkX Graph
 
     Return: list of subgraph
-
     '''
-
     subgraph_list = []
 
     for node in graph:
@@ -234,7 +232,7 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     
     #####
     
-    Basically this function gives you all the node left out
+    This function gives you all the node left out
     from the 'find_subgraph' function.
     The output depends on the graph creation function:
     
@@ -328,7 +326,7 @@ def contact_sense_in_subgraph(graph, subgraph_list):
 def sense_in_subgraph(graph, subgraphs_list):
     '''Get number of contact per sense in subgraph.
     
-    Arguments: NetworkX.MultiGraph, as output from morphoscanner.graph.graph_v1.
+    Arguments: NetworkX.Graph, as output from morphoscanner.graph.graph_v1.
     
     Output = dict, with number of parallels and antiparallels contact per aggregate'''                   
 
