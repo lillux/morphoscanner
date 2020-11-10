@@ -103,18 +103,28 @@ def full_graph(denoised_dict):
 
 ## THIS IS WORKING in object trajectory
 
-def graph_v1(denoised_dict, df):
+def graph_v1(df):
     '''
-    Create a full graph of all the peptides in the frame.
-    Every peptide is a node in the graph.
-    Edges join contacting peptides.
-    Edges have attribute:   'length', that gives the number of contact between the peptides
-                            'sense', that gives the sense of the contact
-    Useful to analyze peptides aggregation behaviour analysis during molecular dynamics
-    Arguments: denoised contact maps dict
-    return: networkx.Graph
-    '''
+    Create a graph from the contact informations
     
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        output[1] of 'backend.pattern_recognition.denoise_contact_maps_torch_v1' output.
+
+    Returns
+    -------
+    graph : networkx.Graph()
+        Every node is a peptide, with related index as label.
+        Edges join contacting peptides.
+        Edges have attributes:
+            'weight': the number of contact between the peptides
+            'color': color of the edge:
+                'g' : 'sense' is parallel
+                'b' : 'sense' is antiparallel
+            'sense': the sense of the contact
+    '''    
     colors = {'parallel' : 'g',
               'antiparallel' : 'b'}
     
@@ -270,8 +280,6 @@ def subgraph_length(aggregate):
 
     return: dict, keys = frame number,
                   value = a sorted list (big to small) of the aggregate size in that frame
-
-
     '''
 
     subgraph_len_dict = {}

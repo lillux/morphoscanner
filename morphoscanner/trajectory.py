@@ -281,7 +281,7 @@ class trajectory:
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den), 'seconds.')
         # compose a graph of the contacting peptides
-        frame_graph_full = graph.graph_v1(frame_denoised, df)
+        frame_graph_full = graph.graph_v1(df)
         # find isolate peptides aggregate
         subgraphs = graph.find_subgraph(frame_graph_full)  
         # save computed data in the object 'results'
@@ -304,14 +304,15 @@ class trajectory:
         Parameters
         ----------
         threshold : float, optional
-            The default is 5.2.
+            The default is 5.
             threshold is the longest distance at which two points i,j are considered in contact.
             Is unitless, the unit of measurement depends on the one used in your dataset.
-            5.2 Angstrom is used as a default value.
+            5 Angstrom is used as a default value.
+            
             
             if threshold == None, the threshold is calculated as follow:
                     
-                    median(median(ed (p[c], p[c+1]) for c in [0, len(p)) for each p in f)
+                    median(median(ed (p[c], p[c+1]) for c in [0, len(p)) for each p in f) * threshold_multiplier
                     
                     Where T is the set of the sampled frames
                     f is a frame in T
@@ -328,7 +329,7 @@ class trajectory:
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
             The calculate threshold distance is the median distance between all the contiguos 
-            apha-carbon median  of each peptides aminoacid in a frame.
+            apha-carbon median of each peptides aminoacid in a frame.
             
             When threshold_mmultiplier is used, the theshold is calculated as:
                 
@@ -342,7 +343,7 @@ class trajectory:
                 distance is the euclidean distance
                 median is the median value
             
-            This parameter is overwritten if threshold is given.
+            This parameter is not used if threshold =! None.
             
         device : str, optional
             The device on which the data are saved and the analysis is computed.
