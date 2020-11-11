@@ -1029,3 +1029,33 @@ class trajectory:
     
         return
     
+    
+    def plot_3d_distance_map(self, frame, i, j):
+        '''
+        Plot 3D distance map via plotly.
+        
+        Parameters
+        ----------
+        frame : int
+            The timestep (frame index) from which you want to visualize the distance map.
+        i : int
+            Index of the peptide i, of which you want to visualize the map
+        j : int
+            Index of peptide j, of which you want to vsualize the distance map with respect to peptide i.
+
+        Returns
+        -------
+        None.
+
+        '''
+        d_map = self.frames[frame].results.distance_maps[i][j]
+        fig = go.Figure(data=[go.Surface(z=d_map.numpy(), x=np.linspace(0,d_map.shape[0], num=d_map.shape[0]+1), y=np.linspace(0,d_map.shape[1], num=d_map.shape[1]+1))])
+        fig.update_layout(autosize=True,
+                          scene = dict(
+                        xaxis_title='Peptide i',
+                        yaxis_title='Peptide j',
+                        zaxis_title='Distance'),
+                        #zaxis = dict(nticks=20, range=[0,100])),
+                        title='3D distance map')
+        fig.show()
+        return
