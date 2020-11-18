@@ -657,7 +657,7 @@ class trajectory:
         for peptide in pep_index:
             d_map = self.retrieve_map(distance_map,pep_index,peptide,peptide)
             h_map = backend.helix_recognition.contact_map_helix_torch(d_map)
-            score = backend.distance_tensor.contact_tracer_v1(h_map)
+            score = backend.helix_recognition.contact_tracer_v1(h_map)
             h_score[peptide] = score
         return h_score
     
