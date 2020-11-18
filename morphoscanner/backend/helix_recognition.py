@@ -36,5 +36,3 @@ def contact_tracer_v1(contact_map):
         return folding
     
     
-    
-    
