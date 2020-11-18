@@ -7,3 +7,4 @@ from . import distance_tensor
 from . import pattern_recognition
 from . import graph
 from . import check_val
+from . import helix_recognition
