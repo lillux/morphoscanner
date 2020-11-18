@@ -662,9 +662,9 @@ class trajectory:
         return h_score
     
     def calculate_helix_score_for_frame(self, frame: int, device='cpu'):
-        frame_tens = self.get_single_tens_frame(self, frame, device=device)
+        frame_tens = self.get_single_tens_frame(frame, device=device)
         frame_dist = backend.distance_tensor.fast_cdist(frame_tens, frame_tens)
-        pep_index = self.get_map_index(self, frame)
+        pep_index = self.get_map_index(frame)
         h_score = self._calculate_helix_score(frame_dist, pep_index)
         self.frames[frame].results.helix_score = h_score
         return
