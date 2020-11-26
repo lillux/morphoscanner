@@ -10,7 +10,7 @@ def contact_map_helix_torch(distance_map):
     
     t_h_sub = distance_map.clone()
     t_h_sub[t_h_sub<=4.7] = 0
-    t_h_sub[(t_h_sub>4.7) & (t_h_sub<=6.5)] = 2
+    t_h_sub[(t_h_sub>4.7) & (t_h_sub<=6)] = 2
     t_h_sub[t_h_sub>6.5] = 3
     
     return t_h_sub
