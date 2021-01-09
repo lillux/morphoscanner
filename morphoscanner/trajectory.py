@@ -669,6 +669,24 @@ class trajectory:
         self.frames[frame].results.helix_score = h_score
         return
     
+    def helix_score(self, device='cpu'):
+        '''
+        Calculate alpha-helix score for each sampled timestep
+
+        Parameters
+        ----------
+        device : str, optional
+            The default is 'cpu'.
+            Choose between 'cpu' and 'cuda'
+
+        Returns
+        -------
+        None.
+
+        '''
+        for frame in self.frames:
+            self.calculate_helix_score_for_frame(frame=frame, device=device)
+        return
     
     ######################
     #############################
