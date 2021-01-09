@@ -5,7 +5,7 @@ Created on Wed Nov 18 19:55:01 2020
 """
 import numpy as np
 from timeit import default_timer as timer
-from . import backend
+from .. import backend
 
 
 from .distance import get_euclidean_distance
