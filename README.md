@@ -76,10 +76,10 @@ You need to be a collaborator of the project to download the package. The prompt
 
 Then it will be installed in your env. You can now use morphoscanner from your *IDE* or *Python Console*.
 
-Branches other than yhe *default branch* can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url. For example, to download the v0.0.2 branch:
+Branches other than the *default branch* can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url. For example, to download the ***dev***  branch:
 
 ```bash
-pip install git+https://github.com/lillux/morphoscanner.git@v0.0.2#egg=morphoscanner
+pip install git+https://github.com/lillux/morphoscanner.git@dev#egg=morphoscanner
 ```
 
 
