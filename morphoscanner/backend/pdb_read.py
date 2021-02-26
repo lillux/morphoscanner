@@ -5,7 +5,6 @@ Created on Wed Nov 18 19:55:01 2020
 """
 import numpy as np
 from timeit import default_timer as timer
-import backend
 
 
 from .distance import get_euclidean_distance
@@ -168,7 +167,7 @@ def test_distance_error(protein_dict):
 
 
 def get_distance_map_from_pdb(path:str):
-    coordinate = backend.pdb_read.get_coordinate_from_pdb(path)
+    coordinate = get_coordinate_from_pdb(path)
     keys = [k for k in coordinate.keys()]
     print('The file you opened has the following models ID:\n')
     print(keys)
@@ -177,13 +176,13 @@ def get_distance_map_from_pdb(path:str):
         try:
             model_coord = coordinate[model]
             print('\nModel %s was selected' % str(model))
-            tensor = backend.pdb_read.get_coordinate_tensor_from_dict_single(model_coord)
-            distance_map = backend.distance_tensor.fast_cdist(tensor,tensor)
+            tensor = get_coordinate_tensor_from_dict_single(model_coord)
+            distance_map = fast_cdist(tensor,tensor)
         except KeyError:
             print('%s is not a correct model ID.' % model)
     else:
         model = keys[0]
         print('\nModel %s was selected.' % str(model))
-        tensor = backend.pdb_read.get_coordinate_tensor_from_dict_single(coordinate[model])
-        distance_map = backend.distance_tensor.fast_cdist(tensor,tensor)
+        tensor = get_coordinate_tensor_from_dict_single(coordinate[model])
+        distance_map = fast_cdist(tensor,tensor)
     return distance_map
