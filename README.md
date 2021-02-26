@@ -51,7 +51,7 @@ conda config --append channels conda-forge
 
 An *env* called *morphoscanner* can be created with: 
 ```bash
-conda create -n morphoscanner python=3.8 pip numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
+conda create -n morphoscanner python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
 ```
 
 The installed packages can be checked (in the active env) with:
