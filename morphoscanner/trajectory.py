@@ -104,7 +104,8 @@ class trajectory:
             
         direct_parse : bool, optional
             Choose between parsing the data directly from the MDAnalysis.Universe() (True)
-            or use sequence and atom_index parsede in the frame 0 to recover coordinate data from each other frames.
+            or use sequence and atom_index parsede in the frame 0 to recover 
+            coordinate data from each other frames.
             The default is False.
 
         Returns
