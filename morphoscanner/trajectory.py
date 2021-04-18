@@ -674,7 +674,7 @@ class trajectory:
         '''
         Calculate alpha-helix score for each sampled timestep
 
-        Parameters
+activate         Parameters
         ----------
         device : str, optional
             The default is 'cpu'.
