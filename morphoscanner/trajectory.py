@@ -546,11 +546,12 @@ class trajectory:
                 # because C and N terminal of respective peptides
                 # can interact differently
                 if group == 'antiparallel':
+                    shift_profile[frame][group]['negative'] = {}
+                    shift_profile[frame][group]['positive'] = {}
                     for index in a.groups[group]:
                         shift = int(self.frames[frame].results.cross_correlation.iloc[index]['shift'])
-        
+  
                         if shift > 0:
-                            shift_profile[frame][group]['negative'] = {}
                             try:
                                 shift_profile[frame][group]['negative'][shift] += 1
                             except:
@@ -563,7 +564,7 @@ class trajectory:
         
                         if shift <= 0:
                             shift = abs(shift)
-                            shift_profile[frame][group]['positive'] = {}
+                            
                             try:
                                 shift_profile[frame][group]['positive'][shift] += 1
                             except:
