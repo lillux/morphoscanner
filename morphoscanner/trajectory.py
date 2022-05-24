@@ -1172,11 +1172,12 @@ class trajectory:
                 f = 0
             y.append(f*100)
         plt.plot(x, y)
-        plt.xlabel('P Shift')
+        plt.title('Parallel Shift')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
-
+    
     def plot_shift_antiparallel_negative_percentage(self):
         index = self.database.index
         total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
@@ -1190,7 +1191,8 @@ class trajectory:
                 f = 0
             y.append(f*100)
         plt.plot(x, y)
-        plt.xlabel('AP- Shift')
+        plt.title('Antiparallel Negative Shift')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1208,7 +1210,8 @@ class trajectory:
                 f = 0
             y.append(f*100)
         plt.plot(x, y)
-        plt.xlabel('AP+ Shift')
+        plt.title('Antiparallel Positive Shift')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
