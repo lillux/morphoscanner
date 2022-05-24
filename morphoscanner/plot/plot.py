@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import torch
 import plotly as px 
 import plotly.graph_objects as go
+from scipy.interpolate import interpolate
 
 
 
@@ -300,4 +301,43 @@ def plot_protein(coordinate_dict):
     fig = go.Figure(data = [go.Scatter3d (x=x, y=y, z=z)])
     return fig.show()
 
+def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
+    '''
+    Plot % of alpha helix in an MD trajectory
 
+    Parameters
+    ----------
+    peptide : int, optional
+        The default is 0.
+        Index of the peptide of which you want to track the aplha-helix folding.
+        
+    num : int, optional
+        The default is 50.
+        The number of interpolated point, same as numpy.linspace(num=int)
+        
+    kind : str, optional
+        The default is 'cubic'.
+        The kind of interpolation to perform, same as scipy.interpolate.interp1d(kind=str)
+
+    Returns
+    -------
+    None.
+
+    '''
+    alpha_perc = []
+    for f in self.frames:
+        alpha_perc.append(self.frames[f].results.helix_score[peptide]['perc_alpha'])
+
+    fr = [i for i in self.frames.keys()]
+    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in fr]).astype(float)
+    x = np.linspace(tss_int.min(),tss_int.max(), num)
+    spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
+    fr_smooth = spl(x)
+    
+    
+    plt.plot(x, fr_smooth)
+    plt.title('Alpha-helix % over time')
+    plt.xlabel('Time (ns)')
+    plt.ylabel('Alpha-helix %')
+    
+    return
