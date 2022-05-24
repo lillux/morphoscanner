@@ -212,8 +212,8 @@ class trajectory:
             The default is 1.5.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
-            The calculate threshold distance is the median distance between all the contiguos 
-            apha-carbon of each peptides aminoacid in a frame.
+            The calculated threshold distance is the median distance between all the contiguos 
+            apha-carbon of each peptide's aminoacid in a frame.
             
             When threshold_mmultiplier is used, the theshold is calculated as:
                 
@@ -518,7 +518,7 @@ class trajectory:
             for group in a.groups:
                 # create a nested dict for the contact sense
                 shift_profile[frame][group] = {}
-                # if sense of the contact is parallel
+                # if sense of the contact is parallel,
                 # positive or negative shift is not important
                 if group == 'parallel':
                     # for dataframe index (contact data)
@@ -1155,4 +1155,59 @@ class trajectory:
                         #zaxis = dict(nticks=20, range=[0,100])),
                         title='3D distance map')
         fig.show()
+        return
+
+
+    def plot_shift_parallel_percentage(self):
+        index = self.database.index
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        x = [self.universe.trajectory[i].time/1000 for i in index]
+        y = []
+        for idx, frame in enumerate(self.frames):
+            try:
+                sense_contact = sum(self.frames[frame].results.shift_profile_parallel.values())
+                f = sense_contact/total_contact[idx]
+            except AttributeError:
+                f = 0
+            y.append(f*100)
+        plt.plot(x, y)
+        plt.xlabel('P Shift')
+        plt.ylabel('% of contacts')
+        plt.show()
+        return
+
+    def plot_shift_antiparallel_negative_percentage(self):
+        index = self.database.index
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        x = [self.universe.trajectory[i].time/1000 for i in index]
+        y = []
+        for idx, frame in enumerate(self.frames):
+            try:
+                sense_contact = sum(self.frames[frame].results.shift_profile_antiparallel_negative.values())
+                f = sense_contact/total_contact[idx]
+            except AttributeError:
+                f = 0
+            y.append(f*100)
+        plt.plot(x, y)
+        plt.xlabel('AP- Shift')
+        plt.ylabel('% of contacts')
+        plt.show()
+        return
+    
+    def plot_shift_antiparallel_positive_percentage(self):
+        index = self.database.index
+        total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
+        x = [self.universe.trajectory[i].time/1000 for i in index]
+        y = []
+        for idx, frame in enumerate(self.frames):
+            try:
+                sense_contact = sum(self.frames[frame].results.shift_profile_antiparallel_positive.values())
+                f = sense_contact/total_contact[idx]
+            except AttributeError:
+                f = 0
+            y.append(f*100)
+        plt.plot(x, y)
+        plt.xlabel('AP+ Shift')
+        plt.ylabel('% of contacts')
+        plt.show()
         return

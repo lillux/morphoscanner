@@ -6,4 +6,4 @@ from . import trj_object
 from . import molnames
 from . import analysis
 
-__version__ = '0.0.2'
+__version__ = '0.0.3_dev'

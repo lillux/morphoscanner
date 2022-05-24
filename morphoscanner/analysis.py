@@ -308,6 +308,21 @@ def get_aggregates(self):
     return x, aggregates_smooth
 
 def plot_aggregates_average(data: list, label: str):
+    '''
+    Plot the average number of the aggregates between different trajectories.
+
+    Parameters
+    ----------
+    data : list
+        A list of ms.trajectory.trajectory() objects.
+    label : str
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    '''
     
     aggregates_data = np.array([i for i in map(get_aggregates, data)])
     x = np.max(aggregates_data, axis=0)[0]
