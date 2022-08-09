@@ -726,7 +726,6 @@ class trajectory:
         plt.title('β-sheets alignment over time')
         plt.xlabel('Time (ns)')
         plt.ylabel('β-Sheet Organizational Index')
-    
         return
     
     
@@ -761,40 +760,42 @@ class trajectory:
         plt.ylim((0,100))
         plt.xlabel('Time (ns)')
         plt.ylabel('% of Peptides in β-sheet')
-    
         return
     
     def plot_aggregates(self, kind='cubic'):
         '''
         Plot `the number of macroaggregates` or clusters for each
         sampled timestep (or frame).        
-
+    
         Parameters
         ----------
         kind : str, optional
             The default is 'cubic'.
-
+    
         Is the kind of interpolation used to plot the data.
         The same as `scipy.interpolate.interp1()`
-
+    
         Returns
         -------
         None.
         '''
+        # get the timestep index
         index = self.database.index
-        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+        # get the timestep (in picoseconds) from each indexed frame
+        tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
         aggregates = self.database['n° of macroaggreates']
+        # interpolate data through the timesteps
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
         spl = interpolate.interp1d(tss_int, aggregates, kind=kind)
         aggregates_smooth = spl(x)
+        # define boundary for y axis
         y_max = len(self.frames[0].peptides)//2
-
+        #plot
         plt.plot(x, aggregates_smooth,'-')
         plt.yticks([i for i in range(0, y_max+2, 2)])
         plt.title('Aggregation Order')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('N° of macroaggregates')
-
         return
     
     def plot_shift_parallel(self, frame=None):
