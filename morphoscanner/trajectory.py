@@ -89,7 +89,7 @@ class trajectory:
         return  
     
     
-    def compose_database(self, sampling_interval=1, direct_parse=False):
+    def compose_database(self, sampling_interval=1, direct_parse=False):  #TODO: add parsing of timesteps in unit of time
         '''
         Sample the trajectory() frames to gather coordinates from the peptides.
         
