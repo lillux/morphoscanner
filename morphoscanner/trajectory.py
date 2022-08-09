@@ -717,14 +717,14 @@ class trajectory:
         contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
         antiparallel = self.database['antiparallel']
         antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
-        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+        tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
         spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = kind)
         antip_total_ratio_smooth = spl(x)
         
         plt.plot(x, antip_total_ratio_smooth,'-')
         plt.title('β-sheets alignment over time')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('β-Sheet Organizational Index')
         return
     
@@ -748,7 +748,7 @@ class trajectory:
         '''
         index = self.database.index
         beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
-        tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+        tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
         number_of_peptides = len(self.frames[0].peptides)
         x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
         spl = interpolate.interp1d(tss_int, beta, kind = kind)
@@ -758,7 +758,7 @@ class trajectory:
         plt.plot(x, beta_smooth_norm, '-')
         plt.title('% of peptides involved in β-sheets')
         plt.ylim((0,100))
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of Peptides in β-sheet')
         return
     
@@ -790,7 +790,7 @@ class trajectory:
         aggregates_smooth = spl(x)
         # define boundary for y axis
         y_max = len(self.frames[0].peptides)//2
-        #plot
+    
         plt.plot(x, aggregates_smooth,'-')
         plt.yticks([i for i in range(0, y_max+2, 2)])
         plt.title('Aggregation Order')
