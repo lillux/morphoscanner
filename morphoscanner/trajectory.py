@@ -1164,7 +1164,7 @@ class trajectory:
     def plot_shift_parallel_percentage(self):
         index = self.database.index
         total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
-        x = [self.universe.trajectory[i].time/1000 for i in index]
+        x = [self.universe.trajectory[i].time for i in index]
         y = []
         for idx, frame in enumerate(self.frames):
             try:
@@ -1183,7 +1183,7 @@ class trajectory:
     def plot_shift_antiparallel_negative_percentage(self):
         index = self.database.index
         total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
-        x = [self.universe.trajectory[i].time/1000 for i in index]
+        x = [self.universe.trajectory[i].time for i in index]
         y = []
         for idx, frame in enumerate(self.frames):
             try:
@@ -1202,7 +1202,7 @@ class trajectory:
     def plot_shift_antiparallel_positive_percentage(self):
         index = self.database.index
         total_contact = [(self.database.iloc[i]['parallel'] + self.database.iloc[i]['antiparallel']) for i in range(len(self.database))]
-        x = [self.universe.trajectory[i].time/1000 for i in index]
+        x = [self.universe.trajectory[i].time for i in index]
         y = []
         for idx, frame in enumerate(self.frames):
             try:
