@@ -758,7 +758,7 @@ class trajectory:
         plt.plot(x, beta_smooth_norm, '-')
         plt.title('% of peptides involved in β-sheets')
         plt.ylim((0,100))
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of Peptides in β-sheet')
         return
     
@@ -794,7 +794,7 @@ class trajectory:
         plt.plot(x, aggregates_smooth,'-')
         plt.yticks([i for i in range(0, y_max+2, 2)])
         plt.title('Aggregation Order')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('N° of macroaggregates')
         return
     
@@ -1121,7 +1121,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP+ Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                             title='Antiparallel Positive Shift')
@@ -1175,7 +1175,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Parallel Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1194,7 +1194,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Negative Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1213,7 +1213,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Positive Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
