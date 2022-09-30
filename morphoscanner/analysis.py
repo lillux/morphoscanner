@@ -172,7 +172,7 @@ def _plot_3d_antiparallel_positive_shift(x,y,z):
     fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP+ Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                         title='Antiparallel Positive Shift')
@@ -184,7 +184,7 @@ def _plot_3d_antiparallel_negative_shift(x,y,z):
     fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP- Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                         title='Antiparallel Negative Shift')
@@ -196,7 +196,7 @@ def _plot_3d_parallel_shift(x,y,z):
     fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='P Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                         title='Parallel Shift')
@@ -245,7 +245,7 @@ def get_beta_data(self):
 
     index = self.database.index
     beta = [sum(i) for i in self.database['n° of peptides in macroaggregates']]
-    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+    tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
     number_of_peptides = len(self.frames[0].peptides)
     x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
     spl = interpolate.interp1d(tss_int, beta, kind ='cubic')
@@ -263,7 +263,7 @@ def plot_beta_average(data:list, label: str):
     plt.plot(x, beta_average, '-',label=label)
     plt.title('% of peptides involved in β-sheets')
     plt.ylim((0,100))
-    plt.xlabel('Time (ns)')
+    plt.xlabel('Time (ps)')
     plt.ylabel('% of Peptides in β-sheet')
     plt.legend()
     return
@@ -274,7 +274,7 @@ def get_contacts_data(self):
     contact = [i+e for i, e in zip(self.database['parallel'], self.database['antiparallel'])]
     antiparallel = self.database['antiparallel']
     antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
-    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+    tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
     x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
     spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = 'cubic') # kind='linear'
     antip_total_ratio_smooth = spl(x)
@@ -289,7 +289,7 @@ def plot_contacts_average(data: list, label: str):
 
     plt.plot(x, antiparallel_contacts_average_ratio,'-', label=label)
     plt.title('β-sheets alignment over time')
-    plt.xlabel('Time (ns)')
+    plt.xlabel('Time (ps)')
     plt.ylabel('β-Sheet Organizational Index')
     plt.ylim(0,1)
     plt.legend()
@@ -300,7 +300,7 @@ def plot_contacts_average(data: list, label: str):
 def get_aggregates(self):
     index = self.database.index
     aggregates = self.database['n° of macroaggreates']
-    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in index]).astype(int)
+    tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
     x = np.linspace(tss_int.min(),tss_int.max(),tss_int.max())
     spl = interpolate.interp1d(tss_int, aggregates, kind='cubic')
     aggregates_smooth = spl(x)
@@ -332,7 +332,7 @@ def plot_aggregates_average(data: list, label: str):
     
     plt.plot(x, y,'-',label=label)
     plt.title('Aggregation Order')
-    plt.xlabel('Time (ns)')
+    plt.xlabel('Time (ps)')
     plt.ylabel('N° of macroaggregates')
     plt.legend()
     plt.yticks([i for i in range(0,y_max+2, 2)])

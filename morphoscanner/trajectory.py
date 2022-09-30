@@ -298,14 +298,14 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=5, threshold_multiplier=1.5, device='cpu'):
+    def analyze_inLoop(self, threshold=5.1, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
         
         Parameters
         ----------
         threshold : float, optional
-            The default is 5.
+            The default is 5.1.
             threshold is the longest distance at which two points i,j are considered in contact.
             Is unitless, the unit of measurement depends on the one used in your dataset.
             5 Angstrom is used as a default value.
@@ -724,7 +724,7 @@ class trajectory:
         
         plt.plot(x, antip_total_ratio_smooth,'-')
         plt.title('β-sheets alignment over time')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('β-Sheet Organizational Index')
         return
     
@@ -758,7 +758,7 @@ class trajectory:
         plt.plot(x, beta_smooth_norm, '-')
         plt.title('% of peptides involved in β-sheets')
         plt.ylim((0,100))
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of Peptides in β-sheet')
         return
     
@@ -794,7 +794,7 @@ class trajectory:
         plt.plot(x, aggregates_smooth,'-')
         plt.yticks([i for i in range(0, y_max+2, 2)])
         plt.title('Aggregation Order')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('N° of macroaggregates')
         return
     
@@ -1048,7 +1048,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='P Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                             title='Parallel Shift')
@@ -1085,7 +1085,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP- Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                             title='Antiparallel Negative Shift')
@@ -1121,7 +1121,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP+ Shift',
-                        yaxis_title='Time (ns)',
+                        yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,100])),
                             title='Antiparallel Positive Shift')
@@ -1175,7 +1175,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Parallel Shift')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1194,7 +1194,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Negative Shift')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1213,7 +1213,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Positive Shift')
-        plt.xlabel('Time (ns)')
+        plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
         return
