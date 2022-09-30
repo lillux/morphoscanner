@@ -724,7 +724,7 @@ class trajectory:
         
         plt.plot(x, antip_total_ratio_smooth,'-')
         plt.title('β-sheets alignment over time')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('β-Sheet Organizational Index')
         return
     
