@@ -1024,7 +1024,7 @@ class trajectory:
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
-        y = [self.universe.trajectory[i].time/1000 for i in index]
+        y = [self.universe.trajectory[i].time for i in index]
         # get the shift range
         x = [i for i in range(max(self.peptide_length_list))]
         # calculate total contacts per frame
@@ -1061,7 +1061,7 @@ class trajectory:
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
-        y = [self.universe.trajectory[i].time/1000 for i in index]
+        y = [self.universe.trajectory[i].time for i in index]
         # get the shift range
         x = [i for i in range(max(self.peptide_length_list))]
         # calculate total contacts per frame
@@ -1097,7 +1097,7 @@ class trajectory:
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
-        y = [self.universe.trajectory[i].time/1000 for i in index]
+        y = [self.universe.trajectory[i].time for i in index]
         # get the shift range
         x = [i for i in range(max(self.peptide_length_list))]
         # calculate total contacts per frame
