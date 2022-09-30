@@ -42,7 +42,7 @@ def _trajectory_antiparallel_positive(self):
     index = self.database.index
     # get timestep of each frame
     # time is in picosecond, so time/1000 for time in nanoseconds
-    y = [self.universe.trajectory[i].time/1000 for i in index]
+    y = [self.universe.trajectory[i].time for i in index]
     # get the shift range
     # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
@@ -94,7 +94,7 @@ def _trajectory_antiparallel_negative(self):
     index = self.database.index
     # get timestep of each frame
     # time is in picosecond, so time/1000 for time in nanoseconds
-    y = [self.universe.trajectory[i].time/1000 for i in index]
+    y = [self.universe.trajectory[i].time for i in index]
     # get the shift range
     # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
@@ -145,7 +145,7 @@ def _trajectory_parallel(self):
     index = self.database.index
     # get timestep of each frame
     # time is in picosecond, so time/1000 for time in nanoseconds
-    y = [self.universe.trajectory[i].time/1000 for i in index]
+    y = [self.universe.trajectory[i].time for i in index]
     # get the shift range
     # maximum range is the length (number of aminoacids) of the longest peptide
     x = [i for i in range(max(self.peptide_length_list))]
