@@ -200,28 +200,26 @@ class trajectory:
     
     
     # add something to ask for threshold in main.py
-    # THIS FUNCTION CHECK FOR A PARAMETER OF self CALLED threshold, THAT IS CREATED FROM analyze_inLoop FUNCTION
-    # THIS BEHAVIOR NEED TO BE DISENTANGLED, BECAUSE AT THE MOMENT IS COMPLETELY DEPENDENTE ON ANOTHER FUNCTION
-    def analysis(self, frame, threshold_multiplier=1.5, device='cpu'):
+    def analysis(self, frame, threshold=5.1, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on a frame.
-
+    
         Parameters
         ----------
         frame : int
             The frame to analyze.
-            
+    
         threshold_multiplier : float, optional
             The default is 1.5.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
             The calculated threshold distance is the median distance between all the contiguos 
             apha-carbon of each peptide's aminoacid in a frame.
-            
-            When threshold_mmultiplier is used, the theshold is calculated as:
-                
+    
+            When threshold_multiplier is used, the theshold is calculated as:
+    
                 median(median(distance (p[c], p[c+1]) for c in [0, len(p)) for each p in T[f])
-                
+    
                 Where T is the set of the sampled frames
                 f is a frame in T
                 p is a peptide in f
@@ -229,43 +227,39 @@ class trajectory:
                 len(p) is the number of c in p
                 distance is the euclidean distance
                 median is the median value
-            
+    
             This parameter is overwritten if threshold is given.
-            
+    
         device : str, optional
             The device on which the data are saved and the analysis is computed.
             The option are:
                 'cpu', to perform parallelization on cpu
                 'cuda', to performe parallelization on CUDA compatible device,
                     usually Nvidia GPUs.
-            
+    
             The default is 'cpu'.
-
+    
         Returns
         -------
         None.
-
+    
         '''
         # check if threshold distance for contact is given
-        try:
-            threshold = self.contact_threshold
-        # if not given, calculate the threshold
-        except:
-            # compute measure on sampled data
-            measures = distance_tensor.sample_intrapeptide_distance(self, samples=3)
-            # plot histogram
-            plt.hist(measures)
-            # calculate and print confidence interval and median
-            low, median, high = np.percentile(measures, (2.5, 50, 97.5))
-            print('95% confidence interval is between',low, 'and', high,'Angstrom.\n')
-            print('median value is: %f Angstrom.\n' % median)
-            # compute theshold
-            threshold = median * threshold_multiplier
-            print('Computed threshold is %f Angstrom.\n' % threshold)
-            # save the threshold as a trajectory() object's attribute
-            self.contact_threshold = threshold
-            # print the threshold
-            print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom.\n" % str(self.contact_threshold))
+        #try:
+            #threshold = self.contact_threshold
+        if threshold != None:
+            try:
+                threshold == self.contact_threshold
+            except:
+                self.contact_threshold = threshold
+    
+        else:    
+            try:
+                threshold = self.contact_threshold
+            # if not given, calculate the threshold
+            except:
+                threshold = distance_tensor.calculate_distance_threshold(self, threshold_multiplier=threshold_multiplier, save=True)
+    
     
         # print the frame to be analyzed
         print('Analyzing frame n° ', frame)
@@ -296,14 +290,14 @@ class trajectory:
         self.frames[frame].results.subgraphs = subgraphs
         # print to confirm the end of the analysis
         print('Finished analysis of frame n° %d' % frame)
-        
+    
         return
     
     
     def analyze_inLoop(self, threshold=5.1, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
-        
+    
         Parameters
         ----------
         threshold : float, optional
@@ -311,12 +305,12 @@ class trajectory:
             threshold is the longest distance at which two points i,j are considered in contact.
             Is unitless, the unit of measurement depends on the one used in your dataset.
             5 Angstrom is used as a default value.
-            
-            
+    
+    
             if threshold == None, the threshold is calculated as follow:
-                    
+    
                     median(median(ed (p[c], p[c+1]) for c in [0, len(p)) for each p in f) * threshold_multiplier
-                    
+    
                     Where T is the set of the sampled frames
                     f is a frame in T
                     p is a peptide in f
@@ -324,20 +318,20 @@ class trajectory:
                     len(p) is the number of c in p
                     ed is the euclidean distance
                     median is the median value
-            
-            
-            
+    
+    
+    
         threshold_multiplier : float, optional
             The default is 1.5.
             threshold_multiplier is a factor used to multiply the calculated
             threshold distance for contact recognition.
             The calculate threshold distance is the median distance between all the contiguos 
             apha-carbon median of each peptides aminoacid in a frame.
-            
+    
             When threshold_mmultiplier is used, the theshold is calculated as:
-                
+    
                 median(median(distance (p[c], p[c+1]) for c in [0, len(p)) for each p in T[f])
-                
+    
                 Where T is the set of the sampled frames
                 f is a frame in T
                 p is a peptide in f
@@ -345,19 +339,19 @@ class trajectory:
                 len(p) is the number of c in p
                 distance is the euclidean distance
                 median is the median value
-            
+    
             This parameter is not used if threshold =! None.
-            
+    
         device : str, optional
             The device on which the data are saved and the analysis is computed.
             The option are:
                 'cpu', to perform parallelization on cpu
                 'cuda', to performe parallelization on CUDA compatible device,
                     usually Nvidia GPUs.
-            
+    
             The default is 'cpu'.
-            
-
+    
+    
         Returns
         -------
         None.
@@ -367,6 +361,7 @@ class trajectory:
             # threshold for the analysis is the given threshold 
             self.contact_threshold=threshold
         else:
+            threshold = distance_tensor.calculate_distance_threshold(self, threshold_multiplier=threshold_multiplier)
             pass
         # print to confirm the starting of the proces
         print('processing started...\n')
@@ -375,22 +370,20 @@ class trajectory:
         for frame in self.frames:
             start_an = timer()
             # compute analysis
-            self.analysis(frame, threshold_multiplier=threshold_multiplier, device=device)
+            self.analysis(frame, threshold=threshold, threshold_multiplier=threshold_multiplier, device=device)
             end_an = timer()
             # print the time needed for the analysis
             text = 'Time needed to analyze frame %d was %f seconds.\n' % (frame, (end_an-start_an))
             print(text)
-
+    
         end = timer()
-
+    
         print('Total time to analyze dataset was %f seconds\n.' % (end -start))
         return
     
     ###
     ### THESE HAVE BEEN PORTED FROM OLD TRAJECTORY TO STREAMLINE ANALYSIS OF GLICOSILATED PEPTIDES!
-    ###
-    
-    
+    ###   
     def get_sense(self):
 
         '''
