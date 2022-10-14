@@ -6,6 +6,7 @@ Created on Thu Mar 19 20:11:57 2020
 
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
 
  # instantiate 3d tensor with shape n_peptides * n_residues * n_dimension
@@ -616,3 +617,42 @@ def sample_intrapeptide_distance(traj, samples=1, device='cpu'):
 
     return median_dist
         
+
+def calculate_distance_threshold(self, threshold_multiplier=1.5, save=False):
+    '''
+    Calculate distance threshold to define a contact,
+    using empirical statistical mesures based on intrapeptide granes distances
+
+    Parameters
+    ----------
+    threshold_multiplier : float, optional
+        The default is 1.5.
+        It is the multiplier by which the median intrapeptide granes distance is multiplied
+    save : bool, optional
+        The default is False.
+        Save the results in the object. True save the result, False does not save the result.
+
+    Returns
+    -------
+    threshold : float
+        It is the distance (in Amstrong) above which 2 granes are defined as not contacting.
+    '''
+    # compute measure on sampled data
+    measures = sample_intrapeptide_distance(self, samples=3)
+    # plot histogram
+    plt.hist(measures)
+    # calculate and print confidence interval and median
+    low, median, high = np.percentile(measures, (2.5, 50, 97.5))
+    print('95% confidence interval is between',low, 'and', high,'Angstrom.\n')
+    print('median value is: %f Angstrom.\n' % median)
+    # compute theshold
+    threshold = median * threshold_multiplier
+    print('Computed threshold is %f Angstrom.\n' % threshold)
+    # save the threshold as a trajectory() object's attribute
+    if save:
+        self.contact_threshold = threshold
+        # print the threshold
+        print("Two nearby atoms of different peptides are contacting if the distance is lower than: %s Angstrom.\n" % str(self.contact_threshold))
+    else:
+        print("The calculated threshold has not been saved.")
+    return threshold

@@ -200,6 +200,8 @@ class trajectory:
     
     
     # add something to ask for threshold in main.py
+    # THIS FUNCTION CHECK FOR A PARAMETER OF self CALLED threshold, THAT IS CREATED FROM analyze_inLoop FUNCTION
+    # THIS BEHAVIOR NEED TO BE DISENTANGLED, BECAUSE AT THE MOMENT IS COMPLETELY DEPENDENTE ON ANOTHER FUNCTION
     def analysis(self, frame, threshold_multiplier=1.5, device='cpu'):
         '''
         Compute analysis on a frame.

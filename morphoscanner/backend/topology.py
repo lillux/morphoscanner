@@ -138,7 +138,7 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
         a list of consecutive trajectory files,
         as [part1.trr, part2.trr, ...]
     in_memory : bool, optional
-        The default is True.
+        The default is False.
         Move data to memory for faster (~100x faster)
         frames coordinate retrival.
         Needs more memory.
