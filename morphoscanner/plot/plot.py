@@ -322,6 +322,8 @@ def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
     Returns
     -------
     None.
+    
+    Comment from Federico: Removed interpolation because it creates artifacts and make unclear the interpretation of the analysis
 
     '''
     alpha_perc = []
@@ -330,14 +332,33 @@ def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
 
     fr = [i for i in self.frames.keys()]
     tss_int = np.array([self.universe.trajectory[i].time/1000 for i in fr]).astype(float)
-    x = np.linspace(tss_int.min(),tss_int.max(), num)
-    spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
-    fr_smooth = spl(x)
+    #x = np.linspace(tss_int.min(),tss_int.max(), num)
+    x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
+    #spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
+    #fr_smooth = spl(x)
     
     
-    plt.plot(x, fr_smooth)
+    plt.plot(x, alpha_perc)
     plt.title('Alpha-helix % over time')
     plt.xlabel('Time (ns)')
     plt.ylabel('Alpha-helix %')
     
     return
+
+def plot_beta_perc(self, peptide=0, num=50, kind='cubic'):
+    
+    beta_perc = []
+    for f in self.frames:
+        alpha_perc.append(self.frames[f].results.helix_score[peptide]['perc_beta'])
+
+    fr = [i for i in self.frames.keys()]
+    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in fr]).astype(float)
+    x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
+    
+    plt.plot(x, beta_perc)
+    plt.title('Beta-sheet % over time')
+    plt.xlabel('Time (ns)')
+    plt.ylabel('Beta-sheet %')
+    
+    return
+
