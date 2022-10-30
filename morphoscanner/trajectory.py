@@ -316,7 +316,7 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=5.1, threshold_multiplier=1.5, device='cpu'):
+    def analyze_inLoop(self, threshold=5.1, threshold_multiplier=1.5, minimum_contact=2, device='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
     
@@ -392,7 +392,7 @@ class trajectory:
         for frame in self.frames:
             start_an = timer()
             # compute analysis
-            self.analysis(frame, threshold=threshold, threshold_multiplier=threshold_multiplier, device=device)
+            self.analysis(frame, threshold=threshold, threshold_multiplier=threshold_multiplier, minimum_contact=minimum_contact, device=device)
             end_an = timer()
             # print the time needed for the analysis
             text = 'Time needed to analyze frame %d was %f seconds.\n' % (frame, (end_an-start_an))
