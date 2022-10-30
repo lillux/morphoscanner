@@ -1037,7 +1037,7 @@ class trajectory:
 
 
     ### Use this to plot 3d data from trajectory object
-    def plot3d_parallel(self):
+    def plot3d_parallel(self, z_max=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1067,14 +1067,14 @@ class trajectory:
                         xaxis_title='P Shift',
                         yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
-                        zaxis = dict(nticks=20, range=[0,100])),
+                        zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Parallel Shift')
         fig.show()
 
         return
 
 
-    def plot3d_antiparallel_negative(self):
+    def plot3d_antiparallel_negative(self, z_max=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1104,13 +1104,13 @@ class trajectory:
                         xaxis_title='AP- Shift',
                         yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
-                        zaxis = dict(nticks=20, range=[0,100])),
+                        zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Negative Shift')
         fig.show()
 
         return
 
-    def plot3d_antiparallel_positive(self):
+    def plot3d_antiparallel_positive(self, z_max=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1140,7 +1140,7 @@ class trajectory:
                         xaxis_title='AP+ Shift',
                         yaxis_title='Time (ps)',
                         zaxis_title='Contact %',
-                        zaxis = dict(nticks=20, range=[0,100])),
+                        zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Positive Shift')
         fig.show()
     
