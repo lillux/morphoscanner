@@ -55,46 +55,56 @@ def normalized_cross_correlation_function_torch_v1(contact_map, minimum_contact=
     return : a list [ncc_value, index (in the shift_matrix_stack) of the shift matrix
                 that is matching the contact map
     '''
+    # Clone torch.tensor for local use
     contact_map = contact_map.double()
-    shift_matrix_library = shift_library_maker_torch(contact_map, device=device)
-
-    cross_correlation_values = []
-    max_val = []
+    # Sum the contacts
     sum_contact_map = torch.sum(contact_map)
-    shift_matrix_center_index = ((contact_map.shape[0] + contact_map.shape[1]) -1)//2
-
+    # Check that the minimal contact requirement is present
     if sum_contact_map < minimum_contact:
         pass
-
     else:
-        
+        # Create shift matix library
+        shift_matrix_library = shift_library_maker_torch(contact_map, device=device)
+        # Instantiate empty list for future use
+        cross_correlation_values = []
+        max_val = []
+        # Create the shift matrix index for the future assessment of contact sense
+        shift_matrix_center_index = ((contact_map.shape[0] + contact_map.shape[1]) -1)//2
+        # Cicle throught the shift matrix library sense
         for sense in shift_matrix_library:
-            
+            # compute elementwise matrix multiplication (signal denoising)
             signal_full = contact_map * shift_matrix_library[sense]
+            # get the sum of each denoised map
             signal_tens = torch.sum(signal_full, dim=(1,2))
+            # compute norm
             norm = torch.sqrt(sum_contact_map) * torch.sqrt(torch.sum(shift_matrix_library[sense], dim=(1,2)))
+            # compute cross correlation values
             ncc = signal_tens/norm
+            # get the max ncc value index
             ncc_index = torch.argmax(ncc)
+            # use the index to get the actual value
             ncc_val = ncc[ncc_index]
-        
+            # get the denoised map
             denoised = signal_full[ncc_index]
             cross_correlation_values.append([ncc_val, ncc_index, sum_contact_map, sense, denoised])
-            
-        max_val = max(cross_correlation_values) # get only the best match (highest value of ncc)
+        # get only the best match (highest value of ncc)
+        max_val = max(cross_correlation_values)
+        # get number of contacts after denoising
         sum_denoised = torch.sum(max_val[4])
+        # check if number of contacts are at least the required value
         if sum_denoised >= minimum_contact:
-            
+            # get the shift value
             shift = shift_matrix_center_index - max_val[1]
+            # save the number of contacts after denoising
             max_val[2] = sum_denoised
+            # save the shift sense
             max_val.append(shift)
-            
             return max_val
-        
         else:
             pass
 
 
-def cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_array, device='cpu'):
+def cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_array, minimum_contact=2, device='cpu'):
     '''
     Perform Normalized Cross Correlation function on the dataset
     to check for contact. Get a dict for processing and a pandas.DataFrame
@@ -113,7 +123,7 @@ def cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_array
         for col in range((row+1), len(contact_array[row])):
             best_match = []
 
-            best_match = normalized_cross_correlation_function_torch_v1(contact_array[row][col], device=device)
+            best_match = normalized_cross_correlation_function_torch_v1(contact_array[row][col], minimum_contact=minimum_contact, device=device)
 
             if best_match == None:
                 pass
@@ -139,7 +149,7 @@ def cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_array
     return contact_dict, df, denoised_dict
 
 
-def denoise_contact_maps_torch_v1(contact_maps, device='cpu'):
+def denoise_contact_maps_torch_v1(contact_maps, minimum_contact=2, device='cpu'):
     
     '''Denoise the contact_maps dataset using the shift_matrix
     
@@ -148,7 +158,7 @@ def denoise_contact_maps_torch_v1(contact_maps, device='cpu'):
     return : a dict with key:value = row : row, col, denoised_map
     
     '''
-    normalized_cross_correlation_results, df, denoised_dict = cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_maps, device=device)
+    normalized_cross_correlation_results, df, denoised_dict = cross_correlation_function_for_dataset_with_dataframe_torch_v1(contact_maps, minimum_contact=minimum_contact, device=device)
 
     full_denoised_dict = {}
     for peptide_1 in tqdm.tqdm(denoised_dict):

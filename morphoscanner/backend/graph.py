@@ -130,22 +130,17 @@ def graph_v1(df):
     
     # Instantiate graph
     graph = nx.Graph()
-
     # iter dataframe (second output of denoise_contact_maps)
-    for group in df.index:
-        
+    for group in df.index:   
         # peptides index assignment
         peptide_1 = df.iloc[group]['peptide1']
         peptide_2 = df.iloc[group]['peptide2']
-
-        # check number of contacts between the peptides
+        # get number of contacts between the peptides
         number_of_contacts = df.iloc[group]['contacts']
         
         # double check number of contacts
         if number_of_contacts >= 2:
-
             sense = df.iloc[group]['sense']
-
             graph.add_edge(peptide_1, peptide_2, weight=number_of_contacts, color=colors[sense], sense=sense)
 
     return graph
@@ -253,19 +248,16 @@ def get_not_in_subgraph(coordinate_dict, subgraph):
     graph_v1 :      get node without neighbours
     
     '''
-    # one line function # don't use clever shits my friend
+    # one liner function ~~~ don't use clever shits my friend!
     #out = [e for e in coordinate_dict if e not in [a for i in subgraph for a in i]]
 
     out = []
-    
     # get a list with all the node in subgraph
     subgraph = [a for i in subgraph for a in i]
 
     # iter on all element and get the one that are not in subgraph
     for e in coordinate_dict:
-
         if e not in subgraph:
-
             out.append(e)
 
     return out

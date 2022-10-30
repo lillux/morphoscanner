@@ -331,7 +331,7 @@ def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
         alpha_perc.append(self.frames[f].results.helix_score[peptide]['perc_alpha'])
 
     fr = [i for i in self.frames.keys()]
-    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in fr]).astype(float)
+    tss_int = np.array([self.universe.trajectory[i].time for i in fr]).astype(float)
     #x = np.linspace(tss_int.min(),tss_int.max(), num)
     x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
     #spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
@@ -340,7 +340,7 @@ def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
     
     plt.plot(x, alpha_perc)
     plt.title('Alpha-helix % over time')
-    plt.xlabel('Time (ns)')
+    plt.xlabel('Time (ps)')
     plt.ylabel('Alpha-helix %')
     
     return
@@ -349,15 +349,15 @@ def plot_beta_perc(self, peptide=0, num=50, kind='cubic'):
     
     beta_perc = []
     for f in self.frames:
-        alpha_perc.append(self.frames[f].results.helix_score[peptide]['perc_beta'])
+        beta_perc.append(self.frames[f].results.helix_score[peptide]['perc_beta'])
 
     fr = [i for i in self.frames.keys()]
-    tss_int = np.array([self.universe.trajectory[i].time/1000 for i in fr]).astype(float)
+    tss_int = np.array([self.universe.trajectory[i].time for i in fr]).astype(float)
     x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
     
     plt.plot(x, beta_perc)
     plt.title('Beta-sheet % over time')
-    plt.xlabel('Time (ns)')
+    plt.xlabel('Time (ps)')
     plt.ylabel('Beta-sheet %')
     
     return

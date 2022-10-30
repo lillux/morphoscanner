@@ -221,8 +221,8 @@ class trajectory:
             return a_peptide
     
     
-    # add something to ask for threshold in main.py
-    def analysis(self, frame, threshold=5.1, threshold_multiplier=1.5, device='cpu'):
+    # TODO: add something to ask for threshold in main.py
+    def analysis(self, frame, threshold=5.1, threshold_multiplier=1.5, minimum_contact=2, device='cpu'):
         '''
         Compute analysis on a frame.
     
@@ -296,7 +296,7 @@ class trajectory:
         print('Time to compute distance is: ', (end_dist - start_dist), 'seconds.')
         # gather data on the contact network between peptides
         start_den = timer()
-        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact, device=device)
+        frame_denoised, df = pattern_recognition.denoise_contact_maps_torch_v1(frame_contact, minimum_contact=minimum_contact, device=device)
         end_den = timer()
         print('Time to denoise: ', (end_den-start_den), 'seconds.')
         # compose a graph of the contacting peptides

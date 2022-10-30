@@ -25,9 +25,9 @@ def check_int_and_return(value):
     
     Output = int'''
 
-    if isInt(value):
-
+    try:
+        isInt(value)
         return int(value)
 
-    else:
+    except:
         raise ValueError("%s is not an integer, it is of type %s...\n " % (str(value), type(value))) 
