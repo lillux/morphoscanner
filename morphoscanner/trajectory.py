@@ -1,6 +1,6 @@
 import morphoscanner
 from morphoscanner import backend, trj_object
-from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology
+from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology, helix_recognition
 from morphoscanner.plot import gnuplot
 
 import tqdm
@@ -187,6 +187,34 @@ class trajectory:
                 a_frame[pep] = self.frames[frame].peptides[pep].coordinates
 
             return a_frame
+        
+    def get_single_tens_frame(self, frame: int, device='cpu'):
+        '''
+        Instantiate a torch.tensor thath contain all the frame's grains coordinates
+
+        Parameters
+        ----------
+        frame : int
+            One of the sampled frames.
+        device : str, optional
+            The default is 'cpu'.
+            Choose between 'cpu' and 'cuda'
+
+        Returns
+        -------
+        pep_tens : torch.tensor
+            Frame's grains coordinates.
+
+        '''
+        pep_tens = []
+        frame_tens = distance_tensor.get_coordinate_tensor_from_dict_multi(self.get_frame(frame),device=device)
+        
+        for peptide in frame_tens:
+    
+            pep_tens.append(frame_tens[peptide])       
+        pep_tens = torch.cat(pep_tens)
+        
+        return pep_tens
      
     
     def get_peptide(self, peptide):
@@ -616,96 +644,25 @@ class trajectory:
     #################################
     ###########################
     
-    # HELIX
-    
-    def get_single_tens_frame(self, frame: int, device='cpu'):
-        '''
-        Instantiate a torch.tensor thath contain all the frame's grains coordinates
-
-        Parameters
-        ----------
-        frame : int
-            One of the sampled frames.
-        device : str, optional
-            The default is 'cpu'.
-            Choose between 'cpu' and 'cuda'
-
-        Returns
-        -------
-        pep_tens : torch.tensor
-            Frame's grains coordinates.
-
-        '''
-        pep_tens = []
-        frame_tens = distance_tensor.get_coordinate_tensor_from_dict_multi(self.get_frame(frame),device=device)
-        
-        for peptide in frame_tens:
-    
-            pep_tens.append(frame_tens[peptide])       
-        pep_tens = torch.cat(pep_tens)
-        
-        return pep_tens
-
-    
-    def get_map_index(self, frame=0):
-        '''
-        Compute index for fast data retrival from a single distance map, or tensor, using indexing
-        '''
-        # start from 0
-        total = 0
-        # instantiate empty dict
-        index = {}
-        # for each parsed peptide
-        for peptide in self.frames[frame].peptides:
-            # calculate number of peptide grains
-            len_pep = len(self.frames[frame].peptides[peptide].coordinates)
-            # save [start, end] index values
-            index[peptide] = [total,(total+len_pep)]
-            # add actual peptide number of grains to total
-            total += len_pep
-        # save as instance attibute
-        # self.map_index = index # use it to make instance attribute
-        return index
-
-    def retrieve_map(self, dist_map: torch.tensor, map_index: dict, i: int, j: int):
-        ij_map = dist_map[map_index[i][0]:map_index[i][1], map_index[j][0]:map_index[j][1]]
-        return ij_map
-    
-    
-    def _calculate_helix_score(self, distance_map, pep_index):
-        h_score = {}
-        for peptide in pep_index:
-            d_map = self.retrieve_map(distance_map,pep_index,peptide,peptide)
-            h_map = backend.helix_recognition.contact_map_helix_torch(d_map)
-            score = backend.helix_recognition.contact_tracer(h_map)
-            h_score[peptide] = score
-        return h_score
-    
-    def calculate_helix_score_for_frame(self, frame: int, device='cpu'):
-        frame_tens = self.get_single_tens_frame(frame, device=device)
-        frame_dist = backend.distance_tensor.fast_cdist(frame_tens, frame_tens)
-        pep_index = self.get_map_index(frame)
-        h_score = self._calculate_helix_score(frame_dist, pep_index)
-        self.frames[frame].results.helix_score = h_score
-        return
-    
+    # HELIX. Refer to backend.helix_recognition
+       
     def helix_score(self, device='cpu'):
         '''
         Calculate alpha-helix score for each sampled timestep
-
+    
         Parameters
         ----------
         device : str, optional
             The default is 'cpu'.
             Choose between 'cpu' and 'cuda'
-
+    
         Returns
         -------
         None.
-
+    
         '''
         for frame in self.frames:
-            self.calculate_helix_score_for_frame(frame=frame, device=device)
+            helix_recognition.calculate_helix_score_for_frame(self, frame=frame, device=device)
         return
     
     ######################

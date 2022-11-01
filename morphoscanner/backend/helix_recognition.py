@@ -4,7 +4,7 @@ Created on Wed Nov 18 17:50:56 2020
 @author: lillo
 """
 import numpy as np
-
+from timeit import default_timer as timer
 
 def contact_map_helix_torch(distance_map):
     
@@ -25,7 +25,6 @@ def contact_tracer(contact_map):
     count_beta  = 0
     percentage_beta = 0
     length_beta = 0
-    counter = 0
     folding = {}
     explored_alpha = []
     explored_beta = []
@@ -56,3 +55,50 @@ def contact_tracer(contact_map):
     folding['explored_alpha'] = np.sort(explored_alpha)
     folding['explored_beta'] = np.sort(explored_beta)
     return folding
+
+
+def retrieve_map(self, frame, i: int, j: int):
+    ij_map = self.frames[frame].results.distance_maps[i][j]
+    return ij_map
+
+
+def _calculate_helix_score(self, frame):
+    h_score = {}
+    for peptide in range(len(self.frames[frame].peptides)):
+        #print('checking peptide', peptide)
+        d_map = retrieve_map(self,frame,peptide,peptide)
+        #start=timer()
+        h_map = contact_map_helix_torch(d_map)
+        #end=timer()
+        #print('contact map computed in', end-start, 'seconds')
+        #start = timer()
+        score = contact_tracer(h_map)
+        #end = timer()
+        #print('score computed in', end-start, 'seconds')
+        h_score[peptide] = score
+        #print('end peptide', peptide)
+    return h_score
+
+def calculate_helix_score_for_frame(self, frame: int, device='cpu'):
+    h_score = _calculate_helix_score(self, frame)
+    self.frames[frame].results.helix_score = h_score
+    return
+
+def helix_score(self, device='cpu'):
+    '''
+    Calculate alpha-helix score for each sampled timestep
+
+    Parameters
+    ----------
+    device : str, optional
+        The default is 'cpu'.
+        Choose between 'cpu' and 'cuda'
+
+    Returns
+    -------
+    None.
+
+    '''
+    for frame in self.frames:
+        calculate_helix_score_for_frame(self, frame=frame, device=device)
+    return
