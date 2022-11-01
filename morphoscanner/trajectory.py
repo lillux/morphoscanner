@@ -1,6 +1,7 @@
 import morphoscanner
 from morphoscanner import backend, trj_object
 from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology
+from morphoscanner.plot import gnuplot
 
 import tqdm
 from timeit import default_timer as timer
@@ -1233,4 +1234,57 @@ class trajectory:
         plt.xlabel('Time (ps)')
         plt.ylabel('% of contacts')
         plt.show()
+        return
+    
+    def gnuplot_shift_profile(self, sense:str, z_max=100, quality='medium', sleep=2, verbose=True):
+        '''
+        This function is a wrapper calling a function from plot module.
+        
+        Plot a beta-sheet shift profile 3D plot in gnuplot.
+        It Needs PyGnuplot installed in the system.
+
+        Parameters
+        ----------
+        sense : str
+            is the sense of the shift that you want to plot.
+            it can take one of the following values:
+                'parallel'
+                'antiparallel_negative'
+                'antiparallel_positive'
+                
+        z_max : TYPE, optional
+            is the maximum value of the z axis. It start from 0,
+            and finish at z_max. It is a % value,
+            so the value of z_max should be 100 at maximum.
+            The default is 100.
+        quality : TYPE, optional
+            the quality of the saved image.
+            The accepted value are:
+                low',
+                'medium',
+                'high'
+                The default is 'medium'.
+        sleep : TYPE, optional
+            is the length of the pause for the interpreter, in seconds.
+            This argument will be removed in future version.
+            The default is 2.
+        verbose : TYPE, optional
+            if verbose is True, the function gives:
+                the name of the temporary data object,
+                a message confirming the finishing of the plotting
+                a message confirming the deletion of the temporary file.
+                The default is True.
+
+        Raises
+        ------
+        ValueError
+            If the value is wrong, return accepted values.
+            The accepted values are ones accepted by 'sense' argument.
+                
+        Returns
+        -------
+        None.
+
+        '''
+        gnuplot.gnuplot_shift_surface(self, sense, z_max=z_max, quality=quality, sleep=sleep, verbose=verbose)  
         return
