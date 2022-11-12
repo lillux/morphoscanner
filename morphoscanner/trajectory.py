@@ -21,7 +21,7 @@ class trajectory:
     From this object is possible to conduct the analysis.
     '''
 
-    def __init__(self, _sys_config:str, _sys_traj:str, select:list[str]=None):
+    def __init__(self, _sys_config:str, _sys_traj:str, select=None):
         '''
         Construct the trajectory() object.
 
