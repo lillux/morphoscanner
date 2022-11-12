@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import plotly.graph_objects as go
-from scipy.interpolate import interpolate
+from scipy.interpolate import interpolate, interp1d
 import torch
 
 class trajectory:
@@ -112,9 +112,8 @@ class trajectory:
         Returns
         -------
         None.
-        '''
+        ''' 
         flag = False
-        
         if sampling_interval < self.number_of_frames:
             flag = True
         else:
@@ -169,7 +168,6 @@ class trajectory:
         a_frame : dict
             A dict with the form:
                 {peptide_index : {atom_index : [x,y,z]}}
-
         '''
         flag = False
         
@@ -737,19 +735,22 @@ class trajectory:
         plt.ylabel('% of Peptides in β-sheet')
         return
     
-    def plot_aggregates(self, kind:str='cubic'):
+    def plot_aggregates(self, interpolate:bool=False, kind:str='cubic'):
         '''
         Plot `the number of macroaggregates` or clusters for each
         sampled timestep (or frame).        
-    
+
         Parameters
         ----------
+        interpolate : bool
+            default is False
+            Interpolate data using `scipy.interpolate.interp1()`
+
         kind : str, optional
-            The default is 'cubic'.
-    
-        Is the kind of interpolation used to plot the data.
-        The same as `scipy.interpolate.interp1()`
-    
+            default is 'cubic'.
+            The kind of interpolation used to plot the data.
+            Use the same as options as `scipy.interpolate.interp1()`
+
         Returns
         -------
         None.
@@ -759,15 +760,16 @@ class trajectory:
         # get the timestep (in picoseconds) from each indexed frame
         tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
         aggregates = self.database['n° of macroaggreates']
+        # define x
         # interpolate data through the timesteps
-        x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-        spl = interpolate.interp1d(tss_int, aggregates, kind=kind)
-        aggregates_smooth = spl(x)
-        # define boundary for y axis
-        y_max = len(self.frames[0].peptides)//2
-    
-        plt.plot(x, aggregates_smooth,'-')
-        plt.yticks([i for i in range(0, y_max+2, 2)])
+        if interpolate:
+            x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
+            spl = interp1d(tss_int, aggregates, kind=kind)
+            aggregates_smooth = spl(x)
+            plt.plot(x, aggregates_smooth,'-')
+        else:
+            x = np.linspace(tss_int.min(),tss_int.max(), len(aggregates))
+            plt.plot(x, aggregates)        
         plt.title('Aggregation Order')
         plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('N° of macroaggregates')
