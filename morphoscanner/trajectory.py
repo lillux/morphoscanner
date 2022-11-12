@@ -21,7 +21,7 @@ class trajectory:
     From this object is possible to conduct the analysis.
     '''
 
-    def __init__(self, _sys_config, _sys_traj, select = None):
+    def __init__(self, _sys_config:str, _sys_traj:str, select:list[str]=None):
         '''
         Construct the trajectory() object.
 
@@ -63,9 +63,9 @@ class trajectory:
         #       'key' is an int, a certain number of aminoacids
         #       'value' is the int number of peptides that have 'key' aminoacids
         self.len_dict = topology.get_peptide_length_dict(self.peptide_length_list)
-        
+        # retrive the time unit of the trajectory
+        self.time_unit = self.universe.trajectory.units['time']        
         print('In your trajectory there are %d frames.\n' % self.number_of_frames)
-        
         topology.print_peptides_length(self.len_dict)
         
         return           
@@ -90,7 +90,7 @@ class trajectory:
         return  
     
     
-    def compose_database(self, sampling_interval=1, direct_parse=False):  #TODO: add parsing of timesteps in unit of time
+    def compose_database(self, sampling_interval:int=1, direct_parse:bool=False):  #TODO: add parsing of timesteps in unit of time
         '''
         Sample the trajectory() frames to gather coordinates from the peptides.
         
@@ -155,7 +155,7 @@ class trajectory:
         return
     
 
-    def get_frame(self, frame):
+    def get_frame(self, frame:int):
         '''
         Get the position of all the parsed atom of a trajectory frame.
 
@@ -188,7 +188,7 @@ class trajectory:
 
             return a_frame
         
-    def get_single_tens_frame(self, frame: int, device='cpu'):
+    def get_single_tens_frame(self, frame:int, device:str='cpu'):
         '''
         Instantiate a torch.tensor thath contain all the frame's grains coordinates
 
@@ -217,7 +217,7 @@ class trajectory:
         return pep_tens
      
     
-    def get_peptide(self, peptide):
+    def get_peptide(self, peptide:int):
         '''
         Get the position of a peptide in all the parsed frames.
 
@@ -251,7 +251,7 @@ class trajectory:
     
     
     # TODO: add something to ask for threshold in main.py
-    def analysis(self, frame, threshold=5.1, threshold_multiplier=1.5, minimum_contact=2, device='cpu'):
+    def analysis(self, frame:int, threshold:float=5.1, threshold_multiplier:float=1.5, minimum_contact:int=2, device:str='cpu'):
         '''
         Compute analysis on a frame.
     
@@ -345,7 +345,7 @@ class trajectory:
         return
     
     
-    def analyze_inLoop(self, threshold=5.1, threshold_multiplier=1.5, minimum_contact=2, device='cpu'):
+    def analyze_inLoop(self, threshold:float=5.1, threshold_multiplier:float=1.5, minimum_contact:int=2, device:str='cpu'):
         '''
         Compute analysis on the whole sampled dataset.
     
@@ -646,7 +646,7 @@ class trajectory:
     
     # HELIX. Refer to backend.helix_recognition
        
-    def helix_score(self, device='cpu'):
+    def helix_score(self, device:str='cpu'):
         '''
         Calculate alpha-helix score for each sampled timestep
     
@@ -671,7 +671,7 @@ class trajectory:
     
     # PLOT
     
-    def plot_contacts(self, kind='cubic'):
+    def plot_contacts(self, kind:str='cubic'):
         '''
         Plot the ratio `antiparallel contacts` / `total contact` for each
         sampled timestep (or frame).
@@ -699,12 +699,12 @@ class trajectory:
         
         plt.plot(x, antip_total_ratio_smooth,'-')
         plt.title('β-sheets alignment over time')
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('β-Sheet Organizational Index')
         return
     
     
-    def plot_peptides_in_beta(self, kind='cubic'):
+    def plot_peptides_in_beta(self, kind:str='cubic'):
         '''
         Plot the ratio `peptide in beta` / `total peptide` for each
         sampled timestep (or frame).
@@ -733,11 +733,11 @@ class trajectory:
         plt.plot(x, beta_smooth_norm, '-')
         plt.title('% of peptides involved in β-sheets')
         plt.ylim((0,100))
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('% of Peptides in β-sheet')
         return
     
-    def plot_aggregates(self, kind='cubic'):
+    def plot_aggregates(self, kind:str='cubic'):
         '''
         Plot `the number of macroaggregates` or clusters for each
         sampled timestep (or frame).        
@@ -769,11 +769,11 @@ class trajectory:
         plt.plot(x, aggregates_smooth,'-')
         plt.yticks([i for i in range(0, y_max+2, 2)])
         plt.title('Aggregation Order')
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('N° of macroaggregates')
         return
     
-    def plot_shift_parallel(self, frame=None):
+    def plot_shift_parallel(self, frame:int):
         try:
             f = self.frames[frame].results.shift_profile_parallel
         except:
@@ -787,7 +787,7 @@ class trajectory:
         plt.show()
         return
     
-    def plot_shift_antiparallel_positive(self, frame=None):
+    def plot_shift_antiparallel_positive(self, frame:int):
         try:
             f = self.frames[frame].results.shift_profile_antiparallel_positive
         except:
@@ -801,7 +801,7 @@ class trajectory:
         plt.show() 
         return
     
-    def plot_shift_antiparallel_negative(self, frame=None):
+    def plot_shift_antiparallel_negative(self, frame:int):
         try:
             f = self.frames[frame].results.shift_profile_antiparallel_negative
         except:
@@ -817,7 +817,7 @@ class trajectory:
         return
 
 
-    def get_subgraphs_sense(self, frame):
+    def get_subgraphs_sense(self, frame:int):
         '''
         Retrive information about contact sense of each aggregate
         found in self.frames[frame]['subgraphs_full']
@@ -995,7 +995,7 @@ class trajectory:
 
 
     ### Use this to plot 3d data from trajectory object
-    def plot3d_parallel(self, z_max=100):
+    def plot3d_parallel(self, z_max:int=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1023,7 +1023,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='P Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title=f'Time ({self.time_unit})',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Parallel Shift')
@@ -1032,7 +1032,7 @@ class trajectory:
         return
 
 
-    def plot3d_antiparallel_negative(self, z_max=100):
+    def plot3d_antiparallel_negative(self, z_max:int=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1060,7 +1060,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP- Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title=f'Time ({self.time_unit})',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Negative Shift')
@@ -1068,7 +1068,7 @@ class trajectory:
 
         return
 
-    def plot3d_antiparallel_positive(self, z_max=100):
+    def plot3d_antiparallel_positive(self, z_max:int=100):
         # Read timestep from trajectory
         index = self.database.index
         # get timestep of each frame (in nanoseconds)
@@ -1096,7 +1096,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP+ Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title=f'Time ({self.time_unit})',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Positive Shift')
@@ -1105,7 +1105,7 @@ class trajectory:
         return
     
     
-    def plot_3d_distance_map(self, frame, i, j):
+    def plot_3d_distance_map(self, frame:int, i:int, j:int):
         '''
         Plot 3D distance map via plotly.
         
@@ -1127,8 +1127,8 @@ class trajectory:
         fig = go.Figure(data=[go.Surface(z=d_map.numpy(), x=np.linspace(0,d_map.shape[0], num=d_map.shape[0]+1), y=np.linspace(0,d_map.shape[1], num=d_map.shape[1]+1))])
         fig.update_layout(autosize=True,
                           scene = dict(
-                        xaxis_title='Peptide i',
-                        yaxis_title='Peptide j',
+                        xaxis_title=f'Peptide {i}',
+                        yaxis_title=f'Peptide {j}',
                         zaxis_title='Distance'),
                         #zaxis = dict(nticks=20, range=[0,100])),
                         title='3D distance map')
@@ -1150,7 +1150,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Parallel Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1169,7 +1169,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Negative Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1188,12 +1188,12 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Positive Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel(f'Time ({self.time_unit})')
         plt.ylabel('% of contacts')
         plt.show()
         return
     
-    def gnuplot_shift_profile(self, sense:str, z_max=100, quality='medium', sleep=2, verbose=True):
+    def gnuplot_shift_profile(self, sense:str, z_max:int=100, quality:str='medium', sleep:int=2, verbose:bool=True):
         '''
         This function is a wrapper calling a function from plot module.
         

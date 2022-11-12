@@ -78,7 +78,7 @@ def gnuplot_data_antiparallel_negative(self):
 
     return x,y,z
 
-def gnuplot_shift_surface(self, sense:str, z_max=100, quality='medium', sleep=2, verbose=True):
+def gnuplot_shift_surface(self, sense:str, z_max:int=100, quality:str='medium', sleep:int=2, verbose:bool=True):
     '''
     Plot a beta-sheet shift profile 3D plot in gnuplot.
     It Needs PyGnuplot installed in the system
@@ -92,23 +92,23 @@ def gnuplot_shift_surface(self, sense:str, z_max=100, quality='medium', sleep=2,
             'antiparallel_negative'
             'antiparallel_positive'
             
-    z_max : TYPE, optional
+    z_max : int, optional
         is the maximum value of the z axis. It start from 0,
         and finish at z_max. It is a % value,
         so the value of z_max should be 100 at maximum.
         The default is 100.
-    quality : TYPE, optional
+    quality : str, optional
         the quality of the saved image.
         The accepted value are:
             low',
             'medium',
             'high'
             The default is 'medium'.
-    sleep : TYPE, optional
+    sleep : int, optional
         is the length of the pause for the interpreter, in seconds.
         This argument will be removed in future version.
         The default is 2.
-    verbose : TYPE, optional
+    verbose : bool, optional
         if verbose is True, the function gives:
             the name of the temporary data object,
             a message confirming the finishing of the plotting
@@ -159,7 +159,7 @@ def gnuplot_shift_surface(self, sense:str, z_max=100, quality='medium', sleep=2,
         #set title
         gnup.c(sense_dict[sense]['title'])
         # set x label (timestep)
-        gnup.c('set xlabel "Time (ps)"')
+        gnup.c(f'set xlabel "Time ({self.time_unit})"')
         # set y label (type of shift)
         gnup.c(sense_dict[sense]['ylabel'])
         # set z label (% of interaction)
