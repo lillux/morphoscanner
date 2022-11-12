@@ -1023,7 +1023,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='P Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Parallel Shift')
@@ -1060,7 +1060,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP- Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Negative Shift')
@@ -1096,7 +1096,7 @@ class trajectory:
         fig.update_layout(autosize=True,
                           scene = dict(
                         xaxis_title='AP+ Shift',
-                        yaxis_title='Time (ps)',
+                        yaxis_title='Time (ns)',
                         zaxis_title='Contact %',
                         zaxis = dict(nticks=20, range=[0,z_max])),
                             title='Antiparallel Positive Shift')
@@ -1150,7 +1150,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Parallel Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1169,7 +1169,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Negative Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
@@ -1188,7 +1188,7 @@ class trajectory:
             y.append(f*100)
         plt.plot(x, y)
         plt.title('Antiparallel Positive Shift')
-        plt.xlabel('Time (ps)')
+        plt.xlabel('Time (ns)')
         plt.ylabel('% of contacts')
         plt.show()
         return
