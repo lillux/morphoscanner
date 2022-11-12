@@ -204,7 +204,7 @@ def _plot_3d_parallel_shift(x,y,z):
     return
 
 
-def plot_3d_antiparallel_positive_average(data: list):
+def plot_3d_antiparallel_positive_average(data:list):
     
     mp = [i for i in map(_trajectory_antiparallel_positive, data)]
     
@@ -216,7 +216,7 @@ def plot_3d_antiparallel_positive_average(data: list):
     
     return
     
-def plot_3d_antiparallel_negative_average(data: list):
+def plot_3d_antiparallel_negative_average(data:list):
     
     mp = [i for i in map(_trajectory_antiparallel_negative, data)]
     
@@ -228,7 +228,7 @@ def plot_3d_antiparallel_negative_average(data: list):
     
     return
     
-def plot_3d_parallel_average(data: list):
+def plot_3d_parallel_average(data:list):
     
     mp = [i for i in map(_trajectory_parallel, data)]
     
@@ -248,13 +248,13 @@ def get_beta_data(self):
     tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
     number_of_peptides = len(self.frames[0].peptides)
     x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-    spl = interpolate.interp1d(tss_int, beta, kind ='cubic')
+    spl = interpolate.interp1d(tss_int, beta, kind='cubic')
     beta_smooth = spl(x)
     beta_smooth_norm = (beta_smooth/number_of_peptides) * 100
 
     return x, beta_smooth_norm
 
-def plot_beta_average(data:list, label: str):
+def plot_beta_average(data:list, label:str):
 
     beta_data = np.array([i for i in map(get_beta_data, data)])
     beta_average = np.mean(beta_data, axis=0)[1]
@@ -276,12 +276,12 @@ def get_contacts_data(self):
     antip_total_ratio = [anti/cont if cont != 0 else 0 for anti, cont in zip(antiparallel, contact)]
     tss_int = np.array([self.universe.trajectory[i].time for i in index]).astype(int)
     x = np.linspace(tss_int.min(),tss_int.max(), tss_int.max())
-    spl = interpolate.interp1d(tss_int, antip_total_ratio, kind = 'cubic') # kind='linear'
+    spl = interpolate.interp1d(tss_int, antip_total_ratio, kind='cubic') # kind='linear'
     antip_total_ratio_smooth = spl(x)
 
     return x, antip_total_ratio_smooth
 
-def plot_contacts_average(data: list, label: str):
+def plot_contacts_average(data:list, label:str):
 
     contacts = np.array([i for i in map(get_contacts_data, data)])
     x = np.max(contacts, axis=0)[0]
@@ -307,7 +307,7 @@ def get_aggregates(self):
 
     return x, aggregates_smooth
 
-def plot_aggregates_average(data: list, label: str):
+def plot_aggregates_average(data:list, label:str):
     '''
     Plot the average number of the aggregates between different trajectories.
 

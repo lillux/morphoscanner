@@ -1116,7 +1116,7 @@ class trajectory:
         i : int
             Index of the peptide i, of which you want to visualize the map
         j : int
-            Index of peptide j, of which you want to vsualize the distance map with respect to peptide i.
+            Index of peptide j, of which you want to visualize the distance map with respect to peptide i.
 
         Returns
         -------
