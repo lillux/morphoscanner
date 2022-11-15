@@ -68,8 +68,9 @@ conda list
 
 Inside the active env, you can install morphoscanner with:
 
->```bash
+```bash
 pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
+```
 
 You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*, or for an *access token*.
 
@@ -77,74 +78,77 @@ You need to be a collaborator of the project to download the package. The prompt
 
 Branches other than the *default branch* can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url. For example, to download the ***dev***  branch:
 
->```bash
+```bash
 pip install git+https://github.com/lillux/morphoscanner.git@dev#egg=morphoscanner
-
+```
 
 
 ## Getting started
 
 Using ***Morphoscanner*** as a *Python module* is straightforward, leveraging MDAnalysis capability of I/O.\
 The first step is to import `morphoscanner`:
-> ```python
+```python
 from morphoscanner.trajectory import trajectory
+```
 
 The .gro and .xtc or .trr files must be inserted as path:
->``` python
+``` python
 _gro = '/path/to/your/gro'
 _xtc = '/path/to/your/xtc'
-
+```
 
 Create the *trajectory* class instance:
->``` python
+``` python
 trj = trajectory(_gro, _xtc)
-
+```
 
 Multiple consecutive trajectory can be merged and read as a single trajectory:
->``` python
+``` python
 trj = trajectory(_gro, (_xtc1, _xtc2, _xtc3))
-
+```
 
 *Specify the  frame sampling*.\
 The frame in the trajectory can be sampled.\
 To sample all frames just leave `sampling_interval=1`. The value you assign to `sampling_interval` is the number of frame you want to skip for each sampled frame. The value should be `int`:
 
->``` python
+``` python
 interval = 2
 trj.compose_database(sampling_interval = interval)
-
+```
 
 Analyze the database (this can take some time):
->``` python
+``` python
 trj.analyze_inLoop()
-
+```
 
 Retrieve the data:
->``` python
+``` python
 trj.get_data()
-
+```
 
 Show the database with the results of the analysis:
->``` python
+``` python
 trj.database
+```
 
 A *pandas.DataFrame* will be shown at the end of the analysis.
 
 The database can be saved as an *excel file* leveraging *pandas* capability:
 
 Set an output path:
->```python
+```python
 output_path = 'path/to/your/directory'
+```
 
 Set the name of the file:
->```python
+```python
 file_name = 'name_of_the_output_file'
-
+```
 
 Export the database with .xlsx file extension (you need `openpyxl`):
->```python
+```python
 trj.database.to_excel(output_path, sheet_name=file_name)
-
+```
 
 ### Plotting results
 
