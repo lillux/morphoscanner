@@ -201,4 +201,4 @@ trj.frames[frame]
 This is a dict that contains a dict for each sampled and analyzed frame, with the data computed during the analysis.
 
 ### Complete functionality
-An in deep review of morphoscanner functionalities can be found in the [`morphoscanner_tutorial.ipynb`]().
+An in deep review of morphoscanner functionalities can be found in the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/0.0.4/morphoscanner_tutorial.ipynb).
