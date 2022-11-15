@@ -12,13 +12,11 @@ The software  leverages ***parallel computing*** to compute tensor operations. I
 
 The tool can be distributed using *pip* repository and used as a *python module*.
 
-The script gives ease of usage: it only needs the Gromacs output and some topology info as input, and gives *.xlsx* files (Microsoft Excel) as output.
-
-`morphoscanner` can be imported in an IDE and used to write customized scripts and to do specific analysis. Morphoscanner can used to analyze MD trajectory data in a jupyter-notebook, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
+`morphoscanner` can be imported in an IDE and used to write customized scripts and to perform specific analysis. Morphoscanner can be used to analyze MD trajectory data in a jupyter-notebook, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
 
 
 ## Prerequisites
-Is suggested to install the package in a ***conda environment*** using **Anaconda**, due to the *active development status* of *Morphoscanner*.
+It is suggested to install the package in a ***conda environment*** using **Anaconda**, due to the *active development status* of *Morphoscanner*.
 
 **If you have an *Nvidia GPU* you can use** *PyTorch* **hardware acceleration by installing the package** *cudatoolkit*.
 
@@ -30,10 +28,10 @@ The *Nvidia Driver*, *cudatoolkit* and *PyTorch* version have to be compatible. 
 Tested drivers and packages version are in the following table.
 
  
- System | Nvidia Driver | cudatoolkit | PyTorch
---------|---------------|-------------|--------
-Manjaro 20.1.2 | 440.100 | 10.2 | 1.6.0
-Kubuntu 18.04 | 384.130 | 9.0 | 1.1.0
+ System |Python Version| Nvidia Driver | cudatoolkit | PyTorch
+--------|--------------|---------------|-------------|--------
+Manjaro 20.1.2 |3.8| 440.100 | 10.2 | 1.6.0
+Kubuntu 18.04 |3.7|384.130 | 9.0 | 1.1.0
 
 ### Installing Anaconda
 The [Anaconda installer](https://www.anaconda.com/distribution/ "Anaconda website") can be downloaded and installed in the user system using [the instructions](https://docs.anaconda.com/anaconda/install/linux/ "Installation Instructions").
@@ -49,9 +47,14 @@ Add the conda-forge channel (*--append* will add the channel at the bottom of th
 conda config --append channels conda-forge
 ```
 
-An *env* called *morphoscanner* can be created with: 
+An *env* called *ms_env* can be created with: 
 ```bash
-conda create -n morphoscanner python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
+conda create -n ms_env python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
+```
+
+The created env can be accessed with:
+```bash
+conda activate ms_env
 ```
 
 The installed packages can be checked (in the active env) with:
@@ -59,98 +62,89 @@ The installed packages can be checked (in the active env) with:
 conda list
 ```
 
-You can activate the env with:
-```bash
-conda activate morphoscanner
-```
-
 ## Morphoscanner installation
 
 ### Morphoscanner Installation as Module
 
-Inside the env you have to install morphoscanner:
-```bash
-pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
-```
-You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*.
+Inside the active env, you can install morphoscanner with:
 
-Then it will be installed in your env. You can now use morphoscanner from your *IDE* or *Python Console*.
+>```bash
+pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
+
+You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*, or for an *access token*.
+
+`morphoscanner` will be installed in your env. You can now use `morphoscanner` from your *IDE* or *Python Console*.
 
 Branches other than the *default branch* can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url. For example, to download the ***dev***  branch:
 
-```bash
+>```bash
 pip install git+https://github.com/lillux/morphoscanner.git@dev#egg=morphoscanner
-```
+
 
 
 ## Getting started
 
-Using ***Morphoscanner*** as a *Python module* is straightforward, leveraging MDAnalysis capability of I/O:
-``` python
+Using ***Morphoscanner*** as a *Python module* is straightforward, leveraging MDAnalysis capability of I/O.\
+The first step is to import `morphoscanner`:
+> ```python
 from morphoscanner.trajectory import trajectory
-```
 
 The .gro and .xtc or .trr files must be inserted as path:
-``` python
+>``` python
 _gro = '/path/to/your/gro'
 _xtc = '/path/to/your/xtc'
-```
 
-Create class instance:
-``` python
+
+Create the *trajectory* class instance:
+>``` python
 trj = trajectory(_gro, _xtc)
-```
+
 
 Multiple consecutive trajectory can be merged and read as a single trajectory:
-``` python
+>``` python
 trj = trajectory(_gro, (_xtc1, _xtc2, _xtc3))
-```
+
 
 *Specify the  frame sampling*.\
 The frame in the trajectory can be sampled.\
-To sample all frames just leave `sampling_interval=1`. If you want to sample choose the sampling interval as an `int`:
+To sample all frames just leave `sampling_interval=1`. The value you assign to `sampling_interval` is the number of frame you want to skip for each sampled frame. The value should be `int`:
 
-``` python
-interval = int
-```
-
-Then inside the *compose_database* function:
-``` python
+>``` python
+interval = 2
 trj.compose_database(sampling_interval = interval)
-```
+
 
 Analyze the database (this can take some time):
-``` python
+>``` python
 trj.analyze_inLoop()
-```
 
-Get data:
-``` python
+
+Retrieve the data:
+>``` python
 trj.get_data()
-```
 
-Show database:
-``` python
+
+Show the database with the results of the analysis:
+>``` python
 trj.database
-```
 
 A *pandas.DataFrame* will be shown at the end of the analysis.
 
 The database can be saved as an *excel file* leveraging *pandas* capability:
 
 Set an output path:
-```python
+>```python
 output_path = 'path/to/your/directory'
-```
-Set the name of the file:
-```python
-file_name = 'name_of_the_output_file'
-```
 
-Export the database with .xlsx file extension:
-```python
+Set the name of the file:
+>```python
+file_name = 'name_of_the_output_file'
+
+
+Export the database with .xlsx file extension (you need `openpyxl`):
+>```python
 trj.database.to_excel(output_path, sheet_name=file_name)
-```
+
 
 ### Plotting results
 
@@ -180,6 +174,7 @@ trj.plot_contacts()
     **Blue**: majority of antiparallel contacs.\
     **Yellow**: equal number of parallel and antiparallel contacts.\
     **Gray**: no contacts.
+
 ```python
 trj.plot_frame_aggregate(frame: int)
 ```
@@ -187,6 +182,7 @@ trj.plot_frame_aggregate(frame: int)
     **Edge thickness**: thickness proportional to the number of contacts between the two petides (nodes).\
     **Edge green**: parallel contact.\
     **Edge blue**: antiparallel contact.
+
 ``` python
 trj.plot_graph(0)
 ```
