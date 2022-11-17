@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name = 'morphoscanner',
-     version = '0.0.4_dev',
+     version = '0.0.5_dev',
      description = 'A library to handle Martini CG Gromacs trajectory data of Self Assembling Peptides',
      url = 'https://github.com/lillux/morphoscanner',
      author = 'Calogero Carlino, Federico Fontana',
@@ -31,5 +31,6 @@ setup(name = 'morphoscanner',
           'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
               
-      packages=find_packages())
+      packages=find_packages(where='morphoscanner'),
+      include_package_data=True)
 
