@@ -31,6 +31,6 @@ setup(name = 'morphoscanner',
           'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
               
-      packages=find_packages(where='morphoscanner'),
+      packages=find_packages(),
       include_package_data=True)
 
