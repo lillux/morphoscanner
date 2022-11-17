@@ -669,6 +669,45 @@ class trajectory:
     
     # PLOT
     
+    def plot_frame(self, frame:int, peptide_list=None, centroid=False):
+        '''
+        Wrapper around "morphoscanner.plot.plot.plot_peptide_list()" function
+
+        Plot peptides from a trajectory frame.
+        Using jupyter-notebook, use '%matplotlib notebook' to
+        plot the points cloud in 3D interactive mode.
+
+        Parameters
+        ----------
+        coordinate_dict : dict
+            Is the dict that contains all the coordinate
+            of the atoms of a single frame.
+            A single frame of the output of 
+            backend.topology.get_coordinate_dict_from_trajectory 
+            is a coordinate_dict.
+            
+        peptide_list : list, optional
+            The default is None. By default all the peptides
+            will be plotted.
+                Is a list of int. Put here the index of the peptide
+                or peptides that you want to plot.
+                For example [0,2,5,24,1,6] to plot
+                only these peptides.
+            
+        centroid : bool, optional
+            The default is False.
+                The centroid of a peptide can be plotted
+                in red together with the selected peptide.
+        
+        Returns
+        -------
+        3D plot
+            Return a scattered 3D plot.
+
+        '''
+        morphoscanner.plot.plot.plot_peptide_list(self.get_frame(frame), peptide_list=peptide_list, centroid=centroid)
+        return
+    
     def plot_contacts(self, kind:str='cubic'):
         '''
         Plot the ratio `antiparallel contacts` / `total contact` for each
