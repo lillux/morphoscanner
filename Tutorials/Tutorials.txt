@@ -1,8 +1,0 @@
-This folder contains three tutorials covering the possible implementation of the Morphoscanner analysis workflow. 
-The shown examples don't represent all the admissible workflows. Due to the modular features of Morphoscanner, 
-it is possible to rearrange the analysis workflows and integrate them with other Python libraries.
-
-EXAMPLE:
-I - Analysis of CG-MD trajectory: Self-assembling peptides
-II - Analysis of CG-MD trajectory: AQP4 embedded in Neuronal Membrane
-III - Analysis of CG-MD trajectory & Protein Structure: Alpha-helix structures & Analysis of secondary structure patterns of a beta-clamp polymerase
