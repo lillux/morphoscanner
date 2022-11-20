@@ -17,7 +17,7 @@ class dataloader:
     Load data for testing
     '''
     
-    def __init__(self, lib):
+    def __init__(self):
        # save lib path as a str
         self.current_path = os.path.dirname(sys.argv[0])
        # save .gro path as an os agnostic path object, then cast to str
