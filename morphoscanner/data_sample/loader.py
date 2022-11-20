@@ -18,7 +18,7 @@ class dataloader:
        # save lib path as a str
         self.current_path = os.path.dirname(morphoscanner.__file__)
        # save .gro path as an os agnostic path object, then cast to str
-        self.gro_simple_str = str(pathlib.Path(self.current_path).joinpath('simple_homogeneous', 'system.gro'))
+        self.gro_simple_str = str(pathlib.Path(self.current_path).joinpath('data_sample', 'simple_homogeneous', 'system.gro'))
        # save .xtc path as an os agnostic path object, then cast to str
-        self.xtc_simple_str = str(pathlib.Path(self.current_path).joinpath('simple_homogeneous', 'trajectory.xtc'))
+        self.xtc_simple_str = str(pathlib.Path(self.current_path).joinpath('data_sample', 'simple_homogeneous', 'trajectory.xtc'))
         return
