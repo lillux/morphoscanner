@@ -242,8 +242,6 @@ def check_for_compatibility(list1, list2):
             if e1 % e2 != 0:
                 print('%d is not multiple of %d' % (e1,e2))
                 return False
-            
-        
         else:
             return True
     
