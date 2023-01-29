@@ -154,27 +154,49 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
     return universe
 
 
-# Do not select by using the BB nomenclature
-# Use instead the aminoacids names and numbers on the first element
-# and compare it with the data inside molnames
+def get_data_from_trajectory_frame_v2(universe, frame:int, select=['aminoacids']):
+    '''
+    This function act as a parser for the trajectory (based on MartiniCG v2.2. molnames)
 
-def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
+    Parameters
+    ----------
+    universe : MDAnalysis.Universe
+        The MDAnalysis.Universe from which to parse the data
+    frame : int
+        The trajectory frame, or timestep, from which you want to parse the data.
+    select : list(), optional
+        The atom types to take in account in the data collection.
+        Atom types definition are taken from `morphoscanner.molnames.costituents`.
+        The default is ['aminoacids'].
+
+    Raises
+    ------
+    ValueError
+        ValueError if the 'select' argument is not a valid definition.
+
+    Returns
+    -------
+    object_dict : dict()
+        A dict of object (from morphoscanner.trj_object.trj_objects.single_peptide),
+                   with the following hierarchy: dict[peptide][residue],
+                   indexed from 0, in order of appearance in the system configuration file.
+    '''
     # move to frame
     universe.trajectory[frame]
-    
+    # temporary_list keeps track of the residue in a peptide, to know where a peptide ends
     temporary_list = []
     pep_index = 0
-
+    res_counter = 0
+    
     coordinate_dict = {}
     residues_dict = {}
     atom_number_dict = {}
 
     object_dict = {} # new
 
-    #select = ['peptide']
-
     accepted_costituents = []
-
+    
+    # create a checklist for the atom types of interest
     for element in select:
         if element in costituents.keys():
             try:
@@ -184,39 +206,35 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
                 accepted_costituents.append(costituents.get(element))
         else:
             raise ValueError('%s is not a valid key for morphoscanner.molnames.costituents.\n' % str(select))
-
+    
+    # move through the residues of the frame
     for res in universe.residues:
         if res.resname in accepted_costituents:
-
-            res_num = res.resnum - 1 # -1 because id start from 1, but indexing start from 0
-
+            # the number of the residue in the peptide
+            res_num = res.resnum
             atom = res.atoms[0] # always take the first atom of the residues (backbone)
-
             atom_index = atom.id - 1 # -1 because id start from 1, but indexing start from 0
-
             atom_coordinate = atom.position
-
             resname = atom.resname
-
-
+            # check if a new peptide is starting, and get the first C-alpha
             if len(temporary_list) == 0:
-
                 temporary_list.append(res_num)
-
+                
                 object_dict[pep_index] = {}
 
                 coordinate_dict[pep_index] = {}
                 residues_dict[pep_index] = {}
                 atom_number_dict[pep_index] = {}
-
-
+            
             else:
                 if temporary_list[-1] > res_num:
-
+                    # reset the atom index counter, because a new peptide is starting
+                    res_counter = 0
+                    # since a new peptide is starting, save the previous peptide
                     object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
-
+                    
                     pep_index += 1
-
+                    
                     temporary_list = []
                     temporary_list.append(res_num)
 
@@ -225,14 +243,16 @@ def get_data_from_trajectory_frame_v2(universe, frame, select=['aminoacids']):
                     coordinate_dict[pep_index] = {}
                     residues_dict[pep_index] = {}
                     atom_number_dict[pep_index] = {}
-
+                    
                 else:
                     temporary_list.append(res_num)
+                    res_counter += 1
 
-            coordinate_dict[pep_index][res_num] = atom_coordinate
-            residues_dict[pep_index][res_num] = resname
-            atom_number_dict[pep_index][res_num] = atom_index
-
+            coordinate_dict[pep_index][res_counter] = atom_coordinate
+            residues_dict[pep_index][res_counter] = resname
+            atom_number_dict[pep_index][res_counter] = atom_index
+            
+    # save the last peptide
     object_dict[pep_index] = single_peptide(residues_dict[pep_index], atom_number_dict[pep_index], coordinate_dict[pep_index])
     
     return object_dict
