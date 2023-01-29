@@ -1234,7 +1234,7 @@ class trajectory:
         plt.show()
         return
     
-    def gnuplot_shift_profile(self, sense:str, z_max:int=100, quality:str='medium', sleep:int=2, verbose:bool=True):
+    def gnuplot_shift_profile(self, sense:str, z_max:int=100, output_path:str=None, quality:str='medium', sleep:int=2, verbose:bool=True):
         '''
         This function is a wrapper calling a function from plot module.
         
@@ -1284,5 +1284,5 @@ class trajectory:
         None.
 
         '''
-        gnuplot.gnuplot_shift_surface(self, sense, z_max=z_max, quality=quality, sleep=sleep, verbose=verbose)  
+        gnuplot.gnuplot_shift_surface(self, sense=sense, z_max=z_max, output_path=output_path, quality=quality, sleep=sleep, verbose=verbose)  
         return
