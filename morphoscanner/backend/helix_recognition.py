@@ -53,8 +53,8 @@ def contact_tracer(contact_map):
     folding['n_carbonbeta'] = count_beta
     percentage_beta = count_beta/(contact_map.shape[0])*100
     folding['perc_beta'] = percentage_beta
-    folding['explored_alpha'] = np.sort(explored_alpha)
-    folding['explored_beta'] = np.sort(explored_beta)
+    folding['explored_alpha'] = np.sort(explored_alpha).astype(np.int32)
+    folding['explored_beta'] = np.sort(explored_beta).astype(np.int32)
     return folding
 
 
