@@ -4,15 +4,17 @@
 
 The available version of Morphoscanner can recognize *Beta-sheet* topologies and retrieve qualitative and quantitative data on the SAP assembling process.
 
-Morphoscanner is written in Python 3 using an object oriented approach.
+`morphoscanner` is written in Python 3 using an object oriented approach.
 
-Morphoscanner is developed to be versatile and easily accessible at the same time.
+`morphoscanner` is developed to be versatile and easily accessible at the same time.
 
-The software  leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed. Parallelizzation of the full workflow will be added in future developments.
+The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
 
 The tool can be distributed using *pip* repository and used as a *python module*.
 
 `morphoscanner` can be imported in an IDE and used to write customized scripts and to perform specific analysis. Morphoscanner can be used to analyze MD trajectory data in a jupyter-notebook, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
+
+For a deep review of `morphoscanner` functionalities have a look at the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/main/morphoscanner_tutorial.ipynb).
 
 
 ## Prerequisites
