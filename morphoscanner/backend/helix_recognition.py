@@ -5,6 +5,7 @@ Created on Wed Nov 18 17:50:56 2020
 """
 import numpy as np
 from timeit import default_timer as timer
+import pandas as pd
 
 def contact_map_helix_torch(distance_map):
     
@@ -81,7 +82,8 @@ def _calculate_helix_score(self, frame):
 
 def calculate_helix_score_for_frame(self, frame: int, device='cpu'):
     h_score = _calculate_helix_score(self, frame)
-    self.frames[frame].results.helix_score = h_score
+    self.frames[frame].results.helix_score = pd.DataFrame(h_score).transpose()
+    
     return
 
 def helix_score(self, device='cpu'):
