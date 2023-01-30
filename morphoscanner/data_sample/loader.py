@@ -21,4 +21,7 @@ class dataloader:
         self.gro_simple_str = str(pathlib.Path(self.current_path).joinpath('data_sample', 'simple_homogeneous', 'system.gro'))
        # save .xtc path as an os agnostic path object, then cast to str
         self.xtc_simple_str = str(pathlib.Path(self.current_path).joinpath('data_sample', 'simple_homogeneous', 'trajectory.xtc'))
+        
+        # import 3bep path as str
+        self.pdb_3bep = str(pathlib.Path(self.current_path).joinpath('data_sample','pdb_sample','3bep.pdb'))
         return
