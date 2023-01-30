@@ -21,7 +21,7 @@ class trajectory:
     From this object is possible to conduct the analysis.
     '''
 
-    def __init__(self, _sys_config:str, _sys_traj:str, select=None):
+    def __init__(self, _sys_config:str, _sys_traj:str=None, select=None):
         '''
         Construct the trajectory() object.
 
@@ -29,12 +29,14 @@ class trajectory:
         ----------
         _sys_config : str
             file path of the initial configuration of the system (.gro file for GROMACS)
-        _sys_traj : str
+            
+        _sys_traj : str, optional
             file path of the trajectory file (or files) (.xtc or .trr in GROMACS)
+            can be left empty to load system configuration, or structure file (eg. .pdb)
+            
         select : list(str), optional
             Choose which atoms to select and analyze. The atoms can be choosen from
             one of the morphoscanner.molnames.costituents.keys().
-            
             The default is None and will select only the aminoacids alpha-carbon
 
         Returns
@@ -45,9 +47,14 @@ class trajectory:
         
         # save data paths as object attribute
         self._sys_config = _sys_config
-        self._sys_traj = _sys_traj
-        # instantiate MDAnalysis.Universe()
-        self.universe = topology.make_universe(self._sys_config, self._sys_traj)
+        
+        if _sys_traj:
+            self._sys_traj = _sys_traj
+            # instantiate MDAnalysis.Universe()
+            self.universe = topology.make_universe(self._sys_config, self._sys_traj)
+        else:
+            self.universe = topology.make_universe(self._sys_config)
+
         # save the number of frames in the trajectory as object attribute
         self.number_of_frames = len(self.universe.trajectory)
         

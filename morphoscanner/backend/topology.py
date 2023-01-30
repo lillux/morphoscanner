@@ -124,19 +124,21 @@ def print_peptides_length(len_dict):
         print ('Length: %d, Peptides: %d' % (key, value))
     return
         
-# TODO: make trj_xtc an optional parameter
-def make_universe(trj_gro, trj_xtc, in_memory=False):
-    
+# TODO: integrate all the MDAnalysis functionalities
+def make_universe(trj_gro:str, trj_xtc:str=None, in_memory=False):
     '''
+    Instantiated the 
     Parameters
     ----------
-    trj_gro : string
+    trj_gro : str
         system path of gro file (topology).
-    trj_xtc : string
+    trj_xtc : str, optional
         system path of xtc or trr file (trajectory).
         can be provided as a single file or
         a list of consecutive trajectory files,
-        as [part1.trr, part2.trr, ...]
+        as [part1.trr, part2.trr, ...].
+        Can be left empty to load only the system configuration,
+        in case you are loading a single structural file (eg. pdb)
     in_memory : bool, optional
         The default is False.
         Move data to memory for faster (~100x faster)
@@ -148,9 +150,10 @@ def make_universe(trj_gro, trj_xtc, in_memory=False):
     universe : MDAnalysis.Universe()
         
     '''
-
-    universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
-
+    if trj_xtc:
+        universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
+    else:
+        universe = mda.Universe(trj_gro, in_memory=in_memory)
     return universe
 
 
