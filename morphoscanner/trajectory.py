@@ -57,24 +57,14 @@ class trajectory:
 
         # save the number of frames in the trajectory as object attribute
         self.number_of_frames = len(self.universe.trajectory)
-        
         # if no preference for grain selection, get aminoacids C backbone grains
         if select == None:
             select = ['aminoacids']
         # save selected grains types as object attribute
         self.select = select
-        # parse the _sys_config file to get the number of selected grains for each peptide
-        self.peptide_length_list = topology.get_peptide_length_list(self._sys_config, self.select)
-        # save the number of aminoacids for each peptide in a dict in the form:
-        #    {key:value} where:
-        #       'key' is an int, a certain number of aminoacids
-        #       'value' is the int number of peptides that have 'key' aminoacids
-        self.len_dict = topology.get_peptide_length_dict(self.peptide_length_list)
         # retrive the time unit of the trajectory
         self.time_unit = self.universe.trajectory.units['time']        
         print('In your trajectory there are %d frames.\n' % self.number_of_frames)
-        topology.print_peptides_length(self.len_dict)
-        
         return           
 
     
@@ -92,8 +82,10 @@ class trajectory:
         # instantiate 'peptide' object and fill with frame data
         self.frames[frame].peptides = backend.topology.get_data_from_trajectory_frame_v2(universe=self.universe, frame=frame, select=self.select)
         # to print when done
+        self.peptide_length_list = [len(self.frames[frame].peptides[peptide].coordinates) for peptide in self.frames[frame].peptides]
+        self.len_dict = topology.get_peptide_length_dict(self.peptide_length_list)
+        topology.print_peptides_length(self.len_dict)
         print('Exploration of frame %d done.\n' % frame)
-
         return  
     
     
