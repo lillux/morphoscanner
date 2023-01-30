@@ -1,1 +1,3 @@
 recursive-include morphoscanner *.gro *.xtc *.trr
+
+include morphoscanner/data_sample/pdb_sample/3bep.pdb

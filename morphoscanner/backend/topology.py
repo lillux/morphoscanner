@@ -124,7 +124,7 @@ def print_peptides_length(len_dict):
         print ('Length: %d, Peptides: %d' % (key, value))
     return
         
-
+# TODO: make trj_xtc an optional parameter
 def make_universe(trj_gro, trj_xtc, in_memory=False):
     
     '''
