@@ -1,4 +1,4 @@
-# Morphoscanner: a Library for Self Assembling Peptide Analysis from Molecular Dynamics Simulation made with Gromacs
+# Morphoscanner: a Library for Self Assembling Peptide Analysis from Molecular Dynamics Simulation
 
 **Morphoscanner** is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
 
@@ -6,13 +6,13 @@ The available version of Morphoscanner can recognize *Beta-sheet* topologies and
 
 `morphoscanner` is written in Python 3 using an object oriented approach.
 
-`morphoscanner` is developed to be versatile and easily accessible at the same time.
+`morphoscanner` is developed to be versatile and easily accessible.
 
 The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
 
-The tool can be distributed using *pip* repository and used as a *python module*.
+The tool can be distributed using *pip*, *GitHub* repository and used as a ***Python package***.
 
-`morphoscanner` can be imported in an IDE and used to write customized scripts and to perform specific analysis. Morphoscanner can be used to analyze MD trajectory data in a jupyter-notebook, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
+`morphoscanner` can be imported in an IDE and used to write customized scripts and to perform specific analysis. Morphoscanner can be used to analyze MD trajectory data in a *jupyter-notebook*, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
 
 For a deep review of `morphoscanner` functionalities have a look at the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/main/morphoscanner_tutorial.ipynb).
 
@@ -66,15 +66,13 @@ conda list
 
 ## Morphoscanner installation
 
-### Morphoscanner Installation as Module
+### Morphoscanner Installation as Package
 
-Inside the active env, you can install morphoscanner with:
+Inside the active env, you can install `morphoscanner` with:
 
 ```bash
 pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
 ```
-
-You need to be a collaborator of the project to download the package. The prompt will ask for *username* and *password*, or for an *access token*.
 
 `morphoscanner` will be installed in your env. You can now use `morphoscanner` from your *IDE* or *Python Console*.
 
@@ -87,13 +85,13 @@ pip install git+https://github.com/lillux/morphoscanner.git@dev#egg=morphoscanne
 
 ## Getting started
 
-Using ***Morphoscanner*** as a *Python module* is straightforward, leveraging MDAnalysis capability of I/O.\
+Using ***Morphoscanner*** as a *Python package* is straightforward, leveraging MDAnalysis capability of I/O.\
 The first step is to import `morphoscanner`:
 ```python
 from morphoscanner.trajectory import trajectory
 ```
 
-The .gro and .xtc or .trr files must be inserted as path:
+The system configuration (.gro in GROMACS) and trajectory files (.xtc or .trr in GROMACS) path is needed:
 ``` python
 _gro = '/path/to/your/gro'
 _xtc = '/path/to/your/xtc'
@@ -111,14 +109,14 @@ trj = trajectory(_gro, (_xtc1, _xtc2, _xtc3))
 
 *Specify the  frame sampling*.\
 The frame in the trajectory can be sampled.\
-To sample all frames just leave `sampling_interval=1`. The value you assign to `sampling_interval` is the number of frame you want to skip for each sampled frame. The value should be `int`:
+To sample all frames just leave `sampling_interval=1`. The value you assign to `sampling_interval` is the number of frame you want to skip for each sampled frame. The value should be an `int`:
 
 ``` python
 interval = 2
 trj.compose_database(sampling_interval = interval)
 ```
 
-Analyze the database (this can take some time):
+Analyze the simulation dataset (this can take some time):
 ``` python
 trj.analyze_inLoop()
 ```
@@ -135,7 +133,7 @@ trj.database
 
 A *pandas.DataFrame* will be shown at the end of the analysis.
 
-The database can be saved as an *excel file* leveraging *pandas* capability:
+The database can be saved as an *excel file*, leveraging *pandas* capability:
 
 Set an output path:
 ```python
