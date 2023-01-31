@@ -6,5 +6,6 @@ Due to the flexibility of Morphoscanner, it is possible to rearrange the analysi
 
 Examples:
 
-1. **Technical overview of the library + workflow**: Self-assembling peptides
+1. **Technical overview of the library + workflow**: Self-assembling peptides and in deep technical review of `morposcanner` functionalities
 2. **Analysis of Protein Structure**: Alpha-helix structures & Analysis of secondary structure patterns of a beta-clamp polymerase
+3. **Analysis of alpha-helix trajectory**: Fast tutorial with the analysis of a single peptide trajectory to study the alpha helical folding
