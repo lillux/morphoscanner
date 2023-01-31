@@ -14,7 +14,7 @@ The tool can be distributed using *pip*, *GitHub* repository and used as a ***Py
 
 `morphoscanner` can be imported in an IDE and used to write customized scripts and to perform specific analysis. Morphoscanner can be used to analyze MD trajectory data in a *jupyter-notebook*, and it integrates with the main packages used in the data-science workflow, as Numpy, Pandas, PyTorch, MDAnalysis, Matplotlib and NetworkX.
 
-For a deep review of `morphoscanner` functionalities have a look at the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/main/morphoscanner_tutorial.ipynb).
+For a deep review of `morphoscanner` functionalities have a look at the [tutorials](https://github.com/lillux/morphoscanner/blob/main/Tutorials).
 
 
 ## Prerequisites
@@ -201,4 +201,4 @@ trj.frames[frame]
 This is a dict that contains a dict for each sampled and analyzed frame, with the data computed during the analysis.
 
 ### Complete functionality
-An in deep review of morphoscanner functionalities can be found in the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/main/morphoscanner_tutorial.ipynb).
+An in deep review of morphoscanner functionalities can be found in the [morphoscanner_tutorial.ipynb](https://github.com/lillux/morphoscanner/blob/main/Tutorials/morphoscanner_tutorial.ipynb).
