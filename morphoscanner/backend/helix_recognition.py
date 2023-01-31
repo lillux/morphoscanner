@@ -104,3 +104,31 @@ def helix_score(self, device='cpu'):
     for frame in self.frames:
         calculate_helix_score_for_frame(self, frame=frame, device=device)
     return
+
+
+def get_max_helix_single_peptide(self, peptide:int=0):
+    '''
+    Find the frame in which a certain peptide has the max percentage of alpha-helix,
+    and the value of the percentage, as a key:value pair.
+
+    Parameters
+    ----------
+    peptide : int, optional
+        The index of the peptide to analyze.
+        The default is 0.
+
+    Returns
+    -------
+    dict
+        a dict of which the key is the frame index,
+        and the value is the percentage of alpha helix in that frame.
+        
+        {frame_index : percentage}
+
+    '''
+    alpha_perc = []
+    for f in self.frames:
+        alpha_perc.append(self.frames[f].results.helix_score.iloc[peptide]['perc_alpha'])
+    max_alpha = max(alpha_perc)
+    max_time = alpha_perc.index(max_alpha)
+    return {max_time : max_alpha}
