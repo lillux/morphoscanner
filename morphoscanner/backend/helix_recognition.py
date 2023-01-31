@@ -110,6 +110,11 @@ def get_max_helix_single_peptide(self, peptide:int=0):
     '''
     Find the frame in which a certain peptide has the max percentage of alpha-helix,
     and the value of the percentage, as a key:value pair.
+    
+    =============================================================================
+     Need a morphoscanner.trajectory.trajectory() object with the analysis done,
+     trajectory.helix_score() included, to work.
+    =============================================================================
 
     Parameters
     ----------
