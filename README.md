@@ -1,4 +1,4 @@
-# Morphoscanner: a Library for Self Assembling Peptide Analysis from Molecular Dynamics Simulation
+# Morphoscanner: a Library for the Analysis of Molecular Dynamics Simulations of Self Assembling Peptides
 
 **Morphoscanner** is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
 
