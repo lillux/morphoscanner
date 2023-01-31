@@ -137,3 +137,23 @@ def get_max_helix_single_peptide(self, peptide:int=0):
     max_alpha = max(alpha_perc)
     max_time = alpha_perc.index(max_alpha)
     return {max_time : max_alpha}
+
+
+def build_df_single_pep_helix_score(self, peptide:int):
+    '''
+    Construct a pandas.DataFrame with the results of the trajectory.helix_score()
+    function of the specified single peptide.
+
+    Parameters
+    ----------
+    peptide : int
+        The index of the peptide of which you want to gather the result for each frame
+
+    Returns
+    -------
+    pep_df : TYPE
+        pandas.DataFrame, in which each row contains alpha helix information of a peptide at a certain frame.
+    '''
+    
+    pep_df = pd.DataFrame({frame : self.frames[frame].results.helix_score.iloc[peptide] for frame in self.frames}).transpose()
+    return pep_df
