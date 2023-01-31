@@ -301,20 +301,20 @@ def plot_protein(coordinate_dict):
     fig = go.Figure(data = [go.Scatter3d (x=x, y=y, z=z)])
     return fig.show()
 
-def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
+def plot_alpha_perc(self, peptide:int=0, interpol:bool=False, num:int=50, kind:str='cubic'):
     '''
-    Plot % of alpha helix in an MD trajectory
+    Plot the % of alpha helix in an MD trajectory
 
     Parameters
     ----------
     peptide : int, optional
         The default is 0.
         Index of the peptide of which you want to track the aplha-helix folding.
-        
+    interpol : bool, optional
+        If True, interpolate the data. The default is False.
     num : int, optional
         The default is 50.
         The number of interpolated point, same as numpy.linspace(num=int)
-        
     kind : str, optional
         The default is 'cubic'.
         The kind of interpolation to perform, same as scipy.interpolate.interp1d(kind=str)
@@ -322,40 +322,79 @@ def plot_alpha_perc(self, peptide=0, num=50, kind='cubic'):
     Returns
     -------
     None.
-    
-    Comment from Federico: Removed interpolation because it creates artifacts and make unclear the interpretation of the analysis
 
     '''
+    
     alpha_perc = []
     for f in self.frames:
-        alpha_perc.append(self.frames[f].results.helix_score[peptide]['perc_alpha'])
+        alpha_perc.append(self.frames[f].results.helix_score.iloc[peptide]['perc_alpha'])
 
     fr = [i for i in self.frames.keys()]
     tss_int = np.array([self.universe.trajectory[i].time for i in fr]).astype(float)
-    #x = np.linspace(tss_int.min(),tss_int.max(), num)
-    x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
-    #spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
-    #fr_smooth = spl(x)
     
+    if interpol:
+        x = np.linspace(tss_int.min(),tss_int.max(), num)
+        spl = interpolate.interp1d(tss_int, alpha_perc, kind = kind)
+        fr_smooth = spl(x)
+        plt.plot(x, fr_smooth)
     
-    plt.plot(x, alpha_perc)
+    else:
+        x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
+        plt.plot(x, alpha_perc)
+    
     plt.title('Alpha-helix % over time')
-    plt.xlabel('Time (ps)')
+    plt.xlabel(f'Time ({self.time_unit})')
     plt.ylabel('Alpha-helix %')
     
     return
 
-def plot_beta_perc(self, peptide=0, num=50, kind='cubic'):
+def plot_beta_perc(self, peptide:int=0, interpol:bool=False, num:str=50, kind:str='cubic'):
+    '''
+    Another way of plotting the % of beta sheet in an MD trajectory.
+    The data here are computed from the trajectory.helix_score() function, and differs from what 
+    is obtained by running the trajectory.analyze_inLoop() method.
+    
+    This method plot the beta sheet **inside** a protein.
+    The trajectory.analyze_inLoop() produce data for beta sheet **between** proteins
+
+
+    Parameters
+    ----------
+    peptide : int, optional
+        The default is 0.
+        Index of the peptide of which you want to track the beta-sheet folding.
+    interpol : bool, optional
+        If True, interpolate the data. The default is False.
+    num : int, optional
+        The default is 50.
+        The number of interpolated point, same as numpy.linspace(num=int)
+    kind : str, optional
+        The default is 'cubic'.
+        The kind of interpolation to perform, same as scipy.interpolate.interp1d(kind=str)
+
+    Returns
+    -------
+    None.
+
+    '''
     
     beta_perc = []
     for f in self.frames:
-        beta_perc.append(self.frames[f].results.helix_score[peptide]['perc_beta'])
+        beta_perc.append(self.frames[f].results.helix_score.iloc[peptide]['perc_beta'])
 
     fr = [i for i in self.frames.keys()]
     tss_int = np.array([self.universe.trajectory[i].time for i in fr]).astype(float)
-    x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
     
-    plt.plot(x, beta_perc)
+    if interpol:
+        x = np.linspace(tss_int.min(),tss_int.max(), num)
+        spl = interpolate.interp1d(tss_int, beta_perc, kind = kind)
+        fr_smooth = spl(x)
+        plt.plot(x, fr_smooth)
+    
+    else:
+        x = np.linspace(tss_int.min(),tss_int.max(),len(tss_int))
+        plt.plot(x, beta_perc)
+    
     plt.title('Beta-sheet % over time')
     plt.xlabel('Time (ps)')
     plt.ylabel('Beta-sheet %')
