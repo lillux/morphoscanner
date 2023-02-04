@@ -50,6 +50,7 @@ conda config --append channels conda-forge
 ```
 
 Before creating your `env`, **be sure of the package version** that you need. I you will need `pytorch` version `1.1.0`, specify it in the command below, as `pytorch==1.1.0`!!
+
 An *env* called *ms_env* can be created with:
 ```bash
 conda create -n ms_env python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
