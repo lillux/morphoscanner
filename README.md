@@ -24,9 +24,9 @@ For a deep review of `morphoscanner` functionalities have a look at the [tutoria
 ## Prerequisites
 It is suggested to install the package in a ***conda environment*** using **Anaconda**, due to the *active development status* of *Morphoscanner*.
 
-### =============================================================================
-### Warning!! Calculation on GPU is in manteinance!! Always use 'cpu' for your analysis
-### =============================================================================
+#### =============================================================================
+### Warning!! Calculation on GPU is in manteinance!! Use 'cpu' for your analysis
+#### =============================================================================
 
 **If you have an *Nvidia GPU* you can use** *PyTorch* **hardware acceleration by installing the package** *cudatoolkit*.
 
@@ -34,6 +34,10 @@ The *Nvidia Driver*, *cudatoolkit* and *PyTorch* version have to be compatible. 
 
 - [Nvidia Driver and cudatoolkit compatibility](https://docs.nvidia.com/deploy/cuda-compatibility/index.html).
 - [PyTorch and cudatoolkit compatibility](https://pytorch.org/).
+
+#### =============================================================================
+### End Warning!! Use 'cpu' for your analysis
+#### =============================================================================
 
 Tested drivers and packages version are in the following table.
 
