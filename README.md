@@ -1,18 +1,16 @@
 # Morphoscanner: a Library for the Analysis of Molecular Dynamics Simulations of Self Assembling Peptides
 
-**Morphoscanner** is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
+`**morphoscanner**` is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
 
-The available version of Morphoscanner can recognize *Beta-sheet* topologies and retrieve qualitative and quantitative data on the SAP assembling process.
+`morphoscanner` is able to recognize protein secondary structures, and the emergence of *beta-sheet* structural patterns in systems of peptides. It provides qualitative and quantitative data on the SAP assembling process.
 
 `morphoscanner` is written in Python 3 using an object oriented approach, and it is developed to be versatile and easily accessible.
 
 `morphoscanner` gives to the user a way to handle trajectory data using `torch.tensor`. The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
 
-`morphoscanner` is able to recognize protein secondary structures, and the emergence of beta-sheet structural patterns in systems of peptides.
-
 `morphoscanner` is also an `API`, that enable the user to construct alternative workflow to the one we propose.
 
-**We strongly appreciate feedback from the community, bug reports, and advises on alternative analysis the can be useful to the community as a whole**.
+**We strongly appreciate feedback from the community, bug reports, and advises on alternative analysis the can be useful to the community. We also strongly appreciate your help in the development!**
 
 ## Distribution and intended use
 
