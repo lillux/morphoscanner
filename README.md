@@ -70,7 +70,7 @@ conda list
 
 ### Morphoscanner Installation as Package
 
-`morphoscanner` has `pygnuplot` package as an optional dependency. I you follow the command below, it will not be installed.
+`morphoscanner` has `pygnuplot` package as an optional dependency. If you follow the command below, it **will not** be installed.
 
 Inside the active env, you can install `morphoscanner` with:
 
@@ -79,7 +79,7 @@ pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
 ```
 
 #### Install with optional dependencies
-If you want the optional dependency `pygnuplot`, you can install `morphoscanner` with its additional package with the command below.
+If you want the optional dependency `pygnuplot`, you can install `morphoscanner` with its additional packages using the command below.
 
 ```bash
 pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner[full]
