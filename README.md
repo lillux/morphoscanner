@@ -14,7 +14,7 @@ The available version of Morphoscanner can recognize *Beta-sheet* topologies and
 
 **We strongly appreciate feedback from the community, bug reports, and advises on alternative analysis the can be useful to the community as a whole**.
 
-### distribution and intended use
+## Distribution and intended use
 
 The tool can be distributed using *pip*, *GitHub* repository and used as a ***Python package***.
 
