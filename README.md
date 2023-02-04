@@ -1,6 +1,6 @@
 # Morphoscanner: a Library for the Analysis of Molecular Dynamics Simulations of Self Assembling Peptides
 
-`**morphoscanner**` is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
+`morphoscanner` is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
 
 `morphoscanner` is able to recognize protein secondary structures, and the emergence of *beta-sheet* structural patterns in systems of peptides. It provides qualitative and quantitative data on the SAP assembling process.
 
