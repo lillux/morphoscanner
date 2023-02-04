@@ -49,12 +49,13 @@ Add the conda-forge channel (*--append* will add the channel at the bottom of th
 conda config --append channels conda-forge
 ```
 
-An *env* called *ms_env* can be created with: 
+Before creating your `env`, **be sure of the package version** that you need. I you will need `pytorch` version `1.1.0`, specify it in the command below, as `pytorch==1.1.0`!!
+An *env* called *ms_env* can be created with:
 ```bash
 conda create -n ms_env python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
 ```
 
-The created env can be accessed with:
+The env can be accessed with:
 ```bash
 conda activate ms_env
 ```
@@ -68,14 +69,24 @@ conda list
 
 ### Morphoscanner Installation as Package
 
+`morphoscanner` has `pygnuplot` package as an optional dependency. I you follow the command below, it will not be installed.
+
 Inside the active env, you can install `morphoscanner` with:
 
 ```bash
 pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
 ```
 
+#### Install with optional dependencies
+If you want the optional dependency `pygnuplot`, you can install `morphoscanner` with its additional package with the command below.
+
+```bash
+pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner[full]
+```
+
 `morphoscanner` will be installed in your env. You can now use `morphoscanner` from your *IDE* or *Python Console*.
 
+#### Install non-default branches
 Branches other than the *default branch* can be installed adding the name of the branch that you want to download, like *@branch_name*, after the repository url. For example, to download the ***dev***  branch:
 
 ```bash
