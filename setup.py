@@ -18,18 +18,22 @@ setup(name = 'morphoscanner',
                        'matplotlib',
                        'openpyxl',
                        'tqdm'],
-                       
-      classifiers=[
-          'Development Status :: 3 - Alpha',
-          'Intended Audience :: Healthcare Industry',
-          'Intended Audience :: Education',
-          'Intended Audience :: Science/Research',
-          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-          'Programming Language :: Python :: 3.8',
-          'Topic :: Software Development :: Libraries',
-          'Topic :: Software Development :: Libraries :: Python Modules',
-          'Topic :: Scientific/Engineering :: Bio-Informatics'
-      ],
+
+     extras_require = {'full' : ['pygnuplot']},
+     
+     optional = True,
+     
+     classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Healthcare Industry',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: Bio-Informatics'
+          ],
               
       packages=find_packages(),
       include_package_data=True)
