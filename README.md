@@ -49,7 +49,7 @@ Add the conda-forge channel (*--append* will add the channel at the bottom of th
 conda config --append channels conda-forge
 ```
 
-Before creating your `env`, **be sure of the package version** that you need. I you will need `pytorch` version `1.1.0`, specify it in the command below, as `pytorch==1.1.0`!!
+Before creating your `env`, **be sure of the package version** that you need. If you need `pytorch` version `1.1.0`, specify it in the command below, as `pytorch==1.1.0`!!
 
 An *env* called *ms_env* can be created with:
 ```bash
