@@ -4,11 +4,17 @@
 
 The available version of Morphoscanner can recognize *Beta-sheet* topologies and retrieve qualitative and quantitative data on the SAP assembling process.
 
-`morphoscanner` is written in Python 3 using an object oriented approach.
+`morphoscanner` is written in Python 3 using an object oriented approach, and it is developed to be versatile and easily accessible.
 
-`morphoscanner` is developed to be versatile and easily accessible.
+`morphoscanner` gives to the user a way to handle trajectory data using `torch.tensor`. The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
 
-The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
+`morphoscanner` is able to recognize protein secondary structures, and the emergence of beta-sheet structural patterns in systems of peptides.
+
+`morphoscanner` is also an `API`, that enable the user to construct alternative workflow to the one we propose.
+
+**We strongly appreciate feedback from the community, bug reports, and advises on alternative analysis the can be useful to the community as a whole**.
+
+### distribution and intended use
 
 The tool can be distributed using *pip*, *GitHub* repository and used as a ***Python package***.
 
