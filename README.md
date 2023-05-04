@@ -1,16 +1,17 @@
 # Morphoscanner: a Library for the Analysis of Molecular Dynamics Simulations of Self Assembling Peptides
 
+[Repository](https://github.com/lillux/morphoscanner) | [Website](https://www.cnte.science/software) | [Paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284307)
+-----------|---------|-------
+
 `morphoscanner` is a tool developed to analyze *Gromacs* MD simulations of *SAPs* and recognize specific patterns in the SAPs network, in simulation made with the **Martini CG Force Field**.
 
 `morphoscanner` is able to recognize protein secondary structures, and the emergence of *beta-sheet* structural patterns in systems of peptides. It provides qualitative and quantitative data on the SAP assembling process.
 
-`morphoscanner` is written in Python 3 using an object oriented approach, and it is developed to be versatile and easily accessible.
+`morphoscanner` is developed in Python 3, and it gives to the user a way to handle trajectory data using `torch.tensor`. The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
 
-`morphoscanner` gives to the user a way to handle trajectory data using `torch.tensor`. The software leverages ***parallel computing*** to compute tensor operations. It parallelize operations both on *CPU* and *GPU*, if an **Nvidia GPU** is found on the system and the correct version of *cudatoolkit* is installed.
+`morphoscanner` is also an `API`, that enable the user to construct customized analysis workflow.
 
-`morphoscanner` is also an `API`, that enable the user to construct alternative workflow to the one we propose.
-
-**We strongly appreciate feedback from the community, bug reports, and advises on alternative analysis the can be useful to the community. We also strongly appreciate your help in the development!**
+**We strongly appreciate feedback from the community, bug reports, and advises on types of analysis the can be useful to the community. We also strongly appreciate your help in the development!**
 
 ## Distribution and intended use
 
@@ -24,9 +25,9 @@ For a deep review of `morphoscanner` functionalities have a look at the [tutoria
 ## Prerequisites
 It is suggested to install the package in a ***conda environment*** using **Anaconda**, due to the *active development status* of *Morphoscanner*.
 
-#### =============================================================================
+#### ========================================================================
 ### Warning!! Calculation on GPU is in manteinance!! Use 'cpu' for your analysis
-#### =============================================================================
+#### ========================================================================
 
 **If you have an *Nvidia GPU* you can use** *PyTorch* **hardware acceleration by installing the package** *cudatoolkit*.
 
@@ -39,11 +40,12 @@ The *Nvidia Driver*, *cudatoolkit* and *PyTorch* version have to be compatible. 
 ### End Warning!! Use 'cpu' for your analysis
 #### =============================================================================
 
-Tested drivers and packages version are in the following table.
+Tested systems and driver version are in the following table.
 
  
  System |Python Version| Nvidia Driver | cudatoolkit | PyTorch
 --------|--------------|---------------|-------------|--------
+Ubuntu 22.04 |3.9 | 515.105.01 | 11.7 | 1.13.1
 Manjaro 20.1.2 |3.8| 440.100 | 10.2 | 1.6.0
 Kubuntu 18.04 |3.7|384.130 | 9.0 | 1.1.0
 
@@ -61,11 +63,11 @@ Add the conda-forge channel (*--append* will add the channel at the bottom of th
 conda config --append channels conda-forge
 ```
 
-Before creating your `env`, **be sure of the package version** that you need. If you need `pytorch` version `1.1.0`, specify it in the command below, as `pytorch==1.1.0`!!
+Before creating your `env`, **be sure of the package version** that you need. If you need `pytorch` version `1.13.1`, specify it in the command below, as `pytorch==1.13.1`!!
 
 An *env* called *ms_env* can be created with:
 ```bash
-conda create -n ms_env python=3.8 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=10.2 matplotlib scipy plotly
+conda create -n ms_env python=3.9 pip jupyter numpy pandas mdanalysis tqdm pytorch networkx cudatoolkit=11.7 matplotlib scipy plotly
 ```
 
 The env can be accessed with:
@@ -157,7 +159,7 @@ trj.database
 
 A *pandas.DataFrame* will be shown at the end of the analysis.
 
-The database can be saved as an *excel file*, leveraging *pandas* capability:
+The database can be saved as an *excel file*, leveraging *pandas*:
 
 Set an output path:
 ```python
@@ -169,7 +171,7 @@ Set the name of the file:
 file_name = 'name_of_the_output_file'
 ```
 
-Export the database with .xlsx file extension (you need `openpyxl`):
+Export the database with .xlsx file extension (you need to install `openpyxl`):
 ```python
 trj.database.to_excel(output_path, sheet_name=file_name)
 ```
