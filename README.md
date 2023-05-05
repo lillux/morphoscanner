@@ -60,6 +60,7 @@ The channel *conda-forge* is needed to install MDAnalysis.
 
 Add the conda-forge channel (*--append* will add the channel at the bottom of the channel list, *--add* will add the channel at the top of the channels list).
 ```bash
+conda config --append channels pytorch
 conda config --append channels conda-forge
 ```
 
