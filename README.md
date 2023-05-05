@@ -92,13 +92,11 @@ Inside the active env, you can install `morphoscanner` with:
 pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner
 ```
 
-[\\]: # (#### Install with optional dependencies
-If you want the optional dependency `pygnuplot`, you can install `morphoscanner` with its additional packages using the command below.
+[\\]: # (#### Install with optional dependencies)
+[\\]: # (If you want the optional dependency `pygnuplot`, you can install `morphoscanner` with its additional packages using the command below.)
 
-```bash
-pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner[full]
-```
-)
+[\\]: # (```bash)
+[\\]: # (pip install git+https://github.com/lillux/morphoscanner.git#egg=morphoscanner[full]```)
 
 `morphoscanner` will be installed in your env. You can now use `morphoscanner` from your *IDE* or *Python Console*.
 
