@@ -17,11 +17,7 @@ setup(name = 'morphoscanner',
                        'plotly',
                        'matplotlib',
                        'openpyxl',
-                       'tqdm'],
-
-     extras_require = {'full' : ['pygnuplot']},
-     
-     optional = True,
+                       'tqdm'],    
      
      classifiers=[
         'Development Status :: 3 - Alpha',
