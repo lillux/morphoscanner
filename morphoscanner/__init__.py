@@ -7,4 +7,4 @@ from . import molnames
 from . import analysis
 from . import data_sample
 
-__version__ = '0.0.5_dev'
+__version__ = '0.1_future'

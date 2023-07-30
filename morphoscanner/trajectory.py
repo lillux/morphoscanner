@@ -1,7 +1,6 @@
 import morphoscanner
 from morphoscanner import backend, trj_object
-from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology, helix_recognition
-#from morphoscanner.plot import gnuplot
+from morphoscanner.backend import distance_tensor, pattern_recognition, graph, topology, helix_recognition, mda_utils
 
 import tqdm
 from timeit import default_timer as timer
@@ -51,9 +50,9 @@ class trajectory:
         if _sys_traj:
             self._sys_traj = _sys_traj
             # instantiate MDAnalysis.Universe()
-            self.universe = topology.make_universe(self._sys_config, self._sys_traj)
+            self.universe = mda_utils.make_universe(self._sys_config, self._sys_traj)
         else:
-            self.universe = topology.make_universe(self._sys_config)
+            self.universe = mda_utils.make_universe(self._sys_config)
 
         # save the number of frames in the trajectory as object attribute
         self.number_of_frames = len(self.universe.trajectory)

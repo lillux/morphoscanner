@@ -124,39 +124,6 @@ def print_peptides_length(len_dict):
         print ('Length: %d, Peptides: %d' % (key, value))
     return
         
-# TODO: integrate all the MDAnalysis functionalities
-def make_universe(trj_gro:str, trj_xtc:str=None, in_memory=False):
-    '''
-    Instantiated the 
-    Parameters
-    ----------
-    trj_gro : str
-        system path of gro file (topology).
-    trj_xtc : str, optional
-        system path of xtc or trr file (trajectory).
-        can be provided as a single file or
-        a list of consecutive trajectory files,
-        as [part1.trr, part2.trr, ...].
-        Can be left empty to load only the system configuration,
-        in case you are loading a single structural file (eg. pdb)
-    in_memory : bool, optional
-        The default is False.
-        Move data to memory for faster (~100x faster)
-        frames coordinate retrival.
-        Needs more memory.
-
-    Returns
-    -------
-    universe : MDAnalysis.Universe()
-        
-    '''
-    if trj_xtc:
-        universe = mda.Universe(trj_gro, trj_xtc, in_memory=in_memory)
-    else:
-        universe = mda.Universe(trj_gro, in_memory=in_memory)
-    return universe
-
-
 def get_data_from_trajectory_frame_v2(universe, frame:int, select=['aminoacids']):
     '''
     This function act as a parser for the trajectory (based on MartiniCG v2.2. molnames)
