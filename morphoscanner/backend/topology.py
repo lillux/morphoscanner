@@ -124,6 +124,7 @@ def print_peptides_length(len_dict):
         print ('Length: %d, Peptides: %d' % (key, value))
     return
         
+
 def get_data_from_trajectory_frame_v2(universe, frame:int, select=['aminoacids']):
     '''
     This function act as a parser for the trajectory (based on MartiniCG v2.2. molnames)
